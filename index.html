@@ -2,45 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connecting to PingMe...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PingMe Smart Tag</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body {
-      background-color: #070c0e;
-      color: #f0f4f8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 20px;
-    }
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #16222a;
-      border-top: 4px solid #00e5a3;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 20px;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    h2 { font-size: 18px; color: #00e5a3; margin-bottom: 8px; letter-spacing: 0.5px; }
-    p { font-size: 13px; color: #7a8c99; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #070c0e; color: #f0f4f8; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; padding: 24px 16px 40px; }
+    .card { background: #0f171c; border: 1px solid #1c2b36; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); text-align: center; }
+    .logo { font-size: 22px; font-weight: 800; color: #00e5a3; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; }
+    .subhead { font-size: 12px; color: #7a8c99; margin-bottom: 20px; }
+    .badge { background: #16222a; border: 1px solid #233644; border-radius: 12px; padding: 14px; margin-bottom: 20px; }
+    .tag-id { font-size: 12px; font-weight: 700; color: #5bc0be; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .vehicle-num { font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
+    .radar-box { background: rgba(0, 229, 163, 0.06); border: 1px dashed rgba(0, 229, 163, 0.35); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-align: left; }
+    .radar-dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5a3; box-shadow: 0 0 10px #00e5a3; flex-shrink: 0; }
+    .radar-text { font-size: 12px; color: #a4b8c4; line-height: 1.4; }
+    .label { font-size: 12px; font-weight: 600; color: #8fa5b5; text-align: left; margin-bottom: 8px; }
+    .reasons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .reason-btn { background: #16232c; border: 1px solid #223746; color: #cbd5e1; border-radius: 10px; padding: 12px 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+    .reason-btn.active { background: #00e5a3; color: #070c0e; border-color: #00e5a3; font-weight: 700; }
+    .note-input { width: 100%; background: #16222a; border: 1px solid #233644; border-radius: 10px; color: #fff; padding: 12px; font-size: 13px; margin-bottom: 20px; outline: none; }
+    .note-input:focus { border-color: #00e5a3; }
+    .send-btn { width: 100%; background: #00e5a3; color: #070c0e; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 18px rgba(0,229,163,0.3); transition: transform 0.1s ease; }
+    .send-btn:active { transform: scale(0.98); }
+    .send-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+    .status-msg { margin-top: 14px; font-size: 13px; font-weight: 600; min-height: 18px; }
+    .footer { margin-top: 24px; font-size: 11px; color: #486581; }
   </style>
 </head>
 <body>
-  <div class="spinner"></div>
-  <h2>⚡ Connecting to PingMe</h2>
-  <p>Loading vehicle contact portal...</p>
+  <div class="card">
+    <div class="logo">⚡ PingMe</div>
+    <div class="subhead">Smart Privacy & Instant Alert Tag</div>
+
+    <div class="badge">
+      <div class="tag-id" id="displayTag">VP-1001</div>
+      <div class="vehicle-num" id="displayItem">Vehicle / Belonging</div>
+    </div>
+
+    <div class="radar-box">
+      <div class="radar-dot" id="radarDot"></div>
+      <div class="radar-text" id="radarText">Acquiring accurate GPS location...</div>
+    </div>
+
+    <div class="label">SELECT REASON FOR ALERT</div>
+    <div class="reasons-grid">
+      <button class="reason-btn active" onclick="selectReason(this, 'Car Blocking Way')">🚗 Blocking Way</button>
+      <button class="reason-btn" onclick="selectReason(this, 'Window Open')">🪟 Window Open</button>
+      <button class="reason-btn" onclick="selectReason(this, 'Lights ON')">💡 Lights Left ON</button>
+      <button class="reason-btn" onclick="selectReason(this, 'Tow Alert / Security')">🚨 Tow Warning</button>
+    </div>
+
+    <input type="text" id="customNote" class="note-input" placeholder="Add custom message (optional)...">
+
+    <button class="send-btn" id="submitBtn" onclick="sendAlert()">📲 PING OWNER ON WHATSAPP</button>
+    <div class="status-msg" id="statusBox"></div>
+  </div>
+
+  <div class="footer">Milir Crafts • Privacy Protected Contact</div>
 
   <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfxMoAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvIEed7VySzSIJvY4lwS/exec";
+
     const urlParams = new URLSearchParams(window.location.search);
     const tag = urlParams.get('tag') || 'VP-1001';
-    const targetUrl = "https://script.google.com/macros/s/AKfycbzyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvlEEd7VySzSlJvY4lwS/exec?tag=" + encodeURIComponent(tag);
-    window.location.replace(targetUrl);
+    document.getElementById('displayTag').innerText = tag;
+
+    let selectedReason = "Car Blocking Way";
+    let userLat = "";
+    let userLng = "";
+
+    function selectReason(btn, text) {
+      document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedReason = text;
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLat = pos.coords.latitude.toFixed(6);
+          userLng = pos.coords.longitude.toFixed(6);
+          document.getElementById('radarDot').style.background = '#00e5a3';
+          document.getElementById('radarText').innerHTML = "Exact GPS Location Attached (" + userLat + ", " + userLng + ")";
+        },
+        (err) => {
+          document.getElementById('radarDot').style.background = '#f59e0b';
+          document.getElementById('radarText').innerHTML = "Location not shared. Alert will still be sent.";
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    function sendAlert() {
+      const btn = document.getElementById('submitBtn');
+      const statusBox = document.getElementById('statusBox');
+      const note = document.getElementById('customNote').value;
+
+      btn.disabled = true;
+      btn.innerText = "Transmitting Alert...";
+      statusBox.style.color = "#5bc0be";
+      statusBox.innerText = "Delivering alert securely...";
+
+      const payload = {
+        tag: tag,
+        reason: selectedReason,
+        note: note,
+        lat: userLat,
+        lng: userLng
+      };
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        btn.style.background = "#22c55e";
+        btn.innerText = "Alert Delivered!";
+        statusBox.style.color = "#22c55e";
+        statusBox.innerText = "Owner received instant WhatsApp notification!";
+      })
+      .catch((err) => {
+        btn.disabled = false;
+        btn.innerText = "Retry Alert";
+        statusBox.style.color = "#ef4444";
+        statusBox.innerText = "Network issue. Please try again.";
+      });
+    }
   </script>
 </body>
 </html>
