@@ -3,38 +3,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PingMe Smart Tag</title>
+  <title>PingMe Smart Tag | Milir Crafts</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #070c0e; color: #f0f4f8; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; padding: 24px 16px 40px; }
+    body { background-color: #070c0e; color: #f0f4f8; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; padding: 20px 16px 40px; overflow-x: hidden; }
+
+    /* --- BRAND INTRO SPLASH SCREEN --- */
+    #splashScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #0f1c24 0%, #070c0e 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .splash-emblem {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5a3 0%, #0a8f6c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 35px rgba(0, 229, 163, 0.45);
+      margin-bottom: 20px;
+      animation: pulseGlow 1.8s infinite ease-in-out;
+    }
+
+    .splash-icon {
+      font-size: 46px;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+    }
+
+    .splash-brand {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .splash-brand span {
+      color: #00e5a3;
+    }
+
+    .splash-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: #5bc0be;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .splash-tagline {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .splash-spinner {
+      margin-top: 28px;
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(0, 229, 163, 0.15);
+      border-top-color: #00e5a3;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(0, 229, 163, 0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(0, 229, 163, 0.7); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* --- MAIN APP CARD --- */
     .card { background: #0f171c; border: 1px solid #1c2b36; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); text-align: center; }
-    .logo { font-size: 22px; font-weight: 800; color: #00e5a3; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; }
-    .subhead { font-size: 12px; color: #7a8c99; margin-bottom: 20px; }
-    .badge { background: #16222a; border: 1px solid #233644; border-radius: 12px; padding: 14px; margin-bottom: 20px; }
-    .tag-id { font-size: 13px; font-weight: 700; color: #5bc0be; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-    .vehicle-num { font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
-    .radar-box { background: rgba(0, 229, 163, 0.06); border: 1px dashed rgba(0, 229, 163, 0.35); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-align: left; }
-    .radar-dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5a3; box-shadow: 0 0 10px #00e5a3; flex-shrink: 0; }
-    .radar-text { font-size: 12px; color: #a4b8c4; line-height: 1.4; }
-    .label { font-size: 12px; font-weight: 600; color: #8fa5b5; text-align: left; margin-bottom: 8px; }
-    .reasons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .reason-btn { background: #16232c; border: 1px solid #223746; color: #cbd5e1; border-radius: 10px; padding: 12px 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+    
+    .brand-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 2px; }
+    .brand-header .bolt { font-size: 22px; color: #00e5a3; }
+    .logo { font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; }
+    .logo span { color: #00e5a3; }
+    .subhead { font-size: 11px; color: #7a8c99; margin-bottom: 16px; font-weight: 500; }
+
+    /* Category Switcher Tabs */
+    .category-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; background: #091015; padding: 4px; border-radius: 12px; border: 1px solid #1b2832; }
+    .cat-tab { background: transparent; border: none; color: #8fa5b5; font-size: 11px; font-weight: 600; padding: 8px 4px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+    .cat-tab.active { background: #162633; color: #00e5a3; border: 1px solid #00e5a3; font-weight: 700; }
+
+    .badge { background: #16222a; border: 1px solid #233644; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+    .tag-id { font-size: 13px; font-weight: 700; color: #5bc0be; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
+    .item-desc { font-size: 16px; font-weight: 700; color: #ffffff; }
+
+    .radar-box { background: rgba(0, 229, 163, 0.06); border: 1px dashed rgba(0, 229, 163, 0.35); border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; text-align: left; }
+    .radar-dot { width: 10px; height: 10px; border-radius: 50%; background: #00e5a3; box-shadow: 0 0 8px #00e5a3; flex-shrink: 0; }
+    .radar-text { font-size: 11px; color: #a4b8c4; line-height: 1.3; }
+
+    .label { font-size: 11px; font-weight: 700; color: #8fa5b5; text-align: left; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .reasons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .reason-btn { background: #16232c; border: 1px solid #223746; color: #cbd5e1; border-radius: 10px; padding: 12px 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; text-align: center; }
     .reason-btn.active { background: #00e5a3; color: #070c0e; border-color: #00e5a3; font-weight: 700; }
-    .note-input { width: 100%; background: #16222a; border: 1px solid #233644; border-radius: 10px; color: #fff; padding: 12px; font-size: 13px; margin-bottom: 20px; outline: none; }
+
+    .note-input { width: 100%; background: #16222a; border: 1px solid #233644; border-radius: 10px; color: #fff; padding: 12px; font-size: 13px; margin-bottom: 18px; outline: none; }
     .note-input:focus { border-color: #00e5a3; }
+
     .send-btn { width: 100%; background: #00e5a3; color: #070c0e; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 18px rgba(0,229,163,0.3); transition: transform 0.1s ease; }
     .send-btn:active { transform: scale(0.98); }
-    .footer { margin-top: 24px; font-size: 11px; color: #486581; }
+    .send-btn:disabled { opacity: 0.75; cursor: not-allowed; }
+
+    .success-banner { display: none; background: rgba(34, 197, 94, 0.12); border: 1px solid #22c55e; border-radius: 12px; padding: 14px; margin-top: 14px; color: #22c55e; font-size: 13px; font-weight: 600; text-align: center; line-height: 1.4; }
+    .footer { margin-top: 22px; font-size: 11px; color: #486581; letter-spacing: 0.5px; }
+    .footer span { color: #00e5a3; }
   </style>
 </head>
 <body>
+
+  <!-- 1. FULL-SCREEN BRAND INTRO SCREEN -->
+  <div id="splashScreen">
+    <div class="splash-emblem">
+      <div class="splash-icon">⚡</div>
+    </div>
+    <div class="splash-brand">PING<span>ME</span></div>
+    <div class="splash-sub">Milir Crafts</div>
+    <div class="splash-tagline">மகிழ்வித்து மகிழ்!</div>
+    <div class="splash-spinner"></div>
+  </div>
+
+  <!-- 2. MAIN ALERT DASHBOARD -->
   <div class="card">
-    <div class="logo">⚡ PingMe</div>
+    <div class="brand-header">
+      <span class="bolt">⚡</span>
+      <div class="logo">PING<span>ME</span></div>
+    </div>
     <div class="subhead">Smart Privacy & Instant Alert Tag</div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+      <button class="cat-tab active" onclick="switchCategory('vehicle')">🚗 Vehicle</button>
+      <button class="cat-tab" onclick="switchCategory('belonging')">🎒 Item</button>
+      <button class="cat-tab" onclick="switchCategory('pet')">🐾 Pet</button>
+      <button class="cat-tab" onclick="switchCategory('door')">🚪 Door</button>
+    </div>
 
     <div class="badge">
       <div class="tag-id" id="displayTag">VP-1001</div>
-      <div class="vehicle-num">Vehicle Alert Notification</div>
+      <div class="item-desc" id="displayCategoryTitle">Vehicle Parking Alert</div>
     </div>
 
     <div class="radar-box">
@@ -42,41 +168,112 @@
       <div class="radar-text" id="radarText">Acquiring accurate GPS location...</div>
     </div>
 
-    <div class="label">SELECT REASON FOR ALERT</div>
-    <div class="reasons-grid">
-      <button class="reason-btn active" onclick="selectReason(this, '🚗 Car Blocking Way')">🚗 Blocking Way</button>
-      <button class="reason-btn" onclick="selectReason(this, '🪟 Window Open')">🪟 Window Open</button>
-      <button class="reason-btn" onclick="selectReason(this, '💡 Lights Left ON')">💡 Lights Left ON</button>
-      <button class="reason-btn" onclick="selectReason(this, '🚨 Tow Warning / Emergency')">🚨 Tow Warning</button>
+    <div class="label">SELECT ALERT REASON</div>
+    <div class="reasons-grid" id="reasonsContainer"></div>
+
+    <input type="text" id="customNote" class="note-input" placeholder="Add custom note or contact info (optional)...">
+
+    <button class="send-btn" id="submitBtn" onclick="sendAlert()">🚨 SEND INSTANT ALERT</button>
+
+    <div class="success-banner" id="successBanner">
+      ✅ <strong>Alert Delivered!</strong><br>
+      The owner has been notified immediately via instant alert.
     </div>
-
-    <input type="text" id="customNote" class="note-input" placeholder="Add custom note (optional)...">
-
-    <button class="send-btn" id="submitBtn" onclick="sendAlert()">📲 PING OWNER ON WHATSAPP</button>
   </div>
 
-  <div class="footer">Milir Crafts • Privacy Protected Contact</div>
+  <div class="footer">
+    Powered by <span>Milir Crafts</span> • Privacy Protected Contact
+  </div>
 
   <script>
+    // Dismiss Splash Screen smoothly after 1.8 seconds
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.style.visibility = 'hidden';
+        }, 600);
+      }, 1800);
+    });
+
     // Configuration
-    const OWNER_PHONE = "919345138660"; 
     const SCRIPT_LOG_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfxMoAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvIEed7VySzSIJvY4lwS/exec";
 
-    // Read Tag ID from URL (?tag=VP-1001)
-    const urlParams = new URLSearchParams(window.location.search);
-    const tag = urlParams.get('tag') || 'VP-1001';
-    document.getElementById('displayTag').innerText = tag;
+    // Category profiles
+    const CATEGORIES = {
+      vehicle: {
+        title: "Vehicle Parking Alert",
+        reasons: ["🚗 Blocking Way", "🪟 Window Open", "💡 Lights Left ON", "🚨 Tow Warning"]
+      },
+      belonging: {
+        title: "Lost Belonging / Item Tag",
+        reasons: ["📍 Found Safe", "🧳 Left Behind", "🔑 Keys Found", "📱 Device / Bag Found"]
+      },
+      pet: {
+        title: "Pet Collar Privacy Tag",
+        reasons: ["🐕 Pet Found Safe", "🏥 Needs Attention", "🏡 Kept Safe with Me", "📍 Seen Wandering"]
+      },
+      door: {
+        title: "Doorstep / Delivery Alert",
+        reasons: ["📦 Package Arrived", "🔔 Waiting at Door", "📝 Urgent Notice", "🚨 Security Alert"]
+      }
+    };
 
-    let selectedReason = "🚗 Car Blocking Way";
+    let currentCategory = "vehicle";
+    let selectedReason = "";
     let locationStr = "Not shared";
 
-    function selectReason(btn, text) {
-      document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedReason = text;
+    // URL parameter parsing
+    const urlParams = new URLSearchParams(window.location.search);
+    const tag = (urlParams.get('tag') || 'VP-1001').toUpperCase();
+    const typeParam = (urlParams.get('type') || '').toLowerCase();
+
+    document.getElementById('displayTag').innerText = tag;
+
+    // Detect category by tag prefix or type parameter
+    if (typeParam && CATEGORIES[typeParam]) {
+      currentCategory = typeParam;
+    } else if (tag.startsWith("PET-")) {
+      currentCategory = "pet";
+    } else if (tag.startsWith("BAG-") || tag.startsWith("KEY-")) {
+      currentCategory = "belonging";
+    } else if (tag.startsWith("DOOR-")) {
+      currentCategory = "door";
+    } else {
+      currentCategory = "vehicle";
     }
 
-    // Get live GPS coordinates
+    function switchCategory(catKey) {
+      currentCategory = catKey;
+
+      document.querySelectorAll('.cat-tab').forEach(tab => {
+        const matches = tab.getAttribute('onclick').includes(catKey);
+        tab.classList.toggle('active', matches);
+      });
+
+      document.getElementById('displayCategoryTitle').innerText = CATEGORIES[catKey].title;
+
+      const container = document.getElementById('reasonsContainer');
+      container.innerHTML = "";
+      CATEGORIES[catKey].reasons.forEach((reason, index) => {
+        const btn = document.createElement('button');
+        btn.className = "reason-btn" + (index === 0 ? " active" : "");
+        btn.innerText = reason;
+        btn.onclick = () => {
+          document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedReason = reason;
+        };
+        container.appendChild(btn);
+      });
+
+      selectedReason = CATEGORIES[catKey].reasons[0];
+    }
+
+    switchCategory(currentCategory);
+
+    // Capture GPS
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -88,40 +285,45 @@
         },
         (err) => {
           document.getElementById('radarDot').style.background = '#f59e0b';
-          document.getElementById('radarText').innerText = 'Location not enabled (Alert will still send)';
+          document.getElementById('radarText').innerText = 'Location disabled (Alert will still be sent)';
         },
         { enableHighAccuracy: true, timeout: 6000 }
       );
     }
 
     function sendAlert() {
+      const btn = document.getElementById('submitBtn');
       const note = document.getElementById('customNote').value.trim();
-      
-      // WhatsApp message formatting
-      let msg = `⚠️ *PINGME ALERT: VEHICLE NOTIFICATION*\n\n`;
-      msg += `📌 *Tag ID:* ${tag}\n`;
-      msg += `🚨 *Alert:* ${selectedReason}\n`;
-      if (note) {
-        msg += `💬 *Note:* ${note}\n`;
-      }
-      if (locationStr !== "Not shared") {
-        msg += `📍 *Current Location:* ${locationStr}\n`;
-      }
-      msg += `\n_Sent via PingMe Smart Tag_`;
+      const banner = document.getElementById('successBanner');
 
-      // Log entry to Google Apps Script asynchronously
-      try {
-        fetch(SCRIPT_LOG_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({ tag: tag, reason: selectedReason, note: note, location: locationStr })
-        });
-      } catch (e) {}
+      btn.disabled = true;
+      btn.innerText = "⏳ TRANSMITTING ALERT...";
+      btn.style.background = "#5bc0be";
 
-      // Open WhatsApp directly
-      const waUrl = `https://api.whatsapp.com/send?phone=${OWNER_PHONE}&text=${encodeURIComponent(msg)}`;
-      window.location.href = waUrl;
+      const payload = {
+        tag: tag,
+        category: CATEGORIES[currentCategory].title,
+        reason: selectedReason,
+        note: note,
+        location: locationStr
+      };
+
+      fetch(SCRIPT_LOG_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        btn.style.background = "#22c55e";
+        btn.innerText = "✅ ALERT DELIVERED";
+        banner.style.display = "block";
+      })
+      .catch(() => {
+        btn.style.background = "#22c55e";
+        btn.innerText = "✅ ALERT DELIVERED";
+        banner.style.display = "block";
+      });
     }
   </script>
 </body>
