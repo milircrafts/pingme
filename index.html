@@ -11,8 +11,8 @@
     .logo { font-size: 22px; font-weight: 800; color: #00e5a3; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; }
     .subhead { font-size: 12px; color: #7a8c99; margin-bottom: 20px; }
     .badge { background: #16222a; border: 1px solid #233644; border-radius: 12px; padding: 14px; margin-bottom: 20px; }
-    .tag-id { font-size: 12px; font-weight: 700; color: #5bc0be; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-    .vehicle-num { font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
+    .tag-id { font-size: 13px; font-weight: 700; color: #5bc0be; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .vehicle-num { font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
     .radar-box { background: rgba(0, 229, 163, 0.06); border: 1px dashed rgba(0, 229, 163, 0.35); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-align: left; }
     .radar-dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5a3; box-shadow: 0 0 10px #00e5a3; flex-shrink: 0; }
     .radar-text { font-size: 12px; color: #a4b8c4; line-height: 1.4; }
@@ -24,8 +24,6 @@
     .note-input:focus { border-color: #00e5a3; }
     .send-btn { width: 100%; background: #00e5a3; color: #070c0e; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 18px rgba(0,229,163,0.3); transition: transform 0.1s ease; }
     .send-btn:active { transform: scale(0.98); }
-    .send-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-    .status-msg { margin-top: 14px; font-size: 13px; font-weight: 600; min-height: 18px; }
     .footer { margin-top: 24px; font-size: 11px; color: #486581; }
   </style>
 </head>
@@ -36,7 +34,7 @@
 
     <div class="badge">
       <div class="tag-id" id="displayTag">VP-1001</div>
-      <div class="vehicle-num" id="displayItem">Vehicle / Belonging</div>
+      <div class="vehicle-num">Vehicle Alert Notification</div>
     </div>
 
     <div class="radar-box">
@@ -46,30 +44,31 @@
 
     <div class="label">SELECT REASON FOR ALERT</div>
     <div class="reasons-grid">
-      <button class="reason-btn active" onclick="selectReason(this, 'Car Blocking Way')">🚗 Blocking Way</button>
-      <button class="reason-btn" onclick="selectReason(this, 'Window Open')">🪟 Window Open</button>
-      <button class="reason-btn" onclick="selectReason(this, 'Lights ON')">💡 Lights Left ON</button>
-      <button class="reason-btn" onclick="selectReason(this, 'Tow Alert / Security')">🚨 Tow Warning</button>
+      <button class="reason-btn active" onclick="selectReason(this, '🚗 Car Blocking Way')">🚗 Blocking Way</button>
+      <button class="reason-btn" onclick="selectReason(this, '🪟 Window Open')">🪟 Window Open</button>
+      <button class="reason-btn" onclick="selectReason(this, '💡 Lights Left ON')">💡 Lights Left ON</button>
+      <button class="reason-btn" onclick="selectReason(this, '🚨 Tow Warning / Emergency')">🚨 Tow Warning</button>
     </div>
 
-    <input type="text" id="customNote" class="note-input" placeholder="Add custom message (optional)...">
+    <input type="text" id="customNote" class="note-input" placeholder="Add custom note (optional)...">
 
     <button class="send-btn" id="submitBtn" onclick="sendAlert()">📲 PING OWNER ON WHATSAPP</button>
-    <div class="status-msg" id="statusBox"></div>
   </div>
 
   <div class="footer">Milir Crafts • Privacy Protected Contact</div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfxMoAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvIEed7VySzSIJvY4lwS/exec";
+    // Configuration
+    const OWNER_PHONE = "919345138660"; 
+    const SCRIPT_LOG_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfxMoAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvIEed7VySzSIJvY4lwS/exec";
 
+    // Read Tag ID from URL (?tag=VP-1001)
     const urlParams = new URLSearchParams(window.location.search);
     const tag = urlParams.get('tag') || 'VP-1001';
     document.getElementById('displayTag').innerText = tag;
 
-    let selectedReason = "Car Blocking Way";
-    let userLat = "";
-    let userLng = "";
+    let selectedReason = "🚗 Car Blocking Way";
+    let locationStr = "Not shared";
 
     function selectReason(btn, text) {
       document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
@@ -77,58 +76,52 @@
       selectedReason = text;
     }
 
+    // Get live GPS coordinates
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          userLat = pos.coords.latitude.toFixed(6);
-          userLng = pos.coords.longitude.toFixed(6);
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          locationStr = `https://maps.google.com/?q=${lat},${lng}`;
           document.getElementById('radarDot').style.background = '#00e5a3';
-          document.getElementById('radarText').innerHTML = "Exact GPS Location Attached (" + userLat + ", " + userLng + ")";
+          document.getElementById('radarText').innerText = `GPS Location Attached (${lat}, ${lng})`;
         },
         (err) => {
           document.getElementById('radarDot').style.background = '#f59e0b';
-          document.getElementById('radarText').innerHTML = "Location not shared. Alert will still be sent.";
+          document.getElementById('radarText').innerText = 'Location not enabled (Alert will still send)';
         },
-        { enableHighAccuracy: true, timeout: 8000 }
+        { enableHighAccuracy: true, timeout: 6000 }
       );
     }
 
     function sendAlert() {
-      const btn = document.getElementById('submitBtn');
-      const statusBox = document.getElementById('statusBox');
-      const note = document.getElementById('customNote').value;
+      const note = document.getElementById('customNote').value.trim();
+      
+      // WhatsApp message formatting
+      let msg = `⚠️ *PINGME ALERT: VEHICLE NOTIFICATION*\n\n`;
+      msg += `📌 *Tag ID:* ${tag}\n`;
+      msg += `🚨 *Alert:* ${selectedReason}\n`;
+      if (note) {
+        msg += `💬 *Note:* ${note}\n`;
+      }
+      if (locationStr !== "Not shared") {
+        msg += `📍 *Current Location:* ${locationStr}\n`;
+      }
+      msg += `\n_Sent via PingMe Smart Tag_`;
 
-      btn.disabled = true;
-      btn.innerText = "Transmitting Alert...";
-      statusBox.style.color = "#5bc0be";
-      statusBox.innerText = "Delivering alert securely...";
+      // Log entry to Google Apps Script asynchronously
+      try {
+        fetch(SCRIPT_LOG_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({ tag: tag, reason: selectedReason, note: note, location: locationStr })
+        });
+      } catch (e) {}
 
-      const payload = {
-        tag: tag,
-        reason: selectedReason,
-        note: note,
-        lat: userLat,
-        lng: userLng
-      };
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
-        btn.style.background = "#22c55e";
-        btn.innerText = "Alert Delivered!";
-        statusBox.style.color = "#22c55e";
-        statusBox.innerText = "Owner received instant WhatsApp notification!";
-      })
-      .catch((err) => {
-        btn.disabled = false;
-        btn.innerText = "Retry Alert";
-        statusBox.style.color = "#ef4444";
-        statusBox.innerText = "Network issue. Please try again.";
-      });
+      // Open WhatsApp directly
+      const waUrl = `https://api.whatsapp.com/send?phone=${OWNER_PHONE}&text=${encodeURIComponent(msg)}`;
+      window.location.href = waUrl;
     }
   </script>
 </body>
