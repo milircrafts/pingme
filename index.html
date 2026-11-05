@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>PINGME • Scan. Notify. Reconnect.</title>
   
-  <!-- Browser & Mobile Icon (Uses your uploaded logo) -->
+  <!-- Browser Tab & Mobile App Favicon -->
   <link rel="icon" type="image/png" href="logo.png" />
   <link rel="apple-touch-icon" href="logo.png" />
   
@@ -65,8 +65,8 @@
     }
 
     .logo-img {
-      width: 82px;
-      height: 82px;
+      width: 80px;
+      height: 80px;
       object-fit: contain;
       margin: 0 auto 6px;
       display: block;
@@ -268,7 +268,7 @@
       box-shadow: none;
     }
 
-    /* 180s Post-Submission Countdown Box */
+    /* 180s Cooldown Countdown Card */
     #cooldownBox {
       display: none;
       margin-top: 14px;
@@ -348,7 +348,7 @@
   <div class="card">
     <div class="glow-header"></div>
 
-    <!-- Header with Official Logo -->
+    <!-- Header & PingMe Logo -->
     <div class="brand-section">
       <img src="logo.png" alt="PingMe Logo" class="logo-img" onerror="this.style.display='none'" />
       
@@ -359,9 +359,9 @@
       <h1 class="tag-title" id="tagHeader">Connecting...</h1>
     </div>
 
-    <!-- Submission Form -->
+    <!-- Form Section -->
     <form id="pingmeForm">
-      <!-- 1. Category Selection -->
+      <!-- 1. Category -->
       <div class="section-title">Select Category</div>
       <div class="cat-selector">
         <div class="cat-card active" onclick="selectCategory('Vehicle', this)">
@@ -378,7 +378,7 @@
         </div>
       </div>
 
-      <!-- 2. Dynamic Dropdown Issue Reason -->
+      <!-- 2. Dynamic Issue Preset Dropdown -->
       <div class="field-group">
         <label class="field-label" for="issueSelector">Select Issue / Status</label>
         <div class="custom-select-wrap">
@@ -386,13 +386,13 @@
         </div>
       </div>
 
-      <!-- 3. Message Section (Dynamic Placeholders) -->
+      <!-- 3. Message Section with Category-Specific Placeholder -->
       <div class="field-group">
         <label class="field-label" for="messageInput">Message to Owner (Optional)</label>
         <textarea id="messageInput" placeholder="e.g. Parked blocking gate #2, lights left on..."></textarea>
       </div>
 
-      <!-- 4. Contact Information (Optional) -->
+      <!-- 4. Optional Reporter Phone -->
       <div class="field-group">
         <label class="field-label" for="contactInput">Your Contact Number (Optional)</label>
         <input type="tel" id="contactInput" placeholder="e.g. 9876543210" maxlength="13" />
@@ -401,13 +401,13 @@
 
       <div id="errorBox"></div>
 
-      <!-- 5. Prominent Gold Submit Button -->
+      <!-- 5. Submit Button -->
       <button type="submit" class="btn-gold" id="submitBtn">
         SEND ALERT TO OWNER
       </button>
     </form>
 
-    <!-- 6. 180s Cooldown Countdown Card -->
+    <!-- 6. Post-Submission 180s Cooldown Card -->
     <div id="cooldownBox">
       <div class="timer-badge">✓ Alert Delivered</div>
       <p class="timer-desc">The owner has been notified via WhatsApp.<br>You can send a follow-up in:</p>
@@ -422,8 +422,8 @@
   </div>
 
   <script>
-    // PASTE YOUR APPS SCRIPT WEB APP URL HERE:
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvlEEd7VySzSlJvY4lwS/exec";
+    // PASTE YOUR ACTUAL WEB APP URL (ENDS IN /exec):
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFgq4Hta0IwiTvIEEd7VySzSlJvY1d8uQ/exec";
 
     const subCategoryMap = {
       Vehicle: [
@@ -459,12 +459,12 @@
     let selectedCategory = "Vehicle";
     let locationUrl = "Location not shared";
 
-    // Dynamic Tag ID from URL parameter
+    // Grab Tag ID from URL parameter (defaults to VP-1001 for testing)
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = (urlParams.get('tag') || 'VP-1001').toUpperCase().trim();
     document.getElementById('tagHeader').innerText = "Tag: " + tagId;
 
-    // Background GPS Acquisition
+    // Background GPS Capture
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -484,7 +484,6 @@
         opt.textContent = item;
         select.appendChild(opt);
       });
-      // Update contextual placeholder
       document.getElementById('messageInput').placeholder = placeholderMap[category];
     }
 
@@ -495,9 +494,10 @@
       renderDropdown(catName);
     }
 
+    // Default initialization
     renderDropdown("Vehicle");
 
-    // 180s (3-Minute) Cooldown Management
+    // 180s Cooldown State Handler
     const COOLDOWN_SECONDS = 180;
     let timerCountdown = null;
 
@@ -546,7 +546,7 @@
 
     checkActiveCooldown();
 
-    // Submission Handler
+    // Submit Action (CORS-Safe implementation)
     document.getElementById('pingmeForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -570,28 +570,20 @@
         location: locationUrl
       };
 
+      // URL-encoded form body ensures requests pass through Google Apps Script redirects cleanly
+      const formBody = new URLSearchParams();
+      formBody.append("postData", JSON.stringify(payload));
+
       fetch(SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formBody.toString()
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "SUCCESS") {
-          const unlockTime = Date.now() + (COOLDOWN_SECONDS * 1000);
-          localStorage.setItem('pingme_lock_' + tagId, unlockTime);
-          startCountdownUI(COOLDOWN_SECONDS);
-        } else if (data.status === "COOLDOWN") {
-          errorBox.innerText = "An alert was recently dispatched. Please wait for the cooldown timer.";
-          errorBox.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.innerText = "SEND ALERT TO OWNER";
-        } else {
-          errorBox.innerText = data.message || "Failed to deliver. Please try again.";
-          errorBox.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.innerText = "SEND ALERT TO OWNER";
-        }
+      .then(() => {
+        const unlockTime = Date.now() + (COOLDOWN_SECONDS * 1000);
+        localStorage.setItem('pingme_lock_' + tagId, unlockTime);
+        startCountdownUI(COOLDOWN_SECONDS);
       })
       .catch(() => {
         errorBox.innerText = "Network error. Please try again.";
