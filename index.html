@@ -104,7 +104,7 @@
       margin-bottom: 8px;
     }
 
-    /* 3 Category Cards */
+    /* 3 Categories */
     .cat-selector {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -239,7 +239,7 @@
       box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
     }
 
-    /* Prominent Gold Submit Button */
+    /* Gold Action Button */
     .btn-gold {
       width: 100%;
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -422,7 +422,7 @@
   </div>
 
   <script>
-    // PASTE YOUR ACTUAL WEB APP URL (ENDS IN /exec):
+    // ACTIVE APPS SCRIPT WEB APP ENDPOINT
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFgq4Hta0IwiTvIEEd7VySzSlJvY1d8uQ/exec";
 
     const subCategoryMap = {
@@ -459,7 +459,7 @@
     let selectedCategory = "Vehicle";
     let locationUrl = "Location not shared";
 
-    // Grab Tag ID from URL parameter (defaults to VP-1001 for testing)
+    // Grab Tag ID from URL parameter (default: VP-1001)
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = (urlParams.get('tag') || 'VP-1001').toUpperCase().trim();
     document.getElementById('tagHeader').innerText = "Tag: " + tagId;
@@ -494,10 +494,9 @@
       renderDropdown(catName);
     }
 
-    // Default initialization
     renderDropdown("Vehicle");
 
-    // 180s Cooldown State Handler
+    // 180s Cooldown State Controller
     const COOLDOWN_SECONDS = 180;
     let timerCountdown = null;
 
@@ -570,7 +569,7 @@
         location: locationUrl
       };
 
-      // URL-encoded form body ensures requests pass through Google Apps Script redirects cleanly
+      // Form body encoding for Google Apps Script redirects
       const formBody = new URLSearchParams();
       formBody.append("postData", JSON.stringify(payload));
 
