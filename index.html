@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>PINGME • Scan. Notify. Reconnect.</title>
+  
+  <!-- Browser & Mobile Icon (Uses your uploaded logo) -->
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -39,7 +44,7 @@
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       border-radius: 28px;
-      padding: 26px 20px;
+      padding: 24px 20px;
       box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.4);
       position: relative;
       overflow: hidden;
@@ -56,53 +61,42 @@
 
     .brand-section {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .logo-icon {
-      font-size: 22px;
-      color: #0284c7;
-    }
-
-    .logo-text {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      color: var(--text-dark);
+    .logo-img {
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      margin: 0 auto 6px;
+      display: block;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
     }
 
     .badge-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       background: #eff6ff;
       color: #1d4ed8;
-      padding: 6px 14px;
+      padding: 5px 14px;
       border-radius: 50px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
       box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
       border: 1px solid rgba(191, 219, 254, 0.8);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .tag-title {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 800;
       color: var(--text-dark);
       letter-spacing: -0.3px;
     }
 
     .section-title {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -115,7 +109,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .cat-card {
@@ -129,12 +123,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .cat-card .emoji-circle {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -168,7 +162,7 @@
 
     /* Form Fields */
     .field-group {
-      margin-bottom: 14px;
+      margin-bottom: 13px;
     }
 
     .field-label {
@@ -180,10 +174,46 @@
     }
 
     .field-desc {
-      font-size: 11.5px;
+      font-size: 11px;
       color: var(--text-muted);
       margin-top: 4px;
       line-height: 1.3;
+    }
+
+    .custom-select-wrap {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 38px 12px 14px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-dark);
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--gold-accent);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    .custom-select-wrap::after {
+      content: "▼";
+      font-size: 11px;
+      color: #94a3b8;
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
     }
 
     textarea, input[type="tel"] {
@@ -191,8 +221,8 @@
       background: #ffffff;
       border: 2px solid #e2e8f0;
       border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 14.5px;
+      padding: 11px 14px;
+      font-size: 14px;
       font-weight: 500;
       color: var(--text-dark);
       outline: none;
@@ -201,7 +231,7 @@
 
     textarea {
       resize: none;
-      height: 72px;
+      height: 64px;
     }
 
     textarea:focus, input[type="tel"]:focus {
@@ -214,9 +244,9 @@
       width: 100%;
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       color: #ffffff;
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 800;
-      padding: 16px;
+      padding: 15px;
       border: none;
       border-radius: 16px;
       cursor: pointer;
@@ -232,61 +262,56 @@
     }
 
     .btn-gold:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
     }
 
-    /* Success Card */
-    #successScreen {
+    /* 180s Post-Submission Countdown Box */
+    #cooldownBox {
       display: none;
-      padding: 24px 12px;
+      margin-top: 14px;
+      padding: 16px 14px;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 2px solid #fde68a;
+      border-radius: 18px;
       text-align: center;
-      animation: fadeIn 0.3s ease-in-out;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.96); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
-    .success-icon-badge {
-      width: 64px;
-      height: 64px;
-      background: #ecfdf5;
-      color: #059669;
-      font-size: 32px;
+    .timer-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: #ffffff;
+      font-size: 11px;
       font-weight: 800;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2);
+      padding: 3px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
-    .success-title {
-      font-size: 19px;
-      font-weight: 800;
-      color: #065f46;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
-    }
-
-    .success-sub {
-      font-size: 14.5px;
+    .timer-desc {
+      font-size: 13px;
       font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 12px;
+      color: #92400e;
+      line-height: 1.4;
     }
 
-    .success-message {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      line-height: 1.5;
-      max-width: 320px;
-      margin: 0 auto;
+    .timer-clock {
+      font-size: 34px;
+      font-weight: 800;
+      color: #b45309;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1.5px;
+      margin-top: 6px;
     }
 
     /* Error Message Box */
@@ -300,13 +325,12 @@
       font-size: 13px;
       font-weight: 600;
       text-align: center;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
-    /* Clean Footer */
     .footer {
       text-align: center;
-      margin-top: 22px;
+      margin-top: 20px;
       font-size: 11.5px;
       font-weight: 600;
       color: #64748b;
@@ -324,15 +348,12 @@
   <div class="card">
     <div class="glow-header"></div>
 
-    <!-- Header & Branding -->
+    <!-- Header with Official Logo -->
     <div class="brand-section">
-      <div class="logo-wrap">
-        <span class="logo-icon">⚡</span>
-        <span class="logo-text">PINGME</span>
-      </div>
-
+      <img src="logo.png" alt="PingMe Logo" class="logo-img" onerror="this.style.display='none'" />
+      
       <div class="badge-pill">
-        🔒 Owner's Phone Number Stays Private
+        🔒 100% Private Alert
       </div>
 
       <h1 class="tag-title" id="tagHeader">Connecting...</h1>
@@ -357,36 +378,43 @@
         </div>
       </div>
 
-      <!-- 2. Message Section -->
+      <!-- 2. Dynamic Dropdown Issue Reason -->
       <div class="field-group">
-        <label class="field-label" for="messageInput">Message to Owner</label>
-        <textarea id="messageInput" placeholder="Where did you find this item?" required></textarea>
+        <label class="field-label" for="issueSelector">Select Issue / Status</label>
+        <div class="custom-select-wrap">
+          <select id="issueSelector" required></select>
+        </div>
       </div>
 
-      <!-- 3. Contact Information (Optional) -->
+      <!-- 3. Message Section (Dynamic Placeholders) -->
+      <div class="field-group">
+        <label class="field-label" for="messageInput">Message to Owner (Optional)</label>
+        <textarea id="messageInput" placeholder="e.g. Parked blocking gate #2, lights left on..."></textarea>
+      </div>
+
+      <!-- 4. Contact Information (Optional) -->
       <div class="field-group">
         <label class="field-label" for="contactInput">Your Contact Number (Optional)</label>
-        <input type="tel" id="contactInput" placeholder="e.g. 9876543210" pattern="[0-9]{10}" maxlength="13" />
+        <input type="tel" id="contactInput" placeholder="e.g. 9876543210" maxlength="13" />
         <p class="field-desc">Shared only with the owner to help coordinate the return.</p>
       </div>
 
       <div id="errorBox"></div>
 
-      <!-- 4. Prominent Gold Submit Button -->
+      <!-- 5. Prominent Gold Submit Button -->
       <button type="submit" class="btn-gold" id="submitBtn">
         SEND ALERT TO OWNER
       </button>
     </form>
 
-    <!-- 5. Successful Submission Screen -->
-    <div id="successScreen">
-      <div class="success-icon-badge">✓</div>
-      <h2 class="success-title">ALERT SENT SUCCESSFULLY!</h2>
-      <p class="success-sub">🔔 The owner has been notified.</p>
-      <p class="success-message">Thank you for helping reunite the owner with their belongings!</p>
+    <!-- 6. 180s Cooldown Countdown Card -->
+    <div id="cooldownBox">
+      <div class="timer-badge">✓ Alert Delivered</div>
+      <p class="timer-desc">The owner has been notified via WhatsApp.<br>You can send a follow-up in:</p>
+      <div class="timer-clock" id="timerClock">03:00</div>
     </div>
 
-    <!-- 6. Footer -->
+    <!-- 7. Footer -->
     <div class="footer">
       <div><span class="footer-brand">PINGME</span> – Scan. Notify. Reconnect.</div>
       <div>Powered by Milir Crafts.</div>
@@ -395,17 +423,48 @@
 
   <script>
     // PASTE YOUR APPS SCRIPT WEB APP URL HERE:
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvlEEd7VySzSlJvY4lwS/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_YOUR_DEPLOYMENT_ID/exec";
+
+    const subCategoryMap = {
+      Vehicle: [
+        "🚗 Blocking Gate / Driveway",
+        "💡 Headlights Left ON",
+        "🛞 Flat Tyre / Puncture",
+        "🪟 Window Left Open",
+        "⚠️ Towing / Traffic Alert",
+        "💬 General Vehicle Notice"
+      ],
+      Keys: [
+        "🔑 Found Dropped Keys",
+        "🏪 Handed to Nearby Shop",
+        "👮 Handed to Security Guard",
+        "📍 Left at Discovery Location",
+        "💬 Other Key Notice"
+      ],
+      Luggage: [
+        "🧳 Misplaced Bag / Strolley",
+        "🚕 Left in Auto / Cab",
+        "🏢 Handed to Lost & Found Desk",
+        "📍 Left at Airport / Station",
+        "💬 Other Bag Notice"
+      ]
+    };
+
+    const placeholderMap = {
+      Vehicle: "e.g. Parked blocking gate #2, lights left on...",
+      Keys: "Where did you find the keys? (e.g. Near lift lobby, shop counter...)",
+      Luggage: "Where did you locate the luggage? (e.g. Platform 2, auto back seat...)"
+    };
 
     let selectedCategory = "Vehicle";
     let locationUrl = "Location not shared";
 
-    // Extract dynamic Tag ID from URL parameter (e.g., ?tag=VP-1001)
+    // Dynamic Tag ID from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = (urlParams.get('tag') || 'VP-1001').toUpperCase().trim();
     document.getElementById('tagHeader').innerText = "Tag: " + tagId;
 
-    // Silent background GPS location acquisition (if permitted)
+    // Background GPS Acquisition
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -416,13 +475,78 @@
       );
     }
 
+    function renderDropdown(category) {
+      const select = document.getElementById('issueSelector');
+      select.innerHTML = "";
+      subCategoryMap[category].forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+      // Update contextual placeholder
+      document.getElementById('messageInput').placeholder = placeholderMap[category];
+    }
+
     function selectCategory(catName, cardEl) {
       selectedCategory = catName;
       document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
       cardEl.classList.add('active');
+      renderDropdown(catName);
     }
 
-    // Form submission & duplicate prevention
+    renderDropdown("Vehicle");
+
+    // 180s (3-Minute) Cooldown Management
+    const COOLDOWN_SECONDS = 180;
+    let timerCountdown = null;
+
+    function checkActiveCooldown() {
+      const savedExpiry = localStorage.getItem('pingme_lock_' + tagId);
+      if (savedExpiry) {
+        const remaining = Math.ceil((parseInt(savedExpiry, 10) - Date.now()) / 1000);
+        if (remaining > 0) {
+          startCountdownUI(remaining);
+        } else {
+          localStorage.removeItem('pingme_lock_' + tagId);
+        }
+      }
+    }
+
+    function startCountdownUI(duration) {
+      const btn = document.getElementById('submitBtn');
+      const cooldownBox = document.getElementById('cooldownBox');
+      const clock = document.getElementById('timerClock');
+
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+      cooldownBox.style.display = 'block';
+
+      let timeLeft = duration;
+      if (timerCountdown) clearInterval(timerCountdown);
+
+      timerCountdown = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timerCountdown);
+          localStorage.removeItem('pingme_lock_' + tagId);
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+          btn.innerText = "SEND FOLLOW-UP ALERT";
+          cooldownBox.style.display = 'none';
+        } else {
+          const mins = Math.floor(timeLeft / 60);
+          const secs = timeLeft % 60;
+          clock.innerText = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+      }, 1000);
+    }
+
+    checkActiveCooldown();
+
+    // Submission Handler
     document.getElementById('pingmeForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -430,23 +554,18 @@
       const errorBox = document.getElementById('errorBox');
       errorBox.style.display = 'none';
 
+      const selectedReason = document.getElementById('issueSelector').value;
       const message = document.getElementById('messageInput').value.trim();
       const reporterPhone = document.getElementById('contactInput').value.trim();
 
-      if (!message) {
-        errorBox.innerText = "Please provide where you found the item.";
-        errorBox.style.display = 'block';
-        return;
-      }
-
-      // Disable button immediately to prevent duplicate submissions
       submitBtn.disabled = true;
-      submitBtn.innerText = "NOTIFYING OWNER...";
+      submitBtn.innerText = "DISPATCHING ALERT...";
 
       const payload = {
         tagId: tagId,
         category: selectedCategory,
-        message: message,
+        reason: selectedReason,
+        message: message || "No extra note provided",
         reporterPhone: reporterPhone || "Not provided",
         location: locationUrl
       };
@@ -459,23 +578,23 @@
       .then(res => res.json())
       .then(data => {
         if (data.status === "SUCCESS") {
-          // Switch to Success Screen only after backend confirmation
-          document.getElementById('pingmeForm').style.display = 'none';
-          document.getElementById('successScreen').style.display = 'block';
+          const unlockTime = Date.now() + (COOLDOWN_SECONDS * 1000);
+          localStorage.setItem('pingme_lock_' + tagId, unlockTime);
+          startCountdownUI(COOLDOWN_SECONDS);
         } else if (data.status === "COOLDOWN") {
-          errorBox.innerText = "An alert was recently dispatched for this tag. Please wait a few moments.";
+          errorBox.innerText = "An alert was recently dispatched. Please wait for the cooldown timer.";
           errorBox.style.display = 'block';
           submitBtn.disabled = false;
           submitBtn.innerText = "SEND ALERT TO OWNER";
         } else {
-          errorBox.innerText = data.message || "Unable to send alert. Please try again.";
+          errorBox.innerText = data.message || "Failed to deliver. Please try again.";
           errorBox.style.display = 'block';
           submitBtn.disabled = false;
           submitBtn.innerText = "SEND ALERT TO OWNER";
         }
       })
       .catch(() => {
-        errorBox.innerText = "Connection error. Please try sending the alert again.";
+        errorBox.innerText = "Network error. Please try again.";
         errorBox.style.display = 'block';
         submitBtn.disabled = false;
         submitBtn.innerText = "SEND ALERT TO OWNER";
