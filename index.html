@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PingMe • Smart Contact Alert</title>
+  <title>PINGME • Scan. Notify. Reconnect.</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -11,10 +11,9 @@
       --card-bg: rgba(255, 255, 255, 0.98);
       --text-dark: #0f172a;
       --text-muted: #64748b;
-      --active-accent: #059669;
-      --active-glow: rgba(16, 185, 129, 0.25);
-      --active-bg: #ecfdf5;
-      --active-border: #10b981;
+      --gold-accent: #f59e0b;
+      --gold-dark: #d97706;
+      --gold-light: #fef3c7;
     }
 
     * {
@@ -57,83 +56,92 @@
 
     .brand-section {
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .logo-icon {
+      font-size: 22px;
+      color: #0284c7;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--text-dark);
     }
 
     .badge-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%);
-      color: #0369a1;
+      background: #eff6ff;
+      color: #1d4ed8;
       padding: 6px 14px;
       border-radius: 50px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
-      box-shadow: 0 2px 6px rgba(14, 165, 233, 0.15);
-      border: 1px solid rgba(14, 165, 233, 0.2);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(191, 219, 254, 0.8);
+      margin-bottom: 8px;
     }
 
     .tag-title {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
       color: var(--text-dark);
-      margin-top: 10px;
-      letter-spacing: -0.5px;
-    }
-
-    .tag-sub {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-top: 2px;
+      letter-spacing: -0.3px;
     }
 
     .section-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      color: #334155;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #475569;
+      margin-bottom: 8px;
     }
 
-    /* 3 Main Categories */
+    /* 3 Category Cards */
     .cat-selector {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .cat-card {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
       border-radius: 18px;
-      padding: 14px 6px;
+      padding: 12px 6px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .cat-card .emoji-circle {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      transition: transform 0.2s ease;
+      font-size: 22px;
       background: #ffffff;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .cat-card .cat-name {
@@ -142,192 +150,172 @@
       color: var(--text-dark);
     }
 
-    .cat-card.theme-vehicle.active {
-      border-color: #10b981;
-      background: #ecfdf5;
-      box-shadow: 0 8px 18px rgba(16, 185, 129, 0.22);
-      transform: translateY(-3px);
+    .cat-card.active {
+      border-color: var(--gold-accent);
+      background: var(--gold-light);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.25);
+      transform: translateY(-2px);
     }
-    .cat-card.theme-vehicle.active .cat-name { color: #047857; }
-    .cat-card.theme-vehicle.active .emoji-circle { background: #d1fae5; transform: scale(1.1); }
 
-    .cat-card.theme-keys.active {
-      border-color: #f59e0b;
-      background: #fffbeb;
-      box-shadow: 0 8px 18px rgba(245, 158, 11, 0.22);
-      transform: translateY(-3px);
+    .cat-card.active .cat-name {
+      color: var(--gold-dark);
     }
-    .cat-card.theme-keys.active .cat-name { color: #b45309; }
-    .cat-card.theme-keys.active .emoji-circle { background: #fef3c7; transform: scale(1.1); }
 
-    .cat-card.theme-luggage.active {
-      border-color: #6366f1;
-      background: #eef2ff;
-      box-shadow: 0 8px 18px rgba(99, 102, 241, 0.22);
-      transform: translateY(-3px);
+    .cat-card.active .emoji-circle {
+      background: #ffffff;
+      transform: scale(1.08);
     }
-    .cat-card.theme-luggage.active .cat-name { color: #4338ca; }
-    .cat-card.theme-luggage.active .emoji-circle { background: #e0e7ff; transform: scale(1.1); }
 
+    /* Form Fields */
     .field-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .field-label {
       font-size: 13px;
       font-weight: 700;
       color: #334155;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       display: block;
     }
 
-    .custom-select-wrap {
-      position: relative;
+    .field-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.3;
     }
 
-    select {
-      width: 100%;
-      appearance: none;
-      -webkit-appearance: none;
-      background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px 40px 14px 16px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-dark);
-      outline: none;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    select:focus {
-      border-color: var(--active-border);
-      box-shadow: 0 0 0 4px var(--active-glow);
-    }
-
-    .custom-select-wrap::after {
-      content: "▼";
-      font-size: 11px;
-      color: #94a3b8;
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-
-    textarea {
+    textarea, input[type="tel"] {
       width: 100%;
       background: #ffffff;
       border: 2px solid #e2e8f0;
       border-radius: 14px;
-      padding: 13px 16px;
-      font-size: 14px;
+      padding: 12px 14px;
+      font-size: 14.5px;
       font-weight: 500;
       color: var(--text-dark);
       outline: none;
-      resize: none;
-      height: 76px;
       transition: all 0.2s ease;
     }
 
-    textarea:focus {
-      border-color: var(--active-border);
-      box-shadow: 0 0 0 4px var(--active-glow);
+    textarea {
+      resize: none;
+      height: 72px;
     }
 
-    .btn-send {
+    textarea:focus, input[type="tel"]:focus {
+      border-color: var(--gold-accent);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    /* Prominent Gold Submit Button */
+    .btn-gold {
       width: 100%;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       color: #ffffff;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       padding: 16px;
       border: none;
       border-radius: 16px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35);
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
     }
 
-    .btn-send:hover {
-      box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+    .btn-gold:hover {
+      box-shadow: 0 10px 24px rgba(217, 119, 6, 0.45);
       transform: translateY(-1px);
     }
 
-    .btn-send:active {
-      transform: scale(0.98);
+    .btn-gold:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
-    /* 180s Cooldown Countdown Card */
-    #timerCard {
+    /* Success Card */
+    #successScreen {
       display: none;
-      margin-top: 16px;
-      padding: 18px 16px;
-      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-      border: 2px solid #fde68a;
-      border-radius: 18px;
+      padding: 24px 12px;
       text-align: center;
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: fadeIn 0.3s ease-in-out;
     }
 
-    @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .timer-badge {
-      display: inline-block;
-      background: #f59e0b;
-      color: #ffffff;
-      font-size: 11px;
+    .success-icon-badge {
+      width: 64px;
+      height: 64px;
+      background: #ecfdf5;
+      color: #059669;
+      font-size: 32px;
       font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .timer-desc {
-      font-size: 13px;
-      font-weight: 600;
-      color: #92400e;
-      line-height: 1.4;
-    }
-
-    .timer-clock {
-      font-size: 34px;
-      font-weight: 800;
-      color: #b45309;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 1.5px;
-      margin-top: 6px;
-      text-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      display: flex;
+      border-radius: 50%;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2);
     }
 
-    .footer span {
-      background: linear-gradient(90deg, #059669, #4f46e5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .success-title {
+      font-size: 19px;
       font-weight: 800;
+      color: #065f46;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .success-sub {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+
+    .success-message {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    /* Error Message Box */
+    #errorBox {
+      display: none;
+      background: #fef2f2;
+      border: 1.5px solid #fecaca;
+      border-radius: 12px;
+      padding: 10px;
+      color: #b91c1c;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* Clean Footer */
+    .footer {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .footer-brand {
+      font-weight: 800;
+      color: #334155;
     }
   </style>
 </head>
@@ -336,238 +324,161 @@
   <div class="card">
     <div class="glow-header"></div>
 
+    <!-- Header & Branding -->
     <div class="brand-section">
-      <div class="badge-pill">
-        <span>🛡️</span> 100% Private Alert
+      <div class="logo-wrap">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">PINGME</span>
       </div>
+
+      <div class="badge-pill">
+        🔒 Owner's Phone Number Stays Private
+      </div>
+
       <h1 class="tag-title" id="tagHeader">Connecting...</h1>
-      <p class="tag-sub">Instant WhatsApp alert to owner's phone</p>
     </div>
 
-    <form id="alertForm">
-      <!-- 1. Categories -->
-      <div class="section-title">1. Select Asset Type</div>
+    <!-- Submission Form -->
+    <form id="pingmeForm">
+      <!-- 1. Category Selection -->
+      <div class="section-title">Select Category</div>
       <div class="cat-selector">
-        <div class="cat-card theme-vehicle active" onclick="chooseCategory('Vehicle', this)">
+        <div class="cat-card active" onclick="selectCategory('Vehicle', this)">
           <div class="emoji-circle">🚗</div>
           <span class="cat-name">Vehicle</span>
         </div>
-        <div class="cat-card theme-keys" onclick="chooseCategory('Keys', this)">
+        <div class="cat-card" onclick="selectCategory('Keys', this)">
           <div class="emoji-circle">🔑</div>
           <span class="cat-name">Keys</span>
         </div>
-        <div class="cat-card theme-luggage" onclick="chooseCategory('Luggage', this)">
+        <div class="cat-card" onclick="selectCategory('Luggage', this)">
           <div class="emoji-circle">🧳</div>
           <span class="cat-name">Luggage</span>
         </div>
       </div>
 
-      <!-- 2. Sub-Reason -->
+      <!-- 2. Message Section -->
       <div class="field-group">
-        <label class="field-label" for="issueSelector">2. What is the issue / status?</label>
-        <div class="custom-select-wrap">
-          <select id="issueSelector" required></select>
-        </div>
+        <label class="field-label" for="messageInput">Message to Owner</label>
+        <textarea id="messageInput" placeholder="Where did you find this item?" required></textarea>
       </div>
 
-      <!-- 3. Notes -->
+      <!-- 3. Contact Information (Optional) -->
       <div class="field-group">
-        <label class="field-label" for="additionalNotes">3. Specific Location / Message (Optional)</label>
-        <textarea id="additionalNotes" placeholder="e.g. Parked blocking gate #2 / Handed over to watchman..."></textarea>
+        <label class="field-label" for="contactInput">Your Contact Number (Optional)</label>
+        <input type="tel" id="contactInput" placeholder="e.g. 9876543210" pattern="[0-9]{10}" maxlength="13" />
+        <p class="field-desc">Shared only with the owner to help coordinate the return.</p>
       </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="btn-send" id="submitBtn">
-        <span>⚡</span> Send Instant Alert
+      <div id="errorBox"></div>
+
+      <!-- 4. Prominent Gold Submit Button -->
+      <button type="submit" class="btn-gold" id="submitBtn">
+        SEND ALERT TO OWNER
       </button>
     </form>
 
-    <!-- 180s Cooldown Countdown Card -->
-    <div id="timerCard">
-      <div class="timer-badge">Alert Delivered</div>
-      <p class="timer-desc">Owner notified! Please give them 3 minutes to reach.<br>Next reminder available in:</p>
-      <div class="timer-clock" id="timerClock">03:00</div>
+    <!-- 5. Successful Submission Screen -->
+    <div id="successScreen">
+      <div class="success-icon-badge">✓</div>
+      <h2 class="success-title">ALERT SENT SUCCESSFULLY!</h2>
+      <p class="success-sub">🔔 The owner has been notified.</p>
+      <p class="success-message">Thank you for helping reunite the owner with their belongings!</p>
     </div>
 
+    <!-- 6. Footer -->
     <div class="footer">
-      Powered by <span>PingMe • Milir Crafts</span>
+      <div><span class="footer-brand">PINGME</span> – Scan. Notify. Reconnect.</div>
+      <div>Powered by Milir Crafts.</div>
     </div>
   </div>
 
   <script>
     // PASTE YOUR APPS SCRIPT WEB APP URL HERE:
-    const SCRIPT_ENDPOINT = "https://script.google.com/macros/s/AKfycbz_YOUR_DEPLOYMENT_ID/exec";
-
-    const optionsData = {
-      Vehicle: [
-        "🚗 Blocking Gate / Driveway",
-        "💡 Headlights Left ON",
-        "🛞 Flat Tyre / Puncture",
-        "🪟 Window Left Open",
-        "⚠️ Towing / Traffic Alert",
-        "💬 General Vehicle Notice"
-      ],
-      Keys: [
-        "🔑 Found Dropped Keys",
-        "🏪 Handed to Nearby Shop",
-        "👮 Handed to Security Guard",
-        "📍 Left at Discovery Location",
-        "💬 Other Key Notice"
-      ],
-      Luggage: [
-        "🧳 Misplaced Bag / Strolley",
-        "🚕 Left in Auto / Cab",
-        "🏢 Handed to Lost & Found Desk",
-        "📍 Left at Airport / Station",
-        "💬 Other Bag Notice"
-      ]
-    };
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_YOUR_DEPLOYMENT_ID/exec";
 
     let selectedCategory = "Vehicle";
-    let locationMapLink = "Location not shared";
+    let locationUrl = "Location not shared";
 
+    // Extract dynamic Tag ID from URL parameter (e.g., ?tag=VP-1001)
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = (urlParams.get('tag') || 'VP-1001').toUpperCase().trim();
     document.getElementById('tagHeader').innerText = "Tag: " + tagId;
 
+    // Silent background GPS location acquisition (if permitted)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          locationMapLink = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+          locationUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
         },
         () => {},
-        { enableHighAccuracy: true, timeout: 6000 }
+        { enableHighAccuracy: true, timeout: 5000 }
       );
     }
 
-    function chooseCategory(catName, cardEl) {
+    function selectCategory(catName, cardEl) {
       selectedCategory = catName;
       document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
       cardEl.classList.add('active');
-
-      const root = document.documentElement;
-      const sendBtn = document.getElementById('submitBtn');
-
-      if (catName === 'Vehicle') {
-        root.style.setProperty('--active-accent', '#059669');
-        root.style.setProperty('--active-glow', 'rgba(16, 185, 129, 0.25)');
-        root.style.setProperty('--active-border', '#10b981');
-        sendBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-        sendBtn.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.35)';
-      } else if (catName === 'Keys') {
-        root.style.setProperty('--active-accent', '#d97706');
-        root.style.setProperty('--active-glow', 'rgba(245, 158, 11, 0.25)');
-        root.style.setProperty('--active-border', '#f59e0b');
-        sendBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-        sendBtn.style.boxShadow = '0 8px 20px rgba(245, 158, 11, 0.35)';
-      } else {
-        root.style.setProperty('--active-accent', '#4f46e5');
-        root.style.setProperty('--active-glow', 'rgba(99, 102, 241, 0.25)');
-        root.style.setProperty('--active-border', '#6366f1');
-        sendBtn.style.background = 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)';
-        sendBtn.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.35)';
-      }
-
-      populateSubOptions(catName);
     }
 
-    function populateSubOptions(cat) {
-      const select = document.getElementById('issueSelector');
-      select.innerHTML = "";
-      optionsData[cat].forEach(opt => {
-        const option = document.createElement('option');
-        option.value = opt;
-        option.textContent = opt;
-        select.appendChild(option);
-      });
-    }
-
-    populateSubOptions("Vehicle");
-
-    const COOLDOWN_SECONDS = 180;
-    let timerCountdown = null;
-
-    function verifyExistingCooldown() {
-      const savedExpiry = localStorage.getItem('cooldown_' + tagId);
-      if (savedExpiry) {
-        const remaining = Math.ceil((parseInt(savedExpiry, 10) - Date.now()) / 1000);
-        if (remaining > 0) {
-          startCountdownUI(remaining);
-        } else {
-          localStorage.removeItem('cooldown_' + tagId);
-        }
-      }
-    }
-
-    function startCountdownUI(duration) {
-      const btn = document.getElementById('submitBtn');
-      const timerCard = document.getElementById('timerCard');
-      const clock = document.getElementById('timerClock');
-
-      btn.disabled = true;
-      btn.style.opacity = '0.35';
-      btn.style.cursor = 'not-allowed';
-      timerCard.style.display = 'block';
-
-      let timeLeft = duration;
-      if (timerCountdown) clearInterval(timerCountdown);
-
-      timerCountdown = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-          clearInterval(timerCountdown);
-          localStorage.removeItem('cooldown_' + tagId);
-          btn.disabled = false;
-          btn.style.opacity = '1';
-          btn.style.cursor = 'pointer';
-          btn.innerHTML = "<span>⚡</span> Send Follow-Up Alert";
-          timerCard.style.display = 'none';
-        } else {
-          const mins = Math.floor(timeLeft / 60);
-          const secs = timeLeft % 60;
-          clock.innerText = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-        }
-      }, 1000);
-    }
-
-    verifyExistingCooldown();
-
-    document.getElementById('alertForm').addEventListener('submit', function(e) {
+    // Form submission & duplicate prevention
+    document.getElementById('pingmeForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerHTML = "<span>⏳</span> Delivering Alert...";
+      const submitBtn = document.getElementById('submitBtn');
+      const errorBox = document.getElementById('errorBox');
+      errorBox.style.display = 'none';
 
-      const typedNotes = document.getElementById('additionalNotes').value.trim();
-      let compiledNotes = typedNotes ? typedNotes : "None provided";
-      if (locationMapLink.startsWith("http")) {
-        compiledNotes += " | GPS: " + locationMapLink;
+      const message = document.getElementById('messageInput').value.trim();
+      const reporterPhone = document.getElementById('contactInput').value.trim();
+
+      if (!message) {
+        errorBox.innerText = "Please provide where you found the item.";
+        errorBox.style.display = 'block';
+        return;
       }
 
-      const alertPayload = {
+      // Disable button immediately to prevent duplicate submissions
+      submitBtn.disabled = true;
+      submitBtn.innerText = "NOTIFYING OWNER...";
+
+      const payload = {
         tagId: tagId,
         category: selectedCategory,
-        reason: document.getElementById('issueSelector').value,
-        notes: compiledNotes,
-        location: locationMapLink
+        message: message,
+        reporterPhone: reporterPhone || "Not provided",
+        location: locationUrl
       };
 
-      fetch(SCRIPT_ENDPOINT, {
+      fetch(SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(alertPayload)
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
       })
-      .then(() => {
-        const unlockAt = Date.now() + (COOLDOWN_SECONDS * 1000);
-        localStorage.setItem('cooldown_' + tagId, unlockAt);
-        startCountdownUI(COOLDOWN_SECONDS);
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "SUCCESS") {
+          // Switch to Success Screen only after backend confirmation
+          document.getElementById('pingmeForm').style.display = 'none';
+          document.getElementById('successScreen').style.display = 'block';
+        } else if (data.status === "COOLDOWN") {
+          errorBox.innerText = "An alert was recently dispatched for this tag. Please wait a few moments.";
+          errorBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.innerText = "SEND ALERT TO OWNER";
+        } else {
+          errorBox.innerText = data.message || "Unable to send alert. Please try again.";
+          errorBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.innerText = "SEND ALERT TO OWNER";
+        }
       })
       .catch(() => {
-        alert("Alert could not be sent. Please check your connection.");
-        btn.disabled = false;
-        btn.innerHTML = "<span>⚡</span> Send Instant Alert";
+        errorBox.innerText = "Connection error. Please try sending the alert again.";
+        errorBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerText = "SEND ALERT TO OWNER";
       });
     });
   </script>
