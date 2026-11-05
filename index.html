@@ -1,330 +1,575 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PingMe Smart Tag | Milir Crafts</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PingMe • Smart Contact Alert</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #070c0e; color: #f0f4f8; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; padding: 20px 16px 40px; overflow-x: hidden; }
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+      --card-bg: rgba(255, 255, 255, 0.98);
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --active-accent: #059669;
+      --active-glow: rgba(16, 185, 129, 0.25);
+      --active-bg: #ecfdf5;
+      --active-border: #10b981;
+    }
 
-    /* --- BRAND INTRO SPLASH SCREEN --- */
-    #splashScreen {
-      position: fixed;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 26px 20px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-header {
+      position: absolute;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(circle at center, #0f1c24 0%, #070c0e 100%);
-      z-index: 9999;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #10b981, #06b6d4, #6366f1, #f59e0b);
+    }
+
+    .brand-section {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%);
+      color: #0369a1;
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    .tag-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-top: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .tag-sub {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #334155;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 3 Main Categories */
+    .cat-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cat-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      gap: 6px;
     }
 
-    .splash-emblem {
-      width: 90px;
-      height: 90px;
+    .cat-card .emoji-circle {
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #00e5a3 0%, #0a8f6c 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 35px rgba(0, 229, 163, 0.45);
-      margin-bottom: 20px;
-      animation: pulseGlow 1.8s infinite ease-in-out;
+      font-size: 24px;
+      transition: transform 0.2s ease;
+      background: #ffffff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
     }
 
-    .splash-icon {
-      font-size: 46px;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
-    }
-
-    .splash-brand {
-      font-size: 26px;
-      font-weight: 900;
-      color: #ffffff;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .splash-brand span {
-      color: #00e5a3;
-    }
-
-    .splash-sub {
+    .cat-card .cat-name {
       font-size: 13px;
       font-weight: 700;
-      color: #5bc0be;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+      color: var(--text-dark);
     }
 
-    .splash-tagline {
+    .cat-card.theme-vehicle.active {
+      border-color: #10b981;
+      background: #ecfdf5;
+      box-shadow: 0 8px 18px rgba(16, 185, 129, 0.22);
+      transform: translateY(-3px);
+    }
+    .cat-card.theme-vehicle.active .cat-name { color: #047857; }
+    .cat-card.theme-vehicle.active .emoji-circle { background: #d1fae5; transform: scale(1.1); }
+
+    .cat-card.theme-keys.active {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      box-shadow: 0 8px 18px rgba(245, 158, 11, 0.22);
+      transform: translateY(-3px);
+    }
+    .cat-card.theme-keys.active .cat-name { color: #b45309; }
+    .cat-card.theme-keys.active .emoji-circle { background: #fef3c7; transform: scale(1.1); }
+
+    .cat-card.theme-luggage.active {
+      border-color: #6366f1;
+      background: #eef2ff;
+      box-shadow: 0 8px 18px rgba(99, 102, 241, 0.22);
+      transform: translateY(-3px);
+    }
+    .cat-card.theme-luggage.active .cat-name { color: #4338ca; }
+    .cat-card.theme-luggage.active .emoji-circle { background: #e0e7ff; transform: scale(1.1); }
+
+    .field-group {
+      margin-bottom: 16px;
+    }
+
+    .field-label {
       font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .custom-select-wrap {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 40px 14px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--active-border);
+      box-shadow: 0 0 0 4px var(--active-glow);
+    }
+
+    .custom-select-wrap::after {
+      content: "▼";
+      font-size: 11px;
       color: #94a3b8;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    textarea {
+      width: 100%;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-size: 14px;
       font-weight: 500;
+      color: var(--text-dark);
+      outline: none;
+      resize: none;
+      height: 76px;
+      transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--active-border);
+      box-shadow: 0 0 0 4px var(--active-glow);
+    }
+
+    .btn-send {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-send:hover {
+      box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-send:active {
+      transform: scale(0.98);
+    }
+
+    /* 180s Cooldown Countdown Card */
+    #timerCard {
+      display: none;
+      margin-top: 16px;
+      padding: 18px 16px;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 2px solid #fde68a;
+      border-radius: 18px;
+      text-align: center;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .timer-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
-    .splash-spinner {
-      margin-top: 28px;
-      width: 32px;
-      height: 32px;
-      border: 3px solid rgba(0, 229, 163, 0.15);
-      border-top-color: #00e5a3;
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
+    .timer-desc {
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400e;
+      line-height: 1.4;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(0, 229, 163, 0.4); }
-      50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(0, 229, 163, 0.7); }
+    .timer-clock {
+      font-size: 34px;
+      font-weight: 800;
+      color: #b45309;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+      text-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    /* --- MAIN APP CARD --- */
-    .card { background: #0f171c; border: 1px solid #1c2b36; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); text-align: center; }
-    
-    .brand-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 2px; }
-    .brand-header .bolt { font-size: 22px; color: #00e5a3; }
-    .logo { font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; }
-    .logo span { color: #00e5a3; }
-    .subhead { font-size: 11px; color: #7a8c99; margin-bottom: 16px; font-weight: 500; }
-
-    /* Category Switcher Tabs */
-    .category-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; background: #091015; padding: 4px; border-radius: 12px; border: 1px solid #1b2832; }
-    .cat-tab { background: transparent; border: none; color: #8fa5b5; font-size: 11px; font-weight: 600; padding: 8px 4px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
-    .cat-tab.active { background: #162633; color: #00e5a3; border: 1px solid #00e5a3; font-weight: 700; }
-
-    .badge { background: #16222a; border: 1px solid #233644; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
-    .tag-id { font-size: 13px; font-weight: 700; color: #5bc0be; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
-    .item-desc { font-size: 16px; font-weight: 700; color: #ffffff; }
-
-    .radar-box { background: rgba(0, 229, 163, 0.06); border: 1px dashed rgba(0, 229, 163, 0.35); border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; text-align: left; }
-    .radar-dot { width: 10px; height: 10px; border-radius: 50%; background: #00e5a3; box-shadow: 0 0 8px #00e5a3; flex-shrink: 0; }
-    .radar-text { font-size: 11px; color: #a4b8c4; line-height: 1.3; }
-
-    .label { font-size: 11px; font-weight: 700; color: #8fa5b5; text-align: left; margin-bottom: 8px; letter-spacing: 0.5px; }
-    .reasons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-    .reason-btn { background: #16232c; border: 1px solid #223746; color: #cbd5e1; border-radius: 10px; padding: 12px 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; text-align: center; }
-    .reason-btn.active { background: #00e5a3; color: #070c0e; border-color: #00e5a3; font-weight: 700; }
-
-    .note-input { width: 100%; background: #16222a; border: 1px solid #233644; border-radius: 10px; color: #fff; padding: 12px; font-size: 13px; margin-bottom: 18px; outline: none; }
-    .note-input:focus { border-color: #00e5a3; }
-
-    .send-btn { width: 100%; background: #00e5a3; color: #070c0e; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 18px rgba(0,229,163,0.3); transition: transform 0.1s ease; }
-    .send-btn:active { transform: scale(0.98); }
-    .send-btn:disabled { opacity: 0.75; cursor: not-allowed; }
-
-    .success-banner { display: none; background: rgba(34, 197, 94, 0.12); border: 1px solid #22c55e; border-radius: 12px; padding: 14px; margin-top: 14px; color: #22c55e; font-size: 13px; font-weight: 600; text-align: center; line-height: 1.4; }
-    .footer { margin-top: 22px; font-size: 11px; color: #486581; letter-spacing: 0.5px; }
-    .footer span { color: #00e5a3; }
+    .footer span {
+      background: linear-gradient(90deg, #059669, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
   </style>
 </head>
 <body>
 
-  <!-- 1. FULL-SCREEN BRAND INTRO SCREEN -->
-  <div id="splashScreen">
-    <div class="splash-emblem">
-      <div class="splash-icon">⚡</div>
-    </div>
-    <div class="splash-brand">PING<span>ME</span></div>
-    <div class="splash-sub">Milir Crafts</div>
-    <div class="splash-tagline">மகிழ்வித்து மகிழ்!</div>
-    <div class="splash-spinner"></div>
-  </div>
-
-  <!-- 2. MAIN ALERT DASHBOARD -->
   <div class="card">
-    <div class="brand-header">
-      <span class="bolt">⚡</span>
-      <div class="logo">PING<span>ME</span></div>
-    </div>
-    <div class="subhead">Smart Privacy & Instant Alert Tag</div>
+    <div class="glow-header"></div>
 
-    <!-- Category Tabs -->
-    <div class="category-tabs">
-      <button class="cat-tab active" onclick="switchCategory('vehicle')">🚗 Vehicle</button>
-      <button class="cat-tab" onclick="switchCategory('belonging')">🎒 Item</button>
-      <button class="cat-tab" onclick="switchCategory('pet')">🐾 Pet</button>
-      <button class="cat-tab" onclick="switchCategory('door')">🚪 Door</button>
+    <div class="brand-section">
+      <div class="badge-pill">
+        <span>🛡️</span> 100% Private Alert
+      </div>
+      <h1 class="tag-title" id="tagHeader">Connecting...</h1>
+      <p class="tag-sub">Instant WhatsApp alert to owner's phone</p>
     </div>
 
-    <div class="badge">
-      <div class="tag-id" id="displayTag">VP-1001</div>
-      <div class="item-desc" id="displayCategoryTitle">Vehicle Parking Alert</div>
+    <form id="alertForm">
+      <!-- 1. Categories -->
+      <div class="section-title">1. Select Asset Type</div>
+      <div class="cat-selector">
+        <div class="cat-card theme-vehicle active" onclick="chooseCategory('Vehicle', this)">
+          <div class="emoji-circle">🚗</div>
+          <span class="cat-name">Vehicle</span>
+        </div>
+        <div class="cat-card theme-keys" onclick="chooseCategory('Keys', this)">
+          <div class="emoji-circle">🔑</div>
+          <span class="cat-name">Keys</span>
+        </div>
+        <div class="cat-card theme-luggage" onclick="chooseCategory('Luggage', this)">
+          <div class="emoji-circle">🧳</div>
+          <span class="cat-name">Luggage</span>
+        </div>
+      </div>
+
+      <!-- 2. Sub-Reason -->
+      <div class="field-group">
+        <label class="field-label" for="issueSelector">2. What is the issue / status?</label>
+        <div class="custom-select-wrap">
+          <select id="issueSelector" required></select>
+        </div>
+      </div>
+
+      <!-- 3. Notes -->
+      <div class="field-group">
+        <label class="field-label" for="additionalNotes">3. Specific Location / Message (Optional)</label>
+        <textarea id="additionalNotes" placeholder="e.g. Parked blocking gate #2 / Handed over to watchman..."></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn-send" id="submitBtn">
+        <span>⚡</span> Send Instant Alert
+      </button>
+    </form>
+
+    <!-- 180s Cooldown Countdown Card -->
+    <div id="timerCard">
+      <div class="timer-badge">Alert Delivered</div>
+      <p class="timer-desc">Owner notified! Please give them 3 minutes to reach.<br>Next reminder available in:</p>
+      <div class="timer-clock" id="timerClock">03:00</div>
     </div>
 
-    <div class="radar-box">
-      <div class="radar-dot" id="radarDot"></div>
-      <div class="radar-text" id="radarText">Acquiring accurate GPS location...</div>
+    <div class="footer">
+      Powered by <span>PingMe • Milir Crafts</span>
     </div>
-
-    <div class="label">SELECT ALERT REASON</div>
-    <div class="reasons-grid" id="reasonsContainer"></div>
-
-    <input type="text" id="customNote" class="note-input" placeholder="Add custom note or contact info (optional)...">
-
-    <button class="send-btn" id="submitBtn" onclick="sendAlert()">🚨 SEND INSTANT ALERT</button>
-
-    <div class="success-banner" id="successBanner">
-      ✅ <strong>Alert Delivered!</strong><br>
-      The owner has been notified immediately via instant alert.
-    </div>
-  </div>
-
-  <div class="footer">
-    Powered by <span>Milir Crafts</span> • Privacy Protected Contact
   </div>
 
   <script>
-    // Dismiss Splash Screen smoothly after 1.8 seconds
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const splash = document.getElementById('splashScreen');
-        splash.style.opacity = '0';
-        setTimeout(() => {
-          splash.style.visibility = 'hidden';
-        }, 600);
-      }, 1800);
-    });
+    // PASTE YOUR APPS SCRIPT WEB APP URL HERE:
+    const SCRIPT_ENDPOINT = "https://script.google.com/macros/s/AKfycbz_YOUR_DEPLOYMENT_ID/exec";
 
-    // Configuration
-    const SCRIPT_LOG_URL = "https://script.google.com/macros/s/AKfycbzyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvlEEd7VySzSlJvY4lwS/exec";
-
-    // Category profiles
-    const CATEGORIES = {
-      vehicle: {
-        title: "Vehicle Parking Alert",
-        reasons: ["🚗 Blocking Way", "🪟 Window Open", "💡 Lights Left ON", "🚨 Tow Warning"]
-      },
-      belonging: {
-        title: "Lost Belonging / Item Tag",
-        reasons: ["📍 Found Safe", "🧳 Left Behind", "🔑 Keys Found", "📱 Device / Bag Found"]
-      },
-      pet: {
-        title: "Pet Collar Privacy Tag",
-        reasons: ["🐕 Pet Found Safe", "🏥 Needs Attention", "🏡 Kept Safe with Me", "📍 Seen Wandering"]
-      },
-      door: {
-        title: "Doorstep / Delivery Alert",
-        reasons: ["📦 Package Arrived", "🔔 Waiting at Door", "📝 Urgent Notice", "🚨 Security Alert"]
-      }
+    const optionsData = {
+      Vehicle: [
+        "🚗 Blocking Gate / Driveway",
+        "💡 Headlights Left ON",
+        "🛞 Flat Tyre / Puncture",
+        "🪟 Window Left Open",
+        "⚠️ Towing / Traffic Alert",
+        "💬 General Vehicle Notice"
+      ],
+      Keys: [
+        "🔑 Found Dropped Keys",
+        "🏪 Handed to Nearby Shop",
+        "👮 Handed to Security Guard",
+        "📍 Left at Discovery Location",
+        "💬 Other Key Notice"
+      ],
+      Luggage: [
+        "🧳 Misplaced Bag / Strolley",
+        "🚕 Left in Auto / Cab",
+        "🏢 Handed to Lost & Found Desk",
+        "📍 Left at Airport / Station",
+        "💬 Other Bag Notice"
+      ]
     };
 
-    let currentCategory = "vehicle";
-    let selectedReason = "";
-    let locationStr = "Not shared";
+    let selectedCategory = "Vehicle";
+    let locationMapLink = "Location not shared";
 
-    // URL parameter parsing
     const urlParams = new URLSearchParams(window.location.search);
-    const tag = (urlParams.get('tag') || 'VP-1001').toUpperCase();
-    const typeParam = (urlParams.get('type') || '').toLowerCase();
+    const tagId = (urlParams.get('tag') || 'VP-1001').toUpperCase().trim();
+    document.getElementById('tagHeader').innerText = "Tag: " + tagId;
 
-    document.getElementById('displayTag').innerText = tag;
-
-    // Detect category by tag prefix or type parameter
-    if (typeParam && CATEGORIES[typeParam]) {
-      currentCategory = typeParam;
-    } else if (tag.startsWith("PET-")) {
-      currentCategory = "pet";
-    } else if (tag.startsWith("BAG-") || tag.startsWith("KEY-")) {
-      currentCategory = "belonging";
-    } else if (tag.startsWith("DOOR-")) {
-      currentCategory = "door";
-    } else {
-      currentCategory = "vehicle";
-    }
-
-    function switchCategory(catKey) {
-      currentCategory = catKey;
-
-      document.querySelectorAll('.cat-tab').forEach(tab => {
-        const matches = tab.getAttribute('onclick').includes(catKey);
-        tab.classList.toggle('active', matches);
-      });
-
-      document.getElementById('displayCategoryTitle').innerText = CATEGORIES[catKey].title;
-
-      const container = document.getElementById('reasonsContainer');
-      container.innerHTML = "";
-      CATEGORIES[catKey].reasons.forEach((reason, index) => {
-        const btn = document.createElement('button');
-        btn.className = "reason-btn" + (index === 0 ? " active" : "");
-        btn.innerText = reason;
-        btn.onclick = () => {
-          document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          selectedReason = reason;
-        };
-        container.appendChild(btn);
-      });
-
-      selectedReason = CATEGORIES[catKey].reasons[0];
-    }
-
-    switchCategory(currentCategory);
-
-    // Capture GPS
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const lat = pos.coords.latitude.toFixed(6);
-          const lng = pos.coords.longitude.toFixed(6);
-          locationStr = `https://maps.google.com/?q=${lat},${lng}`;
-          document.getElementById('radarDot').style.background = '#00e5a3';
-          document.getElementById('radarText').innerText = `GPS Location Attached (${lat}, ${lng})`;
+          locationMapLink = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
         },
-        (err) => {
-          document.getElementById('radarDot').style.background = '#f59e0b';
-          document.getElementById('radarText').innerText = 'Location disabled (Alert will still be sent)';
-        },
+        () => {},
         { enableHighAccuracy: true, timeout: 6000 }
       );
     }
 
-    function sendAlert() {
-      const btn = document.getElementById('submitBtn');
-      const note = document.getElementById('customNote').value.trim();
-      const banner = document.getElementById('successBanner');
+    function chooseCategory(catName, cardEl) {
+      selectedCategory = catName;
+      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+      cardEl.classList.add('active');
 
-      btn.disabled = true;
-      btn.innerText = "⏳ TRANSMITTING ALERT...";
-      btn.style.background = "#5bc0be";
+      const root = document.documentElement;
+      const sendBtn = document.getElementById('submitBtn');
 
-      const payload = {
-        tag: tag,
-        category: CATEGORIES[currentCategory].title,
-        reason: selectedReason,
-        note: note,
-        location: locationStr
-      };
+      if (catName === 'Vehicle') {
+        root.style.setProperty('--active-accent', '#059669');
+        root.style.setProperty('--active-glow', 'rgba(16, 185, 129, 0.25)');
+        root.style.setProperty('--active-border', '#10b981');
+        sendBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        sendBtn.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.35)';
+      } else if (catName === 'Keys') {
+        root.style.setProperty('--active-accent', '#d97706');
+        root.style.setProperty('--active-glow', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--active-border', '#f59e0b');
+        sendBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+        sendBtn.style.boxShadow = '0 8px 20px rgba(245, 158, 11, 0.35)';
+      } else {
+        root.style.setProperty('--active-accent', '#4f46e5');
+        root.style.setProperty('--active-glow', 'rgba(99, 102, 241, 0.25)');
+        root.style.setProperty('--active-border', '#6366f1');
+        sendBtn.style.background = 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)';
+        sendBtn.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.35)';
+      }
 
-      fetch(SCRIPT_LOG_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
-        btn.style.background = "#22c55e";
-        btn.innerText = "✅ ALERT DELIVERED";
-        banner.style.display = "block";
-      })
-      .catch(() => {
-        btn.style.background = "#22c55e";
-        btn.innerText = "✅ ALERT DELIVERED";
-        banner.style.display = "block";
+      populateSubOptions(catName);
+    }
+
+    function populateSubOptions(cat) {
+      const select = document.getElementById('issueSelector');
+      select.innerHTML = "";
+      optionsData[cat].forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        select.appendChild(option);
       });
     }
+
+    populateSubOptions("Vehicle");
+
+    const COOLDOWN_SECONDS = 180;
+    let timerCountdown = null;
+
+    function verifyExistingCooldown() {
+      const savedExpiry = localStorage.getItem('cooldown_' + tagId);
+      if (savedExpiry) {
+        const remaining = Math.ceil((parseInt(savedExpiry, 10) - Date.now()) / 1000);
+        if (remaining > 0) {
+          startCountdownUI(remaining);
+        } else {
+          localStorage.removeItem('cooldown_' + tagId);
+        }
+      }
+    }
+
+    function startCountdownUI(duration) {
+      const btn = document.getElementById('submitBtn');
+      const timerCard = document.getElementById('timerCard');
+      const clock = document.getElementById('timerClock');
+
+      btn.disabled = true;
+      btn.style.opacity = '0.35';
+      btn.style.cursor = 'not-allowed';
+      timerCard.style.display = 'block';
+
+      let timeLeft = duration;
+      if (timerCountdown) clearInterval(timerCountdown);
+
+      timerCountdown = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timerCountdown);
+          localStorage.removeItem('cooldown_' + tagId);
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+          btn.innerHTML = "<span>⚡</span> Send Follow-Up Alert";
+          timerCard.style.display = 'none';
+        } else {
+          const mins = Math.floor(timeLeft / 60);
+          const secs = timeLeft % 60;
+          clock.innerText = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+      }, 1000);
+    }
+
+    verifyExistingCooldown();
+
+    document.getElementById('alertForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = "<span>⏳</span> Delivering Alert...";
+
+      const typedNotes = document.getElementById('additionalNotes').value.trim();
+      let compiledNotes = typedNotes ? typedNotes : "None provided";
+      if (locationMapLink.startsWith("http")) {
+        compiledNotes += " | GPS: " + locationMapLink;
+      }
+
+      const alertPayload = {
+        tagId: tagId,
+        category: selectedCategory,
+        reason: document.getElementById('issueSelector').value,
+        notes: compiledNotes,
+        location: locationMapLink
+      };
+
+      fetch(SCRIPT_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(alertPayload)
+      })
+      .then(() => {
+        const unlockAt = Date.now() + (COOLDOWN_SECONDS * 1000);
+        localStorage.setItem('cooldown_' + tagId, unlockAt);
+        startCountdownUI(COOLDOWN_SECONDS);
+      })
+      .catch(() => {
+        alert("Alert could not be sent. Please check your connection.");
+        btn.disabled = false;
+        btn.innerHTML = "<span>⚡</span> Send Instant Alert";
+      });
+    });
   </script>
 </body>
 </html>
