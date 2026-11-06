@@ -357,7 +357,7 @@
       background: #ffffff;
       outline: none;
       resize: vertical;
-      min-height: 65px;
+      min-height: 75px;
       transition: all 0.2s ease;
     }
 
@@ -448,59 +448,50 @@
 
     <!-- Active Tag ID -->
     <div class="tag-strip">
-      <span class="tag-label" id="lblTag">Vehicle Tag ID</span>
+      <span class="tag-label" id="lblTag">Item / Vehicle Tag</span>
       <span class="tag-val" id="displayTag">Loading...</span>
     </div>
 
-    <!-- Issue Form -->
+    <!-- Form -->
     <form id="alertForm" onsubmit="handleSend(event)">
-      <span class="section-title" id="lblIssueTitle">Select Issue</span>
+      <span class="section-title" id="lblIssueTitle">Select Option</span>
 
       <div class="issue-list" id="issueContainer">
-        <!-- Radio Option 1 -->
-        <div class="issue-card selected" onclick="chooseIssue(this, 'Wrong Parking / Blocking Way')">
+        <!-- Option 1: Vehicle -->
+        <div class="issue-card selected" onclick="chooseIssue(this, 'Vehicle Alert / Parking')">
           <div class="issue-card-content">
             <span class="issue-icon">🚗</span>
-            <span class="issue-text" data-en="Blocking Way / Wrong Parking" data-ta="வழி மறைக்கப்பட்டுள்ளது / தவறான பார்க்கிங்">Blocking Way / Wrong Parking</span>
+            <span class="issue-text" data-en="Vehicle Alert (Parking / Lights / Tyre)" data-ta="வாகன எச்சரிக்கை (பார்க்கிங் / விளக்கு / டயர்)">Vehicle Alert (Parking / Lights / Tyre)</span>
           </div>
           <div class="custom-radio"></div>
         </div>
 
-        <!-- Radio Option 2 -->
-        <div class="issue-card" onclick="chooseIssue(this, 'Vehicle Lights ON')">
+        <!-- Option 2: Keys & Luggage Combined -->
+        <div class="issue-card" onclick="chooseIssue(this, 'Keys & Luggage Alert')">
           <div class="issue-card-content">
-            <span class="issue-icon">💡</span>
-            <span class="issue-text" data-en="Vehicle Lights Left ON" data-ta="வாகன விளக்குகள் எரிகின்றன">Vehicle Lights Left ON</span>
+            <span class="issue-icon">🧳</span>
+            <span class="issue-text" data-en="Keys & Luggage / Baggage Found" data-ta="சாவிகள் & உடமைகள் கண்டெடுக்கப்பட்டது">Keys & Luggage / Baggage Found</span>
           </div>
           <div class="custom-radio"></div>
         </div>
 
-        <!-- Radio Option 3 -->
-        <div class="issue-card" onclick="chooseIssue(this, 'Flat Tyre')">
+        <!-- Option 3: Free Custom Typing -->
+        <div class="issue-card" onclick="chooseIssue(this, 'Custom Message')">
           <div class="issue-card-content">
-            <span class="issue-icon">⚠️</span>
-            <span class="issue-text" data-en="Flat Tyre / Puncture" data-ta="டயர் காற்று இறங்கியுள்ளது / பஞ்சர்">Flat Tyre / Puncture</span>
-          </div>
-          <div class="custom-radio"></div>
-        </div>
-
-        <!-- Radio Option 4 -->
-        <div class="issue-card" onclick="chooseIssue(this, 'Emergency Contact')">
-          <div class="issue-card-content">
-            <span class="issue-icon">🚨</span>
-            <span class="issue-text" data-en="Emergency Assistance" data-ta="அவசர உதவி தேவை">Emergency Assistance</span>
+            <span class="issue-icon">✍️</span>
+            <span class="issue-text" data-en="Other / Type Anything Custom" data-ta="பிற தகவல் / உங்கள் செய்தியைத் தட்டச்சு செய்க">Other / Type Anything Custom</span>
           </div>
           <div class="custom-radio"></div>
         </div>
       </div>
 
-      <!-- Short Note Input -->
+      <!-- Note Input -->
       <div class="note-box">
-        <label for="customNote" class="section-title" id="lblNoteTitle" style="margin-bottom:6px;">Additional Note (Optional)</label>
-        <textarea id="customNote" placeholder="e.g. Please move vehicle forward slightly..."></textarea>
+        <label for="customNote" class="section-title" id="lblNoteTitle" style="margin-bottom:6px;">Type Details / Message</label>
+        <textarea id="customNote" placeholder="Type your message or details here..."></textarea>
       </div>
 
-      <!-- Action Button -->
+      <!-- Submit Button -->
       <button type="submit" id="submitBtn" class="btn-submit">
         <span id="btnText">Send Instant Alert</span>
       </button>
@@ -514,26 +505,25 @@
 
   <script>
     let currentLang = 'en';
-    let selectedIssue = 'Wrong Parking / Blocking Way';
+    let selectedIssue = 'Vehicle Alert / Parking';
 
-    // 1. Language Definitions
     const translations = {
       en: {
         tagline: "One Scan. Instant Alert.",
-        tagLabel: "Vehicle Tag ID",
-        issueTitle: "Select Issue",
-        noteTitle: "Additional Note (Optional)",
-        notePlaceholder: "e.g. Please move vehicle forward slightly...",
+        tagLabel: "Item / Vehicle Tag",
+        issueTitle: "Select Option",
+        noteTitle: "Type Details / Message",
+        notePlaceholder: "Type your message or details here...",
         btnSend: "Send Instant Alert",
         btnSending: "Transmitting Alert...",
         secureNote: "Privacy Shield Enabled • No personal numbers revealed"
       },
       ta: {
         tagline: "ஒரு ஸ்கேன். உடனடி எச்சரிக்கை.",
-        tagLabel: "வாகன டேக் எண்",
-        issueTitle: "காரணத்தைத் தேர்வுசெய்க",
-        noteTitle: "கூடுதல் குறிப்பு (விருப்பப்பட்டால்)",
-        notePlaceholder: "எ.கா. வாகனத்தை சற்று நகர்த்தவும்...",
+        tagLabel: "பொருளின் / வாகன டேக் எண்",
+        issueTitle: "விருப்பத்தைத் தேர்வுசெய்க",
+        noteTitle: "செய்தி / குறிப்பை உள்ளிடுக",
+        notePlaceholder: "உங்கள் செய்தியை இங்கே தட்டச்சு செய்யவும்...",
         btnSend: "உடனடி எச்சரிக்கை அனுப்புக",
         btnSending: "எச்சரிக்கை அனுப்பப்படுகிறது...",
         secureNote: "பாதுகாப்பானது • தொடர்பு எண்கள் யாருக்கும் பகிரப்படாது"
@@ -559,14 +549,15 @@
       });
     }
 
-    // 2. Select Radio Card
     function chooseIssue(card, issueValue) {
       document.querySelectorAll('.issue-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       selectedIssue = issueValue;
+      if (issueValue === 'Custom Message') {
+        document.getElementById('customNote').focus();
+      }
     }
 
-    // 3. Parse Parameters
     function getQueryParam(p) {
       const params = new URLSearchParams(window.location.search);
       return params.get(p) || '';
@@ -575,7 +566,6 @@
     const tagId = getQueryParam('id') || 'VP-1001';
     document.getElementById('displayTag').innerText = tagId;
 
-    // 4. Two-Second Splash Screen Transition
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
@@ -585,7 +575,6 @@
       }, 2000);
     });
 
-    // 5. Handle Alert Submission
     function handleSend(event) {
       event.preventDefault();
       const note = document.getElementById('customNote').value;
@@ -611,9 +600,10 @@
     }
 
     function submitData(tag, issue, note, lat, lng) {
-      // Pull deployed script URL from parameter or fallback
-      let scriptURL = getQueryParam('script') || "https://script.google.com/macros/s/AKfycbx71ctmZpfyxrq49kPWXqKhA_6rPTaOb5EXZ19Nub8P-nAx4ycix01vtWRvuLiFJ5Nt/exec";
-
+      // PASTE YOUR REAL APPS SCRIPT /exec URL IN PLACE OF THE SCRIPT URL BELOW:
+      const defaultScriptURL = "https://script.google.com/macros/s/AKfycbx71ctmZpfyxrq49kPWXqKhA_6rPTaOb5EXZ19Nub8P-nAx4ycix01vtWRvuLiFJ5Nt/exec";
+      
+      const scriptURL = getQueryParam('script') || defaultScriptURL;
       const finalUrl = `${scriptURL}?id=${encodeURIComponent(tag)}&issue=${encodeURIComponent(issue)}&note=${encodeURIComponent(note)}&lat=${lat}&lng=${lng}`;
       window.location.href = finalUrl;
     }
