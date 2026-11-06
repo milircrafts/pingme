@@ -2,595 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PINGME • Scan. Notify. Reconnect.</title>
-  
-  <!-- Browser Tab & Mobile App Favicon -->
-  <link rel="icon" type="image/png" href="logo.png" />
-  <link rel="apple-touch-icon" href="logo.png" />
-  
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PingMe - Vehicle Parking Alert</title>
   <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
-      --card-bg: rgba(255, 255, 255, 0.98);
-      --text-dark: #0f172a;
-      --text-muted: #64748b;
-      --gold-accent: #f59e0b;
-      --gold-dark: #d97706;
-      --gold-light: #fef3c7;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background: var(--bg-gradient);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 440px;
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      border-radius: 28px;
-      padding: 24px 20px;
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glow-header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: linear-gradient(90deg, #10b981, #06b6d4, #6366f1, #f59e0b);
-    }
-
-    .brand-section {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .logo-img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      margin: 0 auto 6px;
-      display: block;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
-    }
-
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      padding: 5px 14px;
-      border-radius: 50px;
-      font-size: 12px;
-      font-weight: 700;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
-      border: 1px solid rgba(191, 219, 254, 0.8);
-      margin-bottom: 6px;
-    }
-
-    .tag-title {
-      font-size: 21px;
-      font-weight: 800;
-      color: var(--text-dark);
-      letter-spacing: -0.3px;
-    }
-
-    .section-title {
-      font-size: 12.5px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: #475569;
-      margin-bottom: 8px;
-    }
-
-    /* 3 Categories */
-    .cat-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .cat-card {
-      background: #f8fafc;
-      border: 2px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 12px 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .cat-card .emoji-circle {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      background: #ffffff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    .cat-card .cat-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-
-    .cat-card.active {
-      border-color: var(--gold-accent);
-      background: var(--gold-light);
-      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.25);
-      transform: translateY(-2px);
-    }
-
-    .cat-card.active .cat-name {
-      color: var(--gold-dark);
-    }
-
-    .cat-card.active .emoji-circle {
-      background: #ffffff;
-      transform: scale(1.08);
-    }
-
-    /* Form Fields */
-    .field-group {
-      margin-bottom: 13px;
-    }
-
-    .field-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 5px;
-      display: block;
-    }
-
-    .field-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      line-height: 1.3;
-    }
-
-    .custom-select-wrap {
-      position: relative;
-    }
-
-    select {
-      width: 100%;
-      appearance: none;
-      -webkit-appearance: none;
-      background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 12px 38px 12px 14px;
-      font-size: 14.5px;
-      font-weight: 600;
-      color: var(--text-dark);
-      outline: none;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    select:focus {
-      border-color: var(--gold-accent);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    }
-
-    .custom-select-wrap::after {
-      content: "▼";
-      font-size: 11px;
-      color: #94a3b8;
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-
-    textarea, input[type="tel"] {
-      width: 100%;
-      background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 11px 14px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-dark);
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    textarea {
-      resize: none;
-      height: 64px;
-    }
-
-    textarea:focus, input[type="tel"]:focus {
-      border-color: var(--gold-accent);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    }
-
-    /* Gold Action Button */
-    .btn-gold {
-      width: 100%;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: #ffffff;
-      font-size: 15.5px;
-      font-weight: 800;
-      padding: 15px;
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35);
-      transition: all 0.2s ease;
-      letter-spacing: 0.5px;
-      margin-top: 6px;
-    }
-
-    .btn-gold:hover {
-      box-shadow: 0 10px 24px rgba(217, 119, 6, 0.45);
-      transform: translateY(-1px);
-    }
-
-    .btn-gold:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    /* 180s Cooldown Countdown Card */
-    #cooldownBox {
-      display: none;
-      margin-top: 14px;
-      padding: 16px 14px;
-      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-      border: 2px solid #fde68a;
-      border-radius: 18px;
-      text-align: center;
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.96); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .timer-badge {
-      display: inline-block;
-      background: #f59e0b;
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 3px 12px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .timer-desc {
-      font-size: 13px;
-      font-weight: 700;
-      color: #92400e;
-      line-height: 1.4;
-    }
-
-    .timer-clock {
-      font-size: 34px;
-      font-weight: 800;
-      color: #b45309;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 1.5px;
-      margin-top: 6px;
-    }
-
-    /* Error Message Box */
-    #errorBox {
-      display: none;
-      background: #fef2f2;
-      border: 1.5px solid #fecaca;
-      border-radius: 12px;
-      padding: 10px;
-      color: #b91c1c;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #64748b;
-      line-height: 1.6;
-    }
-
-    .footer-brand {
-      font-weight: 800;
-      color: #334155;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f3f4f6; color: #1f2937; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
+    .card { background: #ffffff; width: 100%; max-width: 440px; padding: 24px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); align-self: center; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { font-size: 22px; color: #111827; }
+    .tag-badge { display: inline-block; background: #e0e7ff; color: #4338ca; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-top: 6px; font-size: 14px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151; }
+    select, textarea, input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+    button { width: 100%; background: #2563eb; color: #ffffff; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    button:disabled { background: #93c5fd; cursor: not-allowed; }
+    .status-box { margin-top: 20px; padding: 16px; border-radius: 10px; display: none; }
+    .waiting { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .reply { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+    .pulse { animation: blink 1.5s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <div class="glow-header"></div>
-
-    <!-- Header & PingMe Logo -->
-    <div class="brand-section">
-      <img src="logo.png" alt="PingMe Logo" class="logo-img" onerror="this.style.display='none'" />
-      
-      <div class="badge-pill">
-        🔒 100% Private Alert
-      </div>
-
-      <h1 class="tag-title" id="tagHeader">Connecting...</h1>
+    <div class="header">
+      <h2>Vehicle Parking Alert</h2>
+      <div id="tagBadge" class="tag-badge">Scanning Tag...</div>
     </div>
 
-    <!-- Form Section -->
-    <form id="pingmeForm">
-      <!-- 1. Category -->
-      <div class="section-title">Select Category</div>
-      <div class="cat-selector">
-        <div class="cat-card active" onclick="selectCategory('Vehicle', this)">
-          <div class="emoji-circle">🚗</div>
-          <span class="cat-name">Vehicle</span>
-        </div>
-        <div class="cat-card" onclick="selectCategory('Keys', this)">
-          <div class="emoji-circle">🔑</div>
-          <span class="cat-name">Keys</span>
-        </div>
-        <div class="cat-card" onclick="selectCategory('Luggage', this)">
-          <div class="emoji-circle">🧳</div>
-          <span class="cat-name">Luggage</span>
-        </div>
+    <form id="alertForm">
+      <div class="form-group">
+        <label for="issue">Select Issue</label>
+        <select id="issue" required>
+          <option value="Wrong Parking / Blocking Way">🚗 Wrong Parking / Blocking Way</option>
+          <option value="Vehicle Lights ON">💡 Vehicle Lights ON</option>
+          <option value="Flat Tyre">⚠️ Flat Tyre</option>
+          <option value="Emergency Contact">🚨 Emergency Contact</option>
+        </select>
       </div>
 
-      <!-- 2. Dynamic Issue Preset Dropdown -->
-      <div class="field-group">
-        <label class="field-label" for="issueSelector">Select Issue / Status</label>
-        <div class="custom-select-wrap">
-          <select id="issueSelector" required></select>
-        </div>
+      <div class="form-group">
+        <label for="notes">Short Note (Optional)</label>
+        <textarea id="notes" rows="2" placeholder="e.g. Blocking gate entry"></textarea>
       </div>
 
-      <!-- 3. Message Section with Category-Specific Placeholder -->
-      <div class="field-group">
-        <label class="field-label" for="messageInput">Message to Owner (Optional)</label>
-        <textarea id="messageInput" placeholder="e.g. Parked blocking gate #2, lights left on..."></textarea>
-      </div>
-
-      <!-- 4. Optional Reporter Phone -->
-      <div class="field-group">
-        <label class="field-label" for="contactInput">Your Contact Number (Optional)</label>
-        <input type="tel" id="contactInput" placeholder="e.g. 9876543210" maxlength="13" />
-        <p class="field-desc">Shared only with the owner to help coordinate the return.</p>
-      </div>
-
-      <div id="errorBox"></div>
-
-      <!-- 5. Submit Button -->
-      <button type="submit" class="btn-gold" id="submitBtn">
-        SEND ALERT TO OWNER
-      </button>
+      <button type="button" id="submitBtn" onclick="submitAlert()">Notify Vehicle Owner</button>
     </form>
 
-    <!-- 6. Post-Submission 180s Cooldown Card -->
-    <div id="cooldownBox">
-      <div class="timer-badge">✓ Alert Delivered</div>
-      <p class="timer-desc">The owner has been notified via WhatsApp.<br>You can send a follow-up in:</p>
-      <div class="timer-clock" id="timerClock">03:00</div>
-    </div>
-
-    <!-- 7. Footer -->
-    <div class="footer">
-      <div><span class="footer-brand">PINGME</span> – Scan. Notify. Reconnect.</div>
-      <div>Powered by Milir Crafts.</div>
-    </div>
+    <div id="statusContainer" class="status-box"></div>
   </div>
 
   <script>
-    // ACTIVE APPS SCRIPT WEB APP ENDPOINT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFgq4Hta0IwiTvIEEd7VySzSlJvY1d8uQ/exec";
+    // REPLACE THIS WITH YOUR APPS SCRIPT WEB APP EXEC URL:
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyofMf1H3AVNfXmOAP2NY8f3TZEKb8JnVtVFGq4Hta0IwiTvlEEd7VySzSlJvY4lwS/exec";
 
-    const subCategoryMap = {
-      Vehicle: [
-        "🚗 Blocking Gate / Driveway",
-        "💡 Headlights Left ON",
-        "🛞 Flat Tyre / Puncture",
-        "🪟 Window Left Open",
-        "⚠️ Towing / Traffic Alert",
-        "💬 General Vehicle Notice"
-      ],
-      Keys: [
-        "🔑 Found Dropped Keys",
-        "🏪 Handed to Nearby Shop",
-        "👮 Handed to Security Guard",
-        "📍 Left at Discovery Location",
-        "💬 Other Key Notice"
-      ],
-      Luggage: [
-        "🧳 Misplaced Bag / Strolley",
-        "🚕 Left in Auto / Cab",
-        "🏢 Handed to Lost & Found Desk",
-        "📍 Left at Airport / Station",
-        "💬 Other Bag Notice"
-      ]
-    };
-
-    const placeholderMap = {
-      Vehicle: "e.g. Parked blocking gate #2, lights left on...",
-      Keys: "Where did you find the keys? (e.g. Near lift lobby, shop counter...)",
-      Luggage: "Where did you locate the luggage? (e.g. Platform 2, auto back seat...)"
-    };
-
-    let selectedCategory = "Vehicle";
-    let locationUrl = "Location not shared";
-
-    // Grab Tag ID from URL parameter (default: VP-1001)
     const urlParams = new URLSearchParams(window.location.search);
-    const tagId = (urlParams.get('tag') || 'VP-1001').toUpperCase().trim();
-    document.getElementById('tagHeader').innerText = "Tag: " + tagId;
+    const tagId = urlParams.get('tag') || 'VP-1001';
+    document.getElementById('tagBadge').innerText = "Tag ID: " + tagId;
 
-    // Background GPS Capture
+    const sessionId = 'INC-' + Date.now();
+    let pollInterval = null;
+    let gpsCoords = 'Location not shared';
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          locationUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        },
-        () => {},
-        { enableHighAccuracy: true, timeout: 5000 }
+        pos => { gpsCoords = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; },
+        err => { console.log('GPS not available'); }
       );
     }
 
-    function renderDropdown(category) {
-      const select = document.getElementById('issueSelector');
-      select.innerHTML = "";
-      subCategoryMap[category].forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item;
-        opt.textContent = item;
-        select.appendChild(opt);
-      });
-      document.getElementById('messageInput').placeholder = placeholderMap[category];
-    }
-
-    function selectCategory(catName, cardEl) {
-      selectedCategory = catName;
-      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
-      cardEl.classList.add('active');
-      renderDropdown(catName);
-    }
-
-    renderDropdown("Vehicle");
-
-    // 180s Cooldown State Controller
-    const COOLDOWN_SECONDS = 180;
-    let timerCountdown = null;
-
-    function checkActiveCooldown() {
-      const savedExpiry = localStorage.getItem('pingme_lock_' + tagId);
-      if (savedExpiry) {
-        const remaining = Math.ceil((parseInt(savedExpiry, 10) - Date.now()) / 1000);
-        if (remaining > 0) {
-          startCountdownUI(remaining);
-        } else {
-          localStorage.removeItem('pingme_lock_' + tagId);
-        }
-      }
-    }
-
-    function startCountdownUI(duration) {
+    function submitAlert() {
+      const issue = document.getElementById('issue').value;
+      const notes = document.getElementById('notes').value;
       const btn = document.getElementById('submitBtn');
-      const cooldownBox = document.getElementById('cooldownBox');
-      const clock = document.getElementById('timerClock');
+      const statusBox = document.getElementById('statusContainer');
 
       btn.disabled = true;
-      btn.style.opacity = '0.5';
-      btn.style.cursor = 'not-allowed';
-      cooldownBox.style.display = 'block';
-
-      let timeLeft = duration;
-      if (timerCountdown) clearInterval(timerCountdown);
-
-      timerCountdown = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-          clearInterval(timerCountdown);
-          localStorage.removeItem('pingme_lock_' + tagId);
-          btn.disabled = false;
-          btn.style.opacity = '1';
-          btn.style.cursor = 'pointer';
-          btn.innerText = "SEND FOLLOW-UP ALERT";
-          cooldownBox.style.display = 'none';
-        } else {
-          const mins = Math.floor(timeLeft / 60);
-          const secs = timeLeft % 60;
-          clock.innerText = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-        }
-      }, 1000);
-    }
-
-    checkActiveCooldown();
-
-    // Submit Action (CORS-Safe implementation)
-    document.getElementById('pingmeForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const submitBtn = document.getElementById('submitBtn');
-      const errorBox = document.getElementById('errorBox');
-      errorBox.style.display = 'none';
-
-      const selectedReason = document.getElementById('issueSelector').value;
-      const message = document.getElementById('messageInput').value.trim();
-      const reporterPhone = document.getElementById('contactInput').value.trim();
-
-      submitBtn.disabled = true;
-      submitBtn.innerText = "DISPATCHING ALERT...";
+      btn.innerText = "Dispatching Alert...";
 
       const payload = {
+        action: 'submitIncident',
+        sessionId: sessionId,
         tagId: tagId,
-        category: selectedCategory,
-        reason: selectedReason,
-        message: message || "No extra note provided",
-        reporterPhone: reporterPhone || "Not provided",
-        location: locationUrl
+        issue: issue,
+        notes: notes,
+        gps: gpsCoords
       };
 
-      // Form body encoding for Google Apps Script redirects
-      const formBody = new URLSearchParams();
-      formBody.append("postData", JSON.stringify(payload));
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formBody.toString()
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
       })
-      .then(() => {
-        const unlockTime = Date.now() + (COOLDOWN_SECONDS * 1000);
-        localStorage.setItem('pingme_lock_' + tagId, unlockTime);
-        startCountdownUI(COOLDOWN_SECONDS);
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          document.getElementById('alertForm').style.display = 'none';
+          statusBox.style.display = 'block';
+          statusBox.className = 'status-box waiting';
+          statusBox.innerHTML = `
+            <h4 style="margin-bottom: 6px;">🔔 Alert Dispatched</h4>
+            <p style="font-size: 14px;">The owner has been notified on WhatsApp & Email.</p>
+            <p class="pulse" style="font-size: 13px; margin-top: 10px; font-weight: 600;">
+              ⏳ Waiting for owner response...
+            </p>
+          `;
+          startPolling();
+        } else {
+          alert('Error: ' + res.error);
+          btn.disabled = false;
+          btn.innerText = "Notify Vehicle Owner";
+        }
       })
-      .catch(() => {
-        errorBox.innerText = "Network error. Please try again.";
-        errorBox.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.innerText = "SEND ALERT TO OWNER";
+      .catch(err => {
+        alert('Network request failed: ' + err);
+        btn.disabled = false;
+        btn.innerText = "Notify Vehicle Owner";
       });
-    });
+    }
+
+    function startPolling() {
+      pollInterval = setInterval(() => {
+        fetch(`${APPS_SCRIPT_URL}?action=checkReply&sessionId=${encodeURIComponent(sessionId)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.replied) {
+              clearInterval(pollInterval);
+              const statusBox = document.getElementById('statusContainer');
+              statusBox.className = 'status-box reply';
+              statusBox.innerHTML = `
+                <h4 style="color: #15803d; margin-bottom: 6px;">💬 Message from Vehicle Owner:</h4>
+                <p style="font-size: 16px; font-weight: 700; color: #166534; padding: 10px; background: #dcfce7; border-radius: 8px;">
+                  "${data.message}"
+                </p>
+                <small style="display:block; margin-top: 8px; color: #4b5563;">Status updated live</small>
+              `;
+            }
+          })
+          .catch(err => console.log('Polling check error:', err));
+      }, 4000);
+
+      setTimeout(() => {
+        if (pollInterval) clearInterval(pollInterval);
+      }, 180000); // Stop polling after 3 minutes
+    }
   </script>
 </body>
 </html>
