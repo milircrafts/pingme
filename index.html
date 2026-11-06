@@ -29,8 +29,6 @@
     .gradient-bg { background: linear-gradient(135deg, #1E40AF 0%, #6D28D9 50%, #BE185D 100%); }
     .gradient-text { background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08); }
-    @keyframes pulse-slow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-    .animate-pulse-slow { animation: pulse-slow 3s infinite ease-in-out; }
   </style>
 </head>
 <body class="bg-slate-50 text-darkNavy font-sans antialiased min-h-screen flex flex-col items-center justify-center p-3 sm:p-6">
@@ -58,25 +56,8 @@
   <!-- CONTAINER -->
   <div id="app" class="w-full max-w-md bg-white rounded-3xl card-shadow overflow-hidden relative border border-slate-100 min-h-[580px] flex flex-col">
 
-    <!-- SCREEN 1: SPLASH SCREEN -->
-    <div id="screen-splash" class="absolute inset-0 gradient-bg flex flex-col items-center justify-center text-white z-50 p-6 text-center transition-opacity duration-500">
-      <div class="relative mb-4 animate-pulse-slow">
-        <div class="w-24 h-24 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
-          <i class="fa-solid fa-comment-dots text-5xl text-goldAccent"></i>
-          <i class="fa-solid fa-location-dot absolute top-4 right-5 text-highlightPink text-xl"></i>
-        </div>
-      </div>
-      <h1 class="text-4xl font-extrabold tracking-wider mb-2">PINGME</h1>
-      <p class="text-slate-200 text-sm font-medium tracking-wide">One Scan. Instant Connection.</p>
-      <div class="mt-8 flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-white animate-bounce"></div>
-        <div class="w-2 h-2 rounded-full bg-white animate-bounce [animation-delay:0.2s]"></div>
-        <div class="w-2 h-2 rounded-full bg-white animate-bounce [animation-delay:0.4s]"></div>
-      </div>
-    </div>
-
-    <!-- SCREEN 2: HOME SCREEN -->
-    <div id="screen-home" class="p-6 hidden flex flex-col flex-1">
+    <!-- SCREEN 2: HOME SCREEN (Loads instantly) -->
+    <div id="screen-home" class="p-6 flex flex-col flex-1">
       <div class="flex justify-between items-center mb-4">
         <div id="logo-container-home"></div>
         <div class="bg-slate-100 p-1 rounded-xl flex gap-1 text-xs font-semibold">
@@ -320,17 +301,6 @@
     window.onload = function() {
       document.getElementById('logo-container-home').innerHTML = renderPingMeLogo("w-12 h-12");
       document.getElementById('logo-container-msg').innerHTML = renderPingMeLogo("w-10 h-10");
-
-      setTimeout(() => {
-        const splash = document.getElementById('screen-splash');
-        if (splash) {
-          splash.style.opacity = '0';
-          setTimeout(() => {
-            splash.classList.add('hidden');
-            document.getElementById('screen-home').classList.remove('hidden');
-          }, 400);
-        }
-      }, 2000);
     };
 
     function setLanguage(lang) {
