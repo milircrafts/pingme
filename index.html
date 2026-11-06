@@ -35,7 +35,7 @@
 </head>
 <body class="bg-slate-50 text-darkNavy font-sans antialiased min-h-screen flex flex-col items-center justify-center p-3 sm:p-6">
 
-  <!-- SVG Logo Template (Reusable across all pages) -->
+  <!-- SVG Logo Template -->
   <script>
     function renderPingMeLogo(sizeClass = "w-16 h-16") {
       return `
@@ -58,7 +58,7 @@
   <!-- CONTAINER -->
   <div id="app" class="w-full max-w-md bg-white rounded-3xl card-shadow overflow-hidden relative border border-slate-100 min-h-[580px] flex flex-col">
 
-    <!-- SCREEN 1: SPLASH SCREEN (2 Seconds) -->
+    <!-- SCREEN 1: SPLASH SCREEN -->
     <div id="screen-splash" class="absolute inset-0 gradient-bg flex flex-col items-center justify-center text-white z-50 p-6 text-center transition-opacity duration-500">
       <div class="relative mb-4 animate-pulse-slow">
         <div class="w-24 h-24 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl">
@@ -77,7 +77,6 @@
 
     <!-- SCREEN 2: HOME SCREEN -->
     <div id="screen-home" class="p-6 hidden flex flex-col flex-1">
-      <!-- Top Header & Language Toggle -->
       <div class="flex justify-between items-center mb-4">
         <div id="logo-container-home"></div>
         <div class="bg-slate-100 p-1 rounded-xl flex gap-1 text-xs font-semibold">
@@ -88,13 +87,11 @@
 
       <p class="text-center text-slate-500 text-xs font-semibold tracking-wider uppercase mb-1" data-i18n="tagline">One Scan. Instant Connection.</p>
       
-      <!-- Welcome Banner -->
       <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-2xl border border-blue-100/60 my-4 text-center">
         <h2 class="text-base font-bold text-darkNavy mb-1" data-i18n="welcomeTitle">A Little Ping Can Solve a Big Problem! 💙</h2>
         <p class="text-xs text-slate-600 font-medium" data-i18n="welcomeDesc">Choose what you need to notify.</p>
       </div>
 
-      <!-- 4 Category Cards (2x2 Grid) -->
       <div class="grid grid-cols-2 gap-3 mb-6">
         <button onclick="selectCategory('Vehicle', '🚗')" class="p-4 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200/50 flex flex-col items-center text-center transition-all group active:scale-95">
           <div class="w-12 h-12 rounded-xl bg-royalBlue text-white flex items-center justify-center text-xl mb-2 shadow-md group-hover:scale-110 transition-transform">🚗</div>
@@ -121,7 +118,6 @@
         </button>
       </div>
 
-      <!-- Share Footer -->
       <div class="mt-auto pt-2 border-t border-slate-100 text-center">
         <button onclick="sharePingMe()" class="inline-flex items-center gap-2 text-xs font-semibold text-royalBlue hover:text-deepPurple transition-colors">
           <i class="fa-solid fa-share-nodes"></i> <span data-i18n="shareKnowMore">Share & Know More</span>
@@ -144,17 +140,12 @@
         <p class="text-xs text-slate-500 mt-1" data-i18n="msgDesc">Choose a message or type your own.</p>
       </div>
 
-      <!-- Predefined Messages Radio List -->
-      <div id="message-options-list" class="space-y-2.5 mb-5">
-        <!-- Dynamically populated -->
-      </div>
+      <div id="message-options-list" class="space-y-2.5 mb-5"></div>
 
-      <!-- Custom Input -->
       <div id="custom-message-box" class="mb-5 hidden">
         <input type="text" id="custom-msg-input" placeholder="Type your custom message..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-royalBlue focus:ring-2 focus:ring-royalBlue/20 outline-none text-sm font-medium">
       </div>
 
-      <!-- Submit Button -->
       <button onclick="submitAlert()" class="w-full py-4 rounded-2xl bg-whatsappGreen text-white font-bold text-sm shadow-lg shadow-whatsappGreen/30 hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-auto">
         <i class="fa-brands fa-whatsapp text-lg"></i> <span data-i18n="sendWhatsAppAlert">Send WhatsApp Alert</span>
       </button>
@@ -170,7 +161,6 @@
       <h2 class="text-lg font-extrabold text-darkNavy mb-1" data-i18n="alertSentSuccess">ALERT SENT SUCCESSFULLY!</h2>
       <p class="text-xs font-semibold text-royalBlue mb-4" data-i18n="pingOnWay">Your Ping Is on Its Way! 🚀</p>
 
-      <!-- Circular Countdown Timer -->
       <div class="relative w-36 h-36 flex items-center justify-center my-3">
         <svg class="w-full h-full transform -rotate-90">
           <circle cx="72" cy="72" r="64" stroke="currentColor" stroke-width="10" class="text-slate-100" fill="transparent"/>
@@ -197,7 +187,6 @@
       <h2 class="text-lg font-extrabold text-darkNavy mb-1" data-i18n="replyReceivedTitle">REPLY RECEIVED! 🎉</h2>
       <p class="text-xs font-semibold text-emerald-600 mb-4" data-i18n="problemSolved">PROBLEM SOLVED!</p>
 
-      <!-- Chat Bubble Reply Box -->
       <div class="w-full bg-slate-100 p-4 rounded-2xl border border-slate-200 text-left mb-6 shadow-sm relative">
         <div class="text-[10px] text-slate-400 font-semibold mb-1 uppercase" data-i18n="receiverReplyLabel">Receiver's Response:</div>
         <p id="actual-reply-text" class="text-sm font-bold text-darkNavy">"I'm coming. Please wait!"</p>
@@ -205,7 +194,6 @@
 
       <p class="text-xs text-slate-500 mb-6 font-medium" data-i18n="gladConnected">"Glad PingMe helped you connect."</p>
 
-      <!-- Share Promotion Section -->
       <div class="w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 rounded-2xl border border-purple-100 text-center">
         <h3 class="text-xs font-bold text-darkNavy mb-1" data-i18n="enjoyedPingMe">💜 Enjoyed using PingMe?</h3>
         <p class="text-[11px] text-slate-600 mb-3" data-i18n="helpFriends">Help your friends discover a smarter way to connect!</p>
@@ -219,7 +207,6 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // --- CONNECTED BACKEND WEB APP URL ---
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby0niHX1zqplBeAFWTRVyPuZACOfIhfy7g4q8cDQ28DgU9uI7IuMPL8P6QkV3ruy4dp/exec";
 
     const i18n = {
@@ -334,7 +321,6 @@
       document.getElementById('logo-container-home').innerHTML = renderPingMeLogo("w-12 h-12");
       document.getElementById('logo-container-msg').innerHTML = renderPingMeLogo("w-10 h-10");
 
-      // Splash Screen timer (2 seconds) with fallback safeguard
       setTimeout(() => {
         const splash = document.getElementById('screen-splash');
         if (splash) {
@@ -429,17 +415,11 @@
     }
 
     function submitAlert() {
-      const checkedInput = document.querySelector('input[name="alert_msg"][checked]') || document.querySelector('input[name="alert_msg"]:checked');
-      let messageText = checkedInput ? checkedInput.value : "Please assist.";
-      if (messageText.includes('Other')) {
-        const customVal = document.getElementById('custom-msg-input').value.trim();
-        if (customVal) messageText = customVal;
-      }
       obtainLocationAndSubmit();
     }
 
     function executeBackendSubmission() {
-      const checkedInput = document.querySelector('input[name="alert_msg"][checked]') || document.querySelector('input[name="auth_msg"]' || document.querySelector('input[name="alert_msg"]:checked'));
+      const checkedInput = document.querySelector('input[name="alert_msg"][checked]') || document.querySelector('input[name="alert_msg"]:checked');
       let messageText = checkedInput ? checkedInput.value : "Please assist.";
       if (messageText.includes('Other')) {
         const customVal = document.getElementById('custom-msg-input').value.trim();
