@@ -56,7 +56,6 @@
       }
     }
 
-    /* Screen Transitions */
     .screen {
       display: none;
       flex-direction: column;
@@ -70,7 +69,6 @@
       opacity: 1;
     }
 
-    /* Brand Header */
     .brand-header {
       display: flex;
       flex-direction: column;
@@ -124,7 +122,7 @@
       margin-top: 2px;
     }
 
-    /* Screen 1: Splash Screen */
+    /* Screen 1: Splash */
     #screen-splash {
       background: var(--bg-gradient);
       justify-content: center;
@@ -198,7 +196,6 @@
       margin-bottom: 18px;
     }
 
-    /* Category 2x2 Grid */
     .category-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -254,7 +251,7 @@
       box-shadow: 0 6px 18px rgba(124, 58, 237, 0.25);
     }
 
-    /* Screen 3: Message Selection */
+    /* Screen 3: Messages */
     .nav-bar {
       display: flex;
       align-items: center;
@@ -442,7 +439,6 @@
       margin-bottom: 16px;
     }
 
-    /* Circular Timer SVG */
     .timer-ring-container {
       position: relative;
       width: 160px;
@@ -606,7 +602,6 @@
       box-shadow: 0 6px 18px rgba(124, 58, 237, 0.3);
     }
 
-    /* Keyframe Animations */
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes pop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
@@ -616,7 +611,7 @@
 
   <div class="app-viewport">
 
-    <!-- Screen 1: Splash Screen -->
+    <!-- Screen 1: Splash -->
     <div id="screen-splash" class="screen active">
       <div class="brand-pin-icon" style="width: 58px; height: 58px;">
         <div class="brand-pin-inner" style="width: 26px; height: 26px;">
@@ -655,7 +650,6 @@
 
       <h2 class="main-heading" id="t-home-title">How can we help you today?</h2>
 
-      <!-- 2x2 Category Cards -->
       <div class="category-grid">
         <div class="cat-card blue" onclick="selectCategory('vehicle')">
           <div class="cat-icon">🚗</div>
@@ -717,15 +711,12 @@
         <span id="badge-cat-title">Vehicle Alert</span>
       </div>
 
-      <!-- Predefined Messages List -->
       <div class="msg-list" id="msg-radio-group"></div>
 
-      <!-- Custom Input Box (For Other) -->
       <div class="custom-input-box" id="custom-msg-box">
         <textarea id="custom-msg-input" placeholder="Type your message here..."></textarea>
       </div>
 
-      <!-- GPS Location Status Indicator -->
       <div class="gps-status-box">
         <span>📍</span>
         <span id="gps-status-text">Getting your location link...</span>
@@ -768,7 +759,6 @@
           <span id="t-wait-reply">Please wait for a reply... (Auto closes on reply)</span>
         </div>
 
-        <!-- 180s Circular Progress Ring -->
         <div class="timer-ring-container">
           <svg class="timer-svg" viewBox="0 0 160 160">
             <defs>
@@ -860,7 +850,6 @@
     let secondsLeft = 180;
     const TOTAL_SECONDS = 180;
 
-    // Translation Dictionaries (Bilingual Support)
     const i18n = {
       en: {
         langPrompt: "Choose Language",
@@ -939,7 +928,6 @@
       }
     };
 
-    // Screen Navigation
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const target = document.getElementById(screenId);
@@ -971,7 +959,7 @@
       );
     }
 
-    // Auto-advance Splash Screen after 2 Seconds & Request GPS
+    // Splash Screen Transition
     window.addEventListener('load', () => {
       requestLocationImmediate();
       setTimeout(() => {
@@ -979,38 +967,48 @@
       }, 2000);
     });
 
-    // Language Switcher
+    // Safe Language Switcher
     function changeLanguage(lang) {
       currentLang = lang;
       const t = i18n[lang];
-      document.getElementById('t-lang-prompt').innerText = t.langPrompt;
-      document.getElementById('t-home-title').innerText = t.homeTitle;
-      document.getElementById('t-cat-vehicle').innerText = t.catVehicle;
-      document.getElementById('t-cat-keys').innerText = t.catKeys;
-      document.getElementById('t-cat-luggage').innerText = t.catLuggage;
-      document.getElementById('t-cat-other').innerText = t.catOther;
-      document.getElementById('t-home-share').innerText = t.homeShare;
-      document.getElementById('t-btn-send').innerText = t.btnSend;
-      document.getElementById('t-send-note').innerText = t.sendNote;
-      document.getElementById('t-sent-success').innerText = t.sentSuccess;
-      document.getElementById('t-delivered-note').innerText = t.deliveredNote;
-      document.getElementById('t-wait-reply').innerText = t.waitReply;
-      document.getElementById('t-timer-sub').innerText = t.timerSub;
-      document.getElementById('t-cooldown-note').innerText = t.cooldownNote;
-      document.getElementById('t-reply-badge').innerText = t.replyBadge;
-      document.getElementById('t-owner-title').innerText = t.ownerTitle;
-      document.getElementById('t-reply-via').innerText = t.replyVia;
-      document.getElementById('t-resolved-note').innerText = t.resolvedNote;
-      document.getElementById('t-share-title').innerText = t.shareTitle;
-      document.getElementById('t-share-desc').innerText = t.shareDesc;
-      document.getElementById('t-btn-share-final').innerText = t.btnShareFinal;
+
+      function updateText(id, text) {
+        const el = document.getElementById(id);
+        if (el && text) el.innerText = text;
+      }
+
+      updateText('t-lang-prompt', t.langPrompt);
+      updateText('t-home-title', t.homeTitle);
+      updateText('t-cat-vehicle', t.catVehicle);
+      updateText('t-cat-keys', t.catKeys);
+      updateText('t-cat-luggage', t.catLuggage);
+      updateText('t-cat-other', t.catOther);
+      updateText('t-home-share', t.homeShare);
+      updateText('t-btn-send', t.btnSend);
+      updateText('t-send-note', t.sendNote);
+      updateText('t-sent-success', t.sentSuccess);
+      updateText('t-delivered-note', t.deliveredNote);
+      updateText('t-wait-reply', t.waitReply);
+      updateText('t-timer-sub', t.timerSub);
+      updateText('t-cooldown-note', t.cooldownNote);
+      updateText('t-reply-badge', t.replyBadge);
+      updateText('t-owner-title', t.ownerTitle);
+      updateText('t-reply-via', t.replyVia);
+      updateText('t-resolved-note', t.resolvedNote);
+      updateText('t-share-title', t.shareTitle);
+      updateText('t-share-desc', t.shareDesc);
+      updateText('t-btn-share-final', t.btnShareFinal);
+
+      const statusEl = document.getElementById('gps-status-text');
+      if (statusEl) {
+        statusEl.innerText = senderLocationLink ? t.locSuccess : t.locFetching;
+      }
 
       if (document.getElementById('screen-message').classList.contains('active')) {
         renderMessageOptions();
       }
     }
 
-    // Category Selection
     function selectCategory(cat) {
       currentCategory = cat;
       renderMessageOptions();
@@ -1051,7 +1049,7 @@
       if (isCustom) document.getElementById('custom-msg-input').focus();
     }
 
-    // Alert Submission & Backend Trigger
+    // Submit with Fallback GPS Check
     async function submitAlert() {
       const isCustom = selectedMessage.includes('Other') || selectedMessage.includes('மற்றவை');
       let finalMessage = selectedMessage;
@@ -1068,7 +1066,6 @@
       btn.disabled = true;
       btn.innerText = currentLang === 'ta' ? 'அனுப்பப்படுகிறது...' : 'Sending Alert...';
 
-      // Fallback: If location was not ready, perform one quick attempt
       if (!senderLocationLink || senderLocationLink.includes('Location not provided')) {
         await new Promise((resolve) => {
           navigator.geolocation.getCurrentPosition(
@@ -1097,7 +1094,6 @@
         location_link: senderLocationLink || 'Location not provided'
       };
 
-      // Call Google Apps Script Web App
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1126,12 +1122,12 @@
       });
     }
 
-    // 180s Circular Countdown
+    // 180s Countdown Ring (Runs identically in English & Tamil)
     function startCountdown(duration) {
       clearInterval(countdownInterval);
       secondsLeft = duration;
       const circle = document.getElementById('timer-progress');
-      const circumference = 2 * Math.PI * 70; // r=70 -> ~440
+      const circumference = 2 * Math.PI * 70;
 
       function tick() {
         const mins = Math.floor(secondsLeft / 60);
@@ -1155,7 +1151,7 @@
       countdownInterval = setInterval(tick, 1000);
     }
 
-    // Reply Polling & Early Countdown Cancellation
+    // Reply Polling
     function startPollingReply(alertId) {
       clearInterval(pollInterval);
       pollInterval = setInterval(() => {
@@ -1176,7 +1172,6 @@
       }, 4000);
     }
 
-    // Web Share
     function sharePingMe() {
       const shareData = {
         title: 'PingMe - One Scan. Instant Connection',
