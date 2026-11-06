@@ -612,7 +612,7 @@
 
     function submitData(tag, issue, note, lat, lng) {
       // Pull deployed script URL from parameter or fallback
-      let scriptURL = getQueryParam('script') || "https://script.google.com/macros/s/AKfycbw1mD0Xw1yBq7i8oJkL9n0PqRsTuVwXyZaBcDeFgHiJkLmNoP/exec";
+      let scriptURL = getQueryParam('script') || "https://script.google.com/macros/s/AKfycbx71ctmZpfyxrq49kPWXqKhA_6rPTaOb5EXZ19Nub8P-nAx4ycix01vtWRvuLiFJ5Nt/exec";
 
       const finalUrl = `${scriptURL}?id=${encodeURIComponent(tag)}&issue=${encodeURIComponent(issue)}&note=${encodeURIComponent(note)}&lat=${lat}&lng=${lng}`;
       window.location.href = finalUrl;
