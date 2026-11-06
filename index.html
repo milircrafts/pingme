@@ -1,224 +1,135 @@
-/**
- * PINGME PRODUCTION BACKEND
- * Handles: Alert Routing (Email + Meta Cloud API WhatsApp), Webhooks, and Bi-directional Replies
- */
-
-const CONFIG = {
-  PHONE_NUMBER_ID: '1342424558964689',
-  WHATSAPP_TOKEN: 'EAAP00idlNYoBS1l91RffRDOJoMahX6ye63lQO9XZBvTyKUqiZBH9yeDtF6tZCDm2tcZCOFHTQV0ZAnG7f5YHsDWf4Qx4dZBlwfoOzHZAQqZAwcCM7K9ne9a60nNcJN5aQh8kcwftiIJ9R9FsBpLVtxuzrmAfO4fNrk786HhO0ZCdeQKkbiS398lE1Dy0SWC8AE9y9TAZDZD',
-  VERIFY_TOKEN: 'pingme_secure_webhook_token_2026',
-  SPREADSHEET_ID: '1S5GAEQHwgmerU4jxFilSADElLH_fk29d92UG1erHERU',
-  COOLDOWN_SECONDS: 180,
-  APP_NAME: 'PingMe'
-};
-
-/**
- * Handles incoming HTTP GET requests (Webhook verification).
- */
-function doGet(e) {
-  try {
-    const params = e && e.parameter ? e.parameter : {};
-    
-    // Webhook verification from Meta
-    if (params['hub.mode'] === 'subscribe' && params['hub.verify_token'] === CONFIG.VERIFY_TOKEN) {
-      return ContentService.createTextOutput(params['hub.challenge']).setMimeType(ContentService.MimeType.TEXT);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    
-    // Handle standard alert submissions from the front-end form
-    if (params.id) {
-      return handleAlertSubmission(params);
+    .card {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
     }
-    
-    return ContentService.createTextOutput(JSON.stringify({ status: 'active', app: CONFIG.APP_NAME }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.toString }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    h2 {
+      color: #1a73e8;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #5f6368;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #1557b0;
+    }
+  </style>
+</head>
+<body>
 
-/**
- * Handles incoming HTTP POST requests (Incoming WhatsApp messages & replies).
- */
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
+  <div class="card">
+    <h2>🚗 PingMe Alert</h2>
+    <p>Select an issue below to notify the owner instantly via WhatsApp and Email.</p>
     
-    if (data.object === 'whatsapp_business_account') {
-      const entry = data.entry[0];
-      const changes = entry.changes[0];
-      const value = changes.value;
+    <form id="alertForm" onsubmit="sendAlert(event)">
+      <label for="issueSelect" style="text-align: left; display: block; font-weight: 500; font-size: 13px;">Select Issue:</label>
+      <select id="issueSelect" required>
+        <option value="" disabled selected>-- Choose an issue --</option>
+        <option value="Wrong Parking / Blocking Way">Wrong Parking / Blocking Way</option>
+        <option value="Vehicle Lights ON">Vehicle Lights ON</option>
+        <option value="Flat Tyre">Flat Tyre</option>
+        <option value="Emergency Contact">Emergency Contact</option>
+        <option value="General Inquiry">General Inquiry</option>
+      </select>
+
+      <label for="customNote" style="text-align: left; display: block; font-weight: 500; font-size: 13px;">Additional Note (Optional):</label>
+      <textarea id="customNote" rows="3" placeholder="e.g. Please move forward 2 meters"></textarea>
+
+      <button type="submit" id="submitBtn">Send WhatsApp Alert</button>
+    </form>
+  </div>
+
+  <script>
+    function getUrlParams() {
+      const params = {};
+      const queryString = window.location.search.substring(1);
+      const vars = queryString.split("&");
+      for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+        if (pair.length > 1) {
+          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+      }
+      return params;
+    }
+
+    function sendAlert(event) {
+      event.preventDefault();
+      const params = getUrlParams();
+      const tagId = params.id || 'UNKNOWN';
+      const issue = document.getElementById('issueSelect').value;
+      const note = document.getElementById('customNote').value;
       
-      if (value.messages && value.messages.length > 0) {
-        const message = value.messages[0];
-        const senderPhone = message.from; // e.g. 919345138660
-        const messageBody = message.text ? message.text.body : '';
-        
-        logIncomingReply(senderPhone, messageBody);
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = "Sending Alert...";
+      btn.disabled = true;
+
+      // Request GPS Location and submit to Google Apps Script Web App URL
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            submitToBackend(tagId, issue, note, position.coords.latitude, position.coords.longitude);
+          },
+          function(error) {
+            // Proceed without location if permission denied
+            submitToBackend(tagId, issue, note, '', '');
+          },
+          { timeout: 10000 }
+        );
+      } else {
+        submitToBackend(tagId, issue, note, '', '');
       }
     }
-    
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success' }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.toString }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  }
-}
 
-/**
- * Processes form submissions, matches Tag ID against Master Admin, and triggers Email/WhatsApp.
- */
-function handleAlertSubmission(params) {
-  const tagId = params.id;
-  const issue = params.issue || params.select_issue || 'Vehicle Parking Alert';
-  const customNote = params.note || params.short_message || 'No extra details';
-  const lat = params.lat || '';
-  const lng = params.lng || '';
-  
-  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
-  
-  // 1. Log to Form Responses 1
-  const formSheet = ss.getSheetByName('Form Responses 1');
-  if (formSheet) {
-    formSheet.appendRow([new Date(), tagId, issue, customNote]);
-  }
-  
-  // 2. Lookup Tag ID in Master Admin
-  const adminSheet = ss.getSheetByName('Master Admin');
-  const data = adminSheet.getDataRange().getValues();
-  
-  let ownerName = 'NOT FOUND';
-  let vehicleNo = 'N/A';
-  let ownerPhone = '';
-  let ownerEmail = '';
-  let status = 'Inactive';
-  
-  for (let i = 1; i < data.length; i++) {
-    if (String(data[i][0]).trim().toUpperCase() === String(tagId).trim().toUpperCase()) {
-      vehicleNo = data[i][1];
-      ownerName = data[i][2];
-      ownerPhone = String(data[i][3]).trim();
-      ownerEmail = data[i][4];
-      status = data[i][8];
-      break;
+    function submitToBackend(tagId, issue, note, lat, lng) {
+      // REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP /EXEC URL
+      const scriptURL = "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec";
+      
+      const targetUrl = `${scriptURL}?id=${encodeURIComponent(tagId)}&issue=${encodeURIComponent(issue)}&note=${encodeURIComponent(note)}&lat=${lat}&lng=${lng}`;
+      
+      window.location.href = targetUrl;
     }
-  }
-  
-  let deliveryStatus = '';
-  
-  if (status !== 'Active' || ownerPhone === '') {
-    deliveryStatus = 'FAILED: Unregistered or Inactive Tag';
-  } else {
-    // Construct Google Maps Link
-    let gpsLink = (lat && lng) ? `https://maps.google.com/?q=${lat},${lng}` : 'Location not provided';
-    
-    // Send Email
-    try {
-      if (ownerEmail) {
-        MailApp.sendEmail({
-          to: ownerEmail,
-          subject: `🚨 PingMe Alert: Issue with ${vehicleNo}`,
-          body: `Hello ${ownerName},\n\nAn alert was triggered for your asset/vehicle (${vehicleNo}).\n\nIssue: ${issue}\nNote: ${customNote}\nLocation: ${gpsLink}\n\n- PingMe Automated Alert System`
-        });
-        deliveryStatus += 'Email: Sent | ';
-      }
-    } catch (mailErr) {
-      deliveryStatus += `Email Error: ${mailErr.toString()} | `;
-    }
-    
-    // Send WhatsApp via Meta Cloud API
-    try {
-      const waResponse = sendWhatsAppMessage(ownerPhone, issue, vehicleNo, customNote, gpsLink);
-      deliveryStatus += waResponse;
-    } catch (waErr) {
-      deliveryStatus += `WA: Error: ${waErr.toString()}`;
-    }
-  }
-  
-  // 3. Log to AlertLogs
-  const alertSheet = ss.getSheetByName('AlertLogs');
-  if (alertSheet) {
-    alertSheet.appendRow([new Date(), tagId, ownerName, vehicleNo, issue, customNote, deliveryStatus]);
-  }
-  
-  // Return success HTML response to browser
-  const htmlOutput = HtmlService.createHtmlOutput(
-    `<html><body style="font-family:sans-serif; text-align:center; padding:50px;">` +
-    `<h2 style="color:#2e7d32;">✅ Alert Sent Successfully!</h2>` +
-    `<p>The owner of <b>${vehicleNo}</b> has been notified via WhatsApp and Email.</p>` +
-    `<p><a href="javascript:window.close();" style="color:#1976d2;">Close Window</a></p>` +
-    `</body></html>`
-  );
-  return htmlOutput;
-}
-
-/**
- * Dispatches WhatsApp message using Meta Cloud API.
- */
-function sendWhatsAppMessage(recipientPhone, issue, vehicleNo, note, gpsLink) {
-  const url = `https://graph.facebook.com/v22.0/${CONFIG.PHONE_NUMBER_ID}/messages`;
-  
-  const messageText = `🔔 *PingMe Alert!*\n\n` +
-                      `Vehicle / Item: *${vehicleNo}*\n` +
-                      `Issue: *${issue}*\n` +
-                      `Note: ${note}\n\n` +
-                      `📍 *Location:* ${gpsLink}`;
-
-  const payload = {
-    messaging_product: 'whatsapp',
-    to: recipientPhone,
-    type: 'text',
-    text: { body: messageText }
-  };
-
-  const options = {
-    method: 'post',
-    contentType: 'application/json',
-    headers: {
-      'Authorization': `Bearer ${CONFIG.WHATSAPP_TOKEN}`
-    },
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  const response = UrlFetchApp.fetch(url, options);
-  const json = JSON.parse(response.getContentText());
-
-  if (response.getResponseCode() === 200 && json.messages) {
-    return `WA: Delivered (ID: ${json.messages[0].id})`;
-  } else {
-    let errDesc = json.error ? (json.error.message || JSON.stringify(json.error)) : response.getContentText();
-    return `WA: Meta Error: ${errDesc}`;
-  }
-}
-
-/**
- * Logs incoming owner replies from WhatsApp webhooks into IncidentLogs.
- */
-function logIncomingReply(senderPhone, replyText) {
-  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
-  const incidentSheet = ss.getSheetByName('IncidentLogs');
-  const adminSheet = ss.getSheetByName('Master Admin');
-  const adminData = adminSheet.getDataRange().getValues();
-  
-  let matchedTag = 'Unknown';
-  for (let i = 1; i < adminData.length; i++) {
-    const phone = String(adminData[i][3]).trim();
-    if (phone === senderPhone || phone === senderPhone.replace('91', '')) {
-      matchedTag = adminData[i][0];
-      break;
-    }
-  }
-  
-  if (incidentSheet) {
-    incidentSheet.appendRow([
-      'INC-' + Date.now(),
-      new Date(),
-      matchedTag,
-      'Owner WhatsApp Reply',
-      replyText,
-      new Date()
-    ]);
-  }
-}
+  </script>
+</body>
+</html>
