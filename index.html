@@ -1,151 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PingMe - Vehicle Parking Alert</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe - Smart Vehicle Parking Alert</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f3f4f6; color: #1f2937; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
-    .card { background: #ffffff; width: 100%; max-width: 440px; padding: 24px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); align-self: center; }
-    .header { text-align: center; margin-bottom: 20px; }
-    .header h2 { font-size: 22px; color: #111827; }
-    .tag-badge { display: inline-block; background: #e0e7ff; color: #4338ca; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-top: 6px; font-size: 14px; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151; }
-    select, textarea, input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
-    button { width: 100%; background: #2563eb; color: #ffffff; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    button:disabled { background: #93c5fd; cursor: not-allowed; }
-    .status-box { margin-top: 20px; padding: 16px; border-radius: 10px; display: none; }
-    .waiting { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
-    .reply { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
-    .pulse { animation: blink 1.5s infinite; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .option-btn {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .option-btn:hover {
+      border-color: #64748b;
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: rgba(37, 99, 235, 0.15);
+      color: #93c5fd;
+    }
+
+    .option-btn span.icon {
+      font-size: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text);
+      font-size: 14px;
+      resize: none;
+      height: 70px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Live Reply State */
+    .reply-card {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .waiting-box {
+      background: #0f172a;
+      border: 1px dashed var(--card-border);
+      border-radius: 14px;
+      padding: 24px 16px;
+      margin: 16px 0;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .owner-response-box {
+      display: none;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 14px;
+      padding: 20px 16px;
+      margin: 16px 0;
+      text-align: left;
+    }
+
+    .owner-response-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #34d399;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .owner-response-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f8fafc;
+      word-break: break-word;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <div class="header">
-      <h2>Vehicle Parking Alert</h2>
-      <div id="tagBadge" class="tag-badge">Scanning Tag...</div>
+  <div class="container">
+    <!-- SUBMIT INCIDENT FORM -->
+    <div id="formSection">
+      <div class="header">
+        <div class="badge-tag" id="tagBadge">🏷️ TAG: VP-1001</div>
+        <h1>Vehicle Contact Alert</h1>
+        <p>Notify the vehicle owner instantly via WhatsApp</p>
+      </div>
+
+      <span class="section-label">Select Reason</span>
+      <div class="options-grid">
+        <button type="button" class="option-btn selected" onclick="selectIssue(this, 'Wrong Parking / Blocking Way')">
+          <span class="icon">🚗</span>
+          <span>Blocking Way</span>
+        </button>
+        <button type="button" class="option-btn" onclick="selectIssue(this, 'Vehicle Lights ON')">
+          <span class="icon">💡</span>
+          <span>Lights ON</span>
+        </button>
+        <button type="button" class="option-btn" onclick="selectIssue(this, 'Flat Tyre')">
+          <span class="icon">⚠️</span>
+          <span>Flat Tyre</span>
+        </button>
+        <button type="button" class="option-btn" onclick="selectIssue(this, 'Emergency Contact')">
+          <span class="icon">🚨</span>
+          <span>Emergency</span>
+        </button>
+      </div>
+
+      <span class="section-label">Additional Message (Optional)</span>
+      <textarea id="notesInput" placeholder="e.g. Please move vehicle forward 2 meters..."></textarea>
+
+      <button id="submitBtn" class="btn-submit" onclick="submitAlert()">
+        <span>Send WhatsApp Alert</span>
+      </button>
+
+      <div class="footer">
+        🔒 Powered by PingMe • Privacy-Protected Communication
+      </div>
     </div>
 
-    <form id="alertForm">
-      <div class="form-group">
-        <label for="issue">Select Issue</label>
-        <select id="issue" required>
-          <option value="Wrong Parking / Blocking Way">🚗 Wrong Parking / Blocking Way</option>
-          <option value="Vehicle Lights ON">💡 Vehicle Lights ON</option>
-          <option value="Flat Tyre">⚠️ Flat Tyre</option>
-          <option value="Emergency Contact">🚨 Emergency Contact</option>
-        </select>
+    <!-- LIVE TWO-WAY WAITING & RESPONSE SCREEN -->
+    <div id="statusSection" class="reply-card">
+      <div class="status-badge">✓ Alert Dispatched</div>
+      <h2>Alert Sent to Owner</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+        The owner has been notified on WhatsApp.
+      </p>
+
+      <div id="waitingBox" class="waiting-box">
+        <div class="spinner"></div>
+        <div style="font-size: 14px; font-weight: 600;">Waiting for owner's reply...</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+          Replies will appear here automatically in real time.
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="notes">Short Note (Optional)</label>
-        <textarea id="notes" rows="2" placeholder="e.g. Blocking gate entry"></textarea>
+      <div id="responseBox" class="owner-response-box">
+        <div class="owner-response-title">Owner's Message</div>
+        <div id="responseText" class="owner-response-text"></div>
       </div>
 
-      <button type="button" id="submitBtn" onclick="submitAlert()">Notify Vehicle Owner</button>
-    </form>
-
-    <div id="statusContainer" class="status-box"></div>
+      <div class="footer">
+        Do not close this page if you are waiting for an update.
+      </div>
+    </div>
   </div>
 
   <script>
-    // REPLACE THIS WITH YOUR APPS SCRIPT WEB APP EXEC URL:
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhwxge-SiViXW3HBaqvLWjTsZyaZEvaU0-tjMeOTHHUsbhXMybIvoffehhgJ2MHEVm/exec";
+    // ACTIVE GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhwxge-SiViXW3HBaqvLWjTsZyaZEvaU0-tjMeOTHHUsbhXMybIvoffehhgJ2MHEVm/exec";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const tagId = urlParams.get('tag') || 'VP-1001';
-    document.getElementById('tagBadge').innerText = "Tag ID: " + tagId;
-
-    const sessionId = 'INC-' + Date.now();
+    let selectedIssue = "Wrong Parking / Blocking Way";
+    let userLocation = "Location not shared";
+    let activeSessionId = "INC-" + Date.now();
     let pollInterval = null;
-    let gpsCoords = 'Location not shared';
 
+    // 1. Read Tag ID from URL (?tag=VP-1001)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tagId = urlParams.get('tag') ? urlParams.get('tag').trim() : 'VP-1001';
+    document.getElementById('tagBadge').innerText = "🏷️ TAG: " + tagId;
+
+    // 2. Request GPS Location silently
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => { gpsCoords = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`; },
-        err => { console.log('GPS not available'); }
+        (pos) => {
+          userLocation = "https://maps.google.com/?q=" + pos.coords.latitude.toFixed(6) + "," + pos.coords.longitude.toFixed(6);
+        },
+        () => { userLocation = "Location not shared"; },
+        { timeout: 7000 }
       );
     }
 
+    function selectIssue(btn, issueText) {
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedIssue = issueText;
+    }
+
+    // 3. Submit Alert to Google Apps Script
     function submitAlert() {
-      const issue = document.getElementById('issue').value;
-      const notes = document.getElementById('notes').value;
       const btn = document.getElementById('submitBtn');
-      const statusBox = document.getElementById('statusContainer');
+      const notes = document.getElementById('notesInput').value.trim();
 
       btn.disabled = true;
       btn.innerText = "Dispatching Alert...";
 
       const payload = {
-        action: 'submitIncident',
-        sessionId: sessionId,
+        action: "submitIncident",
         tagId: tagId,
-        issue: issue,
-        notes: notes,
-        gps: gpsCoords
+        sessionId: activeSessionId,
+        issue: selectedIssue,
+        notes: notes || "Please check vehicle promptly",
+        gps: userLocation
       };
 
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) {
-          document.getElementById('alertForm').style.display = 'none';
-          statusBox.style.display = 'block';
-          statusBox.className = 'status-box waiting';
-          statusBox.innerHTML = `
-            <h4 style="margin-bottom: 6px;">🔔 Alert Dispatched</h4>
-            <p style="font-size: 14px;">The owner has been notified on WhatsApp & Email.</p>
-            <p class="pulse" style="font-size: 13px; margin-top: 10px; font-weight: 600;">
-              ⏳ Waiting for owner response...
-            </p>
-          `;
-          startPolling();
-        } else {
-          alert('Error: ' + res.error);
-          btn.disabled = false;
-          btn.innerText = "Notify Vehicle Owner";
-        }
+      .then(() => {
+        // Transition to Live Waiting Screen
+        document.getElementById('formSection').style.display = "none";
+        document.getElementById('statusSection').style.display = "block";
+
+        // Begin polling for owner reply every 3 seconds
+        startReplyPolling();
       })
-      .catch(err => {
-        alert('Network request failed: ' + err);
+      .catch((err) => {
+        alert("Alert submission error: " + err);
         btn.disabled = false;
-        btn.innerText = "Notify Vehicle Owner";
+        btn.innerText = "Send WhatsApp Alert";
       });
     }
 
-    function startPolling() {
+    // 4. Poll Apps Script for Owner WhatsApp Reply
+    function startReplyPolling() {
       pollInterval = setInterval(() => {
-        fetch(`${APPS_SCRIPT_URL}?action=checkReply&sessionId=${encodeURIComponent(sessionId)}`)
+        fetch(SCRIPT_URL + "?action=checkReply&sessionId=" + encodeURIComponent(activeSessionId))
           .then(res => res.json())
           .then(data => {
-            if (data.replied) {
+            if (data && data.replied && data.message) {
               clearInterval(pollInterval);
-              const statusBox = document.getElementById('statusContainer');
-              statusBox.className = 'status-box reply';
-              statusBox.innerHTML = `
-                <h4 style="color: #15803d; margin-bottom: 6px;">💬 Message from Vehicle Owner:</h4>
-                <p style="font-size: 16px; font-weight: 700; color: #166534; padding: 10px; background: #dcfce7; border-radius: 8px;">
-                  "${data.message}"
-                </p>
-                <small style="display:block; margin-top: 8px; color: #4b5563;">Status updated live</small>
-              `;
+              document.getElementById('waitingBox').style.display = "none";
+              document.getElementById('responseBox').style.display = "block";
+              document.getElementById('responseText').innerText = data.message;
             }
           })
-          .catch(err => console.log('Polling check error:', err));
-      }, 4000);
-
-      setTimeout(() => {
-        if (pollInterval) clearInterval(pollInterval);
-      }, 180000); // Stop polling after 3 minutes
+          .catch(() => {
+            // Suppress background poll errors
+          });
+      }, 3000);
     }
   </script>
 </body>
