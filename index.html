@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="ta, en">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PingMe - One Scan. Instant Alert.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
-      --accent: #ec4899;
+      --accent-grad: linear-gradient(135deg, #1e3a8a 0%, #4338ca 40%, #7c3aed 70%, #ec4899 100%);
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-sub: #64748b;
       --border: #e2e8f0;
-      --active-border: #3b82f6;
+      --active-border: #2563eb;
       --active-bg: #eff6ff;
     }
 
@@ -31,150 +31,292 @@
 
     body {
       background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
-      font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', -apple-system, sans-serif;
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 16px;
+      overflow-x: hidden;
     }
 
+    /* 2-Second Animated Splash Screen */
+    #splashScreen {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .splash-logo-wrap {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .ping-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      background: rgba(37, 99, 235, 0.2);
+      animation: ripple 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+    }
+
+    .splash-logo-box {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      border-radius: 22px;
+      background: var(--accent-grad);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 15px 35px -5px rgba(67, 56, 202, 0.45);
+      animation: pulsePop 1.5s ease-in-out infinite alternate;
+    }
+
+    .splash-logo-box svg {
+      width: 42px;
+      height: 42px;
+      fill: #ffffff;
+    }
+
+    .splash-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .splash-tagline {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+      letter-spacing: 0.5px;
+    }
+
+    .splash-loader {
+      margin-top: 28px;
+      width: 56px;
+      height: 4px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .splash-loader-bar {
+      width: 100%;
+      height: 100%;
+      background: var(--accent-grad);
+      animation: loadProgress 2s linear forwards;
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      100% { transform: scale(1.45); opacity: 0; }
+    }
+    @keyframes pulsePop {
+      0% { transform: scale(0.97); }
+      100% { transform: scale(1.03); }
+    }
+    @keyframes loadProgress {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(0%); }
+    }
+
+    /* Main Container */
     .container {
       background: var(--card-bg);
       width: 100%;
       max-width: 440px;
       border-radius: 24px;
-      padding: 28px 24px;
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+      padding: 26px 20px;
+      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
       border: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    /* Logo & Header */
+    .container.ready {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Header Bar */
     .brand-header {
-      text-align: center;
-      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
     }
 
-    .logo-container {
-      display: inline-flex;
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mini-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--accent-grad);
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #ec4899 100%);
-      border-radius: 16px;
-      box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
-      margin-bottom: 12px;
+      box-shadow: 0 8px 16px -4px rgba(67, 56, 202, 0.35);
     }
 
-    .logo-container svg {
-      width: 30px;
-      height: 30px;
+    .mini-logo svg {
+      width: 24px;
+      height: 24px;
       fill: #ffffff;
     }
 
-    .brand-title {
-      font-size: 26px;
+    .brand-text h1 {
+      font-size: 20px;
       font-weight: 800;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #1e3a8a 0%, #4338ca 50%, #ec4899 100%);
+      background: var(--accent-grad);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      line-height: 1.1;
     }
 
-    .brand-tagline {
-      font-size: 13px;
+    .brand-text p {
+      font-size: 11px;
       color: var(--text-sub);
-      font-weight: 500;
-      margin-top: 2px;
+      font-weight: 600;
     }
 
-    /* Asset Badge */
+    /* Language Switch Buttons */
+    .lang-toggle {
+      display: flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Tag Identifier */
     .tag-strip {
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 8px;
-      background: #f1f5f9;
-      padding: 8px 16px;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      padding: 9px 14px;
       border-radius: 12px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
+    }
+
+    .tag-strip .tag-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-strip .tag-val {
       font-size: 13px;
-      font-weight: 600;
-      color: #334155;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: #dbeafe;
+      padding: 3px 10px;
+      border-radius: 8px;
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-    }
-
-    /* Issue Selection Grid */
-    .section-label {
+    .section-title {
       font-size: 13px;
       font-weight: 700;
       color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       margin-bottom: 10px;
       display: block;
     }
 
-    .issue-grid {
+    /* Radio Issue Cards */
+    .issue-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
-    .issue-option {
-      position: relative;
+    .issue-card {
+      background: #ffffff;
       border: 1.5px solid var(--border);
       border-radius: 14px;
-      padding: 12px 14px;
+      padding: 13px 15px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      background: #ffffff;
+      transition: all 0.2s ease;
     }
 
-    .issue-option:hover {
+    .issue-card:hover {
       border-color: #cbd5e1;
-      background: #f8fafc;
+      background: #fbfcfe;
     }
 
-    .issue-option.selected {
+    .issue-card.selected {
       border-color: var(--active-border);
       background: var(--active-bg);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
-    .issue-content {
+    .issue-card-content {
       display: flex;
-      flex-direction: column;
-      text-align: left;
+      align-items: center;
+      gap: 12px;
     }
 
-    .issue-en {
+    .issue-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .issue-text {
       font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
     }
 
-    .issue-ta {
-      font-size: 12px;
-      color: var(--text-sub);
-      font-weight: 500;
-      margin-top: 2px;
-    }
-
-    .radio-circle {
+    .custom-radio {
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -182,26 +324,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
-    .issue-option.selected .radio-circle {
+    .issue-card.selected .custom-radio {
       border-color: var(--primary);
       background: var(--primary);
     }
 
-    .issue-option.selected .radio-circle::after {
+    .issue-card.selected .custom-radio::after {
       content: '';
       width: 8px;
       height: 8px;
-      background: #ffffff;
       border-radius: 50%;
+      background: #ffffff;
     }
 
     /* Note Input */
-    .note-container {
-      margin-bottom: 22px;
-      text-align: left;
+    .note-box {
+      margin-bottom: 20px;
     }
 
     textarea {
@@ -215,19 +357,19 @@
       background: #ffffff;
       outline: none;
       resize: vertical;
-      min-height: 70px;
-      transition: border-color 0.2s;
+      min-height: 65px;
+      transition: all 0.2s ease;
     }
 
     textarea:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
     /* Submit Button */
     .btn-submit {
       width: 100%;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      background: var(--accent-grad);
       color: #ffffff;
       border: none;
       border-radius: 14px;
@@ -239,8 +381,8 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.35);
-      transition: all 0.2s;
+      box-shadow: 0 10px 22px -5px rgba(67, 56, 202, 0.4);
+      transition: all 0.2s ease;
     }
 
     .btn-submit:active {
@@ -261,139 +403,219 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 6px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Brand Header -->
-    <div class="brand-header">
-      <div class="logo-container">
-        <!-- PingMe Custom Bell & Transmission Icon -->
+  <!-- 2-Second Animated Splash Screen -->
+  <div id="splashScreen">
+    <div class="splash-logo-wrap">
+      <div class="ping-ring"></div>
+      <div class="splash-logo-box">
         <svg viewBox="0 0 24 24">
           <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6zM7.05 4.05L5.64 2.64A10.94 10.94 0 0 0 2 11h2c0-2.48 1.01-4.73 2.64-6.36.14-.14.28-.27.41-.41v-.18zm9.9 0l1.41-1.41C20.02 4.29 21.01 6.54 21.01 9h-2c0-1.92-.78-3.66-2.06-4.95z"/>
         </svg>
       </div>
-      <div class="brand-title">PingMe</div>
-      <div class="brand-tagline">One Scan. Instant Alert.</div>
+    </div>
+    <div class="splash-title">PingMe</div>
+    <div class="splash-tagline">One Scan. Instant Alert.</div>
+    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+  </div>
+
+  <!-- Main Interface Card -->
+  <div class="container" id="mainContainer">
+    <div class="brand-header">
+      <div class="brand-left">
+        <div class="mini-logo">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6zM7.05 4.05L5.64 2.64A10.94 10.94 0 0 0 2 11h2c0-2.48 1.01-4.73 2.64-6.36.14-.14.28-.27.41-.41v-.18zm9.9 0l1.41-1.41C20.02 4.29 21.01 6.54 21.01 9h-2c0-1.92-.78-3.66-2.06-4.95z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>PingMe</h1>
+          <p id="subTagline">One Scan. Instant Alert.</p>
+        </div>
+      </div>
+
+      <!-- Language Switcher -->
+      <div class="lang-toggle">
+        <button type="button" class="lang-btn active" id="btnEn" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" id="btnTa" onclick="setLanguage('ta')">தமிழ்</button>
+      </div>
     </div>
 
-    <!-- Active Tag ID Badge -->
+    <!-- Active Tag ID -->
     <div class="tag-strip">
-      <div class="status-dot"></div>
-      <span id="displayTag">Tag: Loading...</span>
+      <span class="tag-label" id="lblTag">Vehicle Tag ID</span>
+      <span class="tag-val" id="displayTag">Loading...</span>
     </div>
 
-    <!-- Form -->
-    <form id="alertForm" onsubmit="submitAlert(event)">
-      <span class="section-label">Select Issue / காரணத்தைத் தேர்வுசெய்க</span>
+    <!-- Issue Form -->
+    <form id="alertForm" onsubmit="handleSend(event)">
+      <span class="section-title" id="lblIssueTitle">Select Issue</span>
 
-      <div class="issue-grid">
-        <div class="issue-option selected" onclick="selectIssue(this, 'Wrong Parking / Blocking Way')">
-          <div class="issue-content">
-            <span class="issue-en">🚗 Blocking Way / Wrong Parking</span>
-            <span class="issue-ta">தவறான பார்க்கிங் / வழி மறைக்கப்பட்டுள்ளது</span>
+      <div class="issue-list" id="issueContainer">
+        <!-- Radio Option 1 -->
+        <div class="issue-card selected" onclick="chooseIssue(this, 'Wrong Parking / Blocking Way')">
+          <div class="issue-card-content">
+            <span class="issue-icon">🚗</span>
+            <span class="issue-text" data-en="Blocking Way / Wrong Parking" data-ta="வழி மறைக்கப்பட்டுள்ளது / தவறான பார்க்கிங்">Blocking Way / Wrong Parking</span>
           </div>
-          <div class="radio-circle"></div>
+          <div class="custom-radio"></div>
         </div>
 
-        <div class="issue-option" onclick="selectIssue(this, 'Vehicle Lights ON')">
-          <div class="issue-content">
-            <span class="issue-en">💡 Lights Left ON</span>
-            <span class="issue-ta">வாகன விளக்குகள் எரிகின்றன</span>
+        <!-- Radio Option 2 -->
+        <div class="issue-card" onclick="chooseIssue(this, 'Vehicle Lights ON')">
+          <div class="issue-card-content">
+            <span class="issue-icon">💡</span>
+            <span class="issue-text" data-en="Vehicle Lights Left ON" data-ta="வாகன விளக்குகள் எரிகின்றன">Vehicle Lights Left ON</span>
           </div>
-          <div class="radio-circle"></div>
+          <div class="custom-radio"></div>
         </div>
 
-        <div class="issue-option" onclick="selectIssue(this, 'Flat Tyre')">
-          <div class="issue-content">
-            <span class="issue-en">⚠️ Flat Tyre / Puncture</span>
-            <span class="issue-ta">டயர் காற்று இறங்கியுள்ளது</span>
+        <!-- Radio Option 3 -->
+        <div class="issue-card" onclick="chooseIssue(this, 'Flat Tyre')">
+          <div class="issue-card-content">
+            <span class="issue-icon">⚠️</span>
+            <span class="issue-text" data-en="Flat Tyre / Puncture" data-ta="டயர் காற்று இறங்கியுள்ளது / பஞ்சர்">Flat Tyre / Puncture</span>
           </div>
-          <div class="radio-circle"></div>
+          <div class="custom-radio"></div>
         </div>
 
-        <div class="issue-option" onclick="selectIssue(this, 'Package / Delivery at Gate')">
-          <div class="issue-content">
-            <span class="issue-en">📦 Package / Delivery</span>
-            <span class="issue-ta">பார்சல் அல்லது டெலிவரி வந்துள்ளது</span>
+        <!-- Radio Option 4 -->
+        <div class="issue-card" onclick="chooseIssue(this, 'Emergency Contact')">
+          <div class="issue-card-content">
+            <span class="issue-icon">🚨</span>
+            <span class="issue-text" data-en="Emergency Assistance" data-ta="அவசர உதவி தேவை">Emergency Assistance</span>
           </div>
-          <div class="radio-circle"></div>
-        </div>
-
-        <div class="issue-option" onclick="selectIssue(this, 'Emergency Contact')">
-          <div class="issue-content">
-            <span class="issue-en">🚨 Emergency Assistance</span>
-            <span class="issue-ta">அவசரத் தொடர்பு தேவை</span>
-          </div>
-          <div class="radio-circle"></div>
+          <div class="custom-radio"></div>
         </div>
       </div>
 
-      <div class="note-container">
-        <label for="customNote" class="section-label" style="margin-bottom:6px;">Additional Details (Optional) / குறிப்பு</label>
-        <textarea id="customNote" placeholder="e.g. Please move vehicle 2 meters ahead..."></textarea>
+      <!-- Short Note Input -->
+      <div class="note-box">
+        <label for="customNote" class="section-title" id="lblNoteTitle" style="margin-bottom:6px;">Additional Note (Optional)</label>
+        <textarea id="customNote" placeholder="e.g. Please move vehicle forward slightly..."></textarea>
       </div>
 
+      <!-- Action Button -->
       <button type="submit" id="submitBtn" class="btn-submit">
-        <span>Send Instant Alert / எச்சரிக்கை அனுப்புக</span>
+        <span id="btnText">Send Instant Alert</span>
       </button>
     </form>
 
     <div class="footer-secure">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-      <span>Privacy Shield Enabled • No personal phone numbers revealed</span>
+      <span id="lblSecure">Privacy Shield Enabled • No personal numbers revealed</span>
     </div>
   </div>
 
   <script>
-    let selectedIssueText = "Wrong Parking / Blocking Way";
+    let currentLang = 'en';
+    let selectedIssue = 'Wrong Parking / Blocking Way';
 
-    function getParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param) || '';
+    // 1. Language Definitions
+    const translations = {
+      en: {
+        tagline: "One Scan. Instant Alert.",
+        tagLabel: "Vehicle Tag ID",
+        issueTitle: "Select Issue",
+        noteTitle: "Additional Note (Optional)",
+        notePlaceholder: "e.g. Please move vehicle forward slightly...",
+        btnSend: "Send Instant Alert",
+        btnSending: "Transmitting Alert...",
+        secureNote: "Privacy Shield Enabled • No personal numbers revealed"
+      },
+      ta: {
+        tagline: "ஒரு ஸ்கேன். உடனடி எச்சரிக்கை.",
+        tagLabel: "வாகன டேக் எண்",
+        issueTitle: "காரணத்தைத் தேர்வுசெய்க",
+        noteTitle: "கூடுதல் குறிப்பு (விருப்பப்பட்டால்)",
+        notePlaceholder: "எ.கா. வாகனத்தை சற்று நகர்த்தவும்...",
+        btnSend: "உடனடி எச்சரிக்கை அனுப்புக",
+        btnSending: "எச்சரிக்கை அனுப்பப்படுகிறது...",
+        secureNote: "பாதுகாப்பானது • தொடர்பு எண்கள் யாருக்கும் பகிரப்படாது"
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+      document.getElementById('btnTa').classList.toggle('active', lang === 'ta');
+
+      const t = translations[lang];
+      document.getElementById('subTagline').innerText = t.tagline;
+      document.getElementById('lblTag').innerText = t.tagLabel;
+      document.getElementById('lblIssueTitle').innerText = t.issueTitle;
+      document.getElementById('lblNoteTitle').innerText = t.noteTitle;
+      document.getElementById('customNote').placeholder = t.notePlaceholder;
+      document.getElementById('btnText').innerText = t.btnSend;
+      document.getElementById('lblSecure').innerText = t.secureNote;
+
+      document.querySelectorAll('.issue-text').forEach(el => {
+        el.innerText = el.getAttribute(`data-${lang}`);
+      });
     }
 
-    const tagId = getParam('id') || 'VP-1001';
-    document.getElementById('displayTag').innerText = `Tag: ${tagId}`;
-
-    function selectIssue(element, text) {
-      document.querySelectorAll('.issue-option').forEach(el => el.classList.remove('selected'));
-      element.classList.add('selected');
-      selectedIssueText = text;
+    // 2. Select Radio Card
+    function chooseIssue(card, issueValue) {
+      document.querySelectorAll('.issue-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedIssue = issueValue;
     }
 
-    function submitAlert(event) {
+    // 3. Parse Parameters
+    function getQueryParam(p) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(p) || '';
+    }
+
+    const tagId = getQueryParam('id') || 'VP-1001';
+    document.getElementById('displayTag').innerText = tagId;
+
+    // 4. Two-Second Splash Screen Transition
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+        document.getElementById('mainContainer').classList.add('ready');
+      }, 2000);
+    });
+
+    // 5. Handle Alert Submission
+    function handleSend(event) {
       event.preventDefault();
       const note = document.getElementById('customNote').value;
-      const btn = document.getElementById('submitBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
 
-      btn.disabled = true;
-      btn.innerHTML = '<span>Transmitting Alert...</span>';
+      submitBtn.disabled = true;
+      btnText.innerText = translations[currentLang].btnSending;
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function(pos) {
-            dispatchAlert(tagId, selectedIssueText, note, pos.coords.latitude, pos.coords.longitude);
+            submitData(tagId, selectedIssue, note, pos.coords.latitude, pos.coords.longitude);
           },
           function(err) {
-            dispatchAlert(tagId, selectedIssueText, note, '', '');
+            submitData(tagId, selectedIssue, note, '', '');
           },
-          { timeout: 7000 }
+          { timeout: 6000 }
         );
       } else {
-        dispatchAlert(tagId, selectedIssueText, note, '', '');
+        submitData(tagId, selectedIssue, note, '', '');
       }
     }
 
-    function dispatchAlert(tag, issue, note, lat, lng) {
-      // BACKEND ROUTING: Uses your active Google Apps Script web app
-      const backendURL = "https://script.google.com/macros/s/AKfycbwYOUR_REAL_SCRIPT_ID/exec";
+    function submitData(tag, issue, note, lat, lng) {
+      // Pull deployed script URL from parameter or fallback
+      let scriptURL = getQueryParam('script') || "https://script.google.com/macros/s/AKfycbw1mD0Xw1yBq7i8oJkL9n0PqRsTuVwXyZaBcDeFgHiJkLmNoP/exec";
 
-      const target = `${backendURL}?id=${encodeURIComponent(tag)}&issue=${encodeURIComponent(issue)}&note=${encodeURIComponent(note)}&lat=${lat}&lng=${lng}`;
-      window.location.href = target;
+      const finalUrl = `${scriptURL}?id=${encodeURIComponent(tag)}&issue=${encodeURIComponent(issue)}&note=${encodeURIComponent(note)}&lat=${lat}&lng=${lng}`;
+      window.location.href = finalUrl;
     }
   </script>
 </body>
