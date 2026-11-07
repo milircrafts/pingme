@@ -2,611 +2,372 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PingMe - One Scan. Instant Alert.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe | Smart QR Alert Network</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --accent-grad: linear-gradient(135deg, #1e3a8a 0%, #4338ca 40%, #7c3aed 70%, #ec4899 100%);
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-sub: #64748b;
-      --border: #e2e8f0;
-      --active-border: #2563eb;
-      --active-bg: #eff6ff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
-      font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', -apple-system, sans-serif;
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 16px;
-      overflow-x: hidden;
-    }
-
-    /* 2-Second Animated Splash Screen */
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      background: #ffffff;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-
-    .splash-logo-wrap {
-      position: relative;
-      width: 100px;
-      height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 24px;
-    }
-
-    .ping-ring {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 28px;
-      background: rgba(37, 99, 235, 0.2);
-      animation: ripple 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-    }
-
-    .splash-logo-box {
-      position: relative;
-      width: 76px;
-      height: 76px;
-      border-radius: 22px;
-      background: var(--accent-grad);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 15px 35px -5px rgba(67, 56, 202, 0.45);
-      animation: pulsePop 1.5s ease-in-out infinite alternate;
-    }
-
-    .splash-logo-box svg {
-      width: 42px;
-      height: 42px;
-      fill: #ffffff;
-    }
-
-    .splash-title {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: var(--accent-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
-    }
-
-    .splash-tagline {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-sub);
-      letter-spacing: 0.5px;
-    }
-
-    .splash-loader {
-      margin-top: 28px;
-      width: 56px;
-      height: 4px;
-      border-radius: 999px;
-      background: #e2e8f0;
-      overflow: hidden;
-    }
-
-    .splash-loader-bar {
-      width: 100%;
-      height: 100%;
-      background: var(--accent-grad);
-      animation: loadProgress 2s linear forwards;
-    }
-
-    @keyframes ripple {
-      0% { transform: scale(0.9); opacity: 0.8; }
-      100% { transform: scale(1.45); opacity: 0; }
-    }
-    @keyframes pulsePop {
-      0% { transform: scale(0.97); }
-      100% { transform: scale(1.03); }
-    }
-    @keyframes loadProgress {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(0%); }
-    }
-
-    /* Main Container */
-    .container {
-      background: var(--card-bg);
-      width: 100%;
-      max-width: 440px;
-      border-radius: 24px;
-      padding: 26px 20px;
-      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
-      border: 1px solid var(--border);
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-
-    .container.ready {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Header Bar */
-    .brand-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-
-    .brand-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .mini-logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: var(--accent-grad);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 16px -4px rgba(67, 56, 202, 0.35);
-    }
-
-    .mini-logo svg {
-      width: 24px;
-      height: 24px;
-      fill: #ffffff;
-    }
-
-    .brand-text h1 {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: var(--accent-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.1;
-    }
-
-    .brand-text p {
-      font-size: 11px;
-      color: var(--text-sub);
-      font-weight: 600;
-    }
-
-    /* Language Switch Buttons */
-    .lang-toggle {
-      display: flex;
-      background: #f1f5f9;
-      padding: 3px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .lang-btn {
-      border: none;
-      background: transparent;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-sub);
-      border-radius: 9px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .lang-btn.active {
-      background: #ffffff;
-      color: var(--primary);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Tag Identifier */
-    .tag-strip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      padding: 9px 14px;
-      border-radius: 12px;
-      margin-bottom: 18px;
-    }
-
-    .tag-strip .tag-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-sub);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .tag-strip .tag-val {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--primary-dark);
-      background: #dbeafe;
-      padding: 3px 10px;
-      border-radius: 8px;
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    /* Radio Issue Cards */
-    .issue-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .issue-card {
-      background: #ffffff;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 13px 15px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all 0.2s ease;
-    }
-
-    .issue-card:hover {
-      border-color: #cbd5e1;
-      background: #fbfcfe;
-    }
-
-    .issue-card.selected {
-      border-color: var(--active-border);
-      background: var(--active-bg);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    .issue-card-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .issue-icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .issue-text {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .custom-radio {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid #cbd5e1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .issue-card.selected .custom-radio {
-      border-color: var(--primary);
-      background: var(--primary);
-    }
-
-    .issue-card.selected .custom-radio::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ffffff;
-    }
-
-    /* Note Input */
-    .note-box {
-      margin-bottom: 20px;
-    }
-
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border);
-      font-size: 13px;
-      font-family: inherit;
-      color: var(--text-main);
-      background: #ffffff;
-      outline: none;
-      resize: vertical;
-      min-height: 75px;
-      transition: all 0.2s ease;
-    }
-
-    textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    /* Submit Button */
-    .btn-submit {
-      width: 100%;
-      background: var(--accent-grad);
-      color: #ffffff;
-      border: none;
-      border-radius: 14px;
-      padding: 15px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 22px -5px rgba(67, 56, 202, 0.4);
-      transition: all 0.2s ease;
-    }
-
-    .btn-submit:active {
-      transform: scale(0.98);
-    }
-
-    .btn-submit:disabled {
-      background: #94a3b8;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    .footer-secure {
-      margin-top: 18px;
-      font-size: 11px;
-      color: #94a3b8;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .mono { font-family: 'Space Grotesk', monospace; }
   </style>
 </head>
-<body>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-amber-400 selection:text-black">
 
-  <!-- 2-Second Animated Splash Screen -->
-  <div id="splashScreen">
-    <div class="splash-logo-wrap">
-      <div class="ping-ring"></div>
-      <div class="splash-logo-box">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6zM7.05 4.05L5.64 2.64A10.94 10.94 0 0 0 2 11h2c0-2.48 1.01-4.73 2.64-6.36.14-.14.28-.27.41-.41v-.18zm9.9 0l1.41-1.41C20.02 4.29 21.01 6.54 21.01 9h-2c0-1.92-.78-3.66-2.06-4.95z"/>
-        </svg>
+  <!-- Splash Screen (2s) -->
+  <div id="splash" class="fixed inset-0 z-50 bg-[#07090e] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="relative flex items-center justify-center mb-6">
+      <div class="absolute w-28 h-28 bg-emerald-500/20 rounded-full animate-ping"></div>
+      <div class="relative w-20 h-20 bg-gradient-to-tr from-emerald-500 to-cyan-400 rounded-3xl flex items-center justify-center shadow-xl shadow-emerald-500/30">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
       </div>
     </div>
-    <div class="splash-title">PingMe</div>
-    <div class="splash-tagline">One Scan. Instant Alert.</div>
-    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+    <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">PingMe</h1>
+    <p class="text-xs uppercase tracking-widest text-slate-400 mt-2 mono">Scan • Ping • Connect</p>
   </div>
 
-  <!-- Main Interface Card -->
-  <div class="container" id="mainContainer">
-    <div class="brand-header">
-      <div class="brand-left">
-        <div class="mini-logo">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6zM7.05 4.05L5.64 2.64A10.94 10.94 0 0 0 2 11h2c0-2.48 1.01-4.73 2.64-6.36.14-.14.28-.27.41-.41v-.18zm9.9 0l1.41-1.41C20.02 4.29 21.01 6.54 21.01 9h-2c0-1.92-.78-3.66-2.06-4.95z"/>
-          </svg>
-        </div>
-        <div class="brand-text">
-          <h1>PingMe</h1>
-          <p id="subTagline">One Scan. Instant Alert.</p>
-        </div>
-      </div>
-
-      <!-- Language Switcher -->
-      <div class="lang-toggle">
-        <button type="button" class="lang-btn active" id="btnEn" onclick="setLanguage('en')">EN</button>
-        <button type="button" class="lang-btn" id="btnTa" onclick="setLanguage('ta')">தமிழ்</button>
+  <!-- Header -->
+  <header class="max-w-md mx-auto w-full pt-6 px-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">P</div>
+      <div>
+        <span class="font-extrabold text-xl tracking-tight text-white">Ping<span class="text-emerald-400">Me</span></span>
+        <div id="tagDisplay" class="text-[11px] mono text-slate-400">ID: SCANNING...</div>
       </div>
     </div>
 
-    <!-- Active Tag ID -->
-    <div class="tag-strip">
-      <span class="tag-label" id="lblTag">Item / Vehicle Tag</span>
-      <span class="tag-val" id="displayTag">Loading...</span>
+    <!-- Language Selector -->
+    <div class="flex bg-slate-900/90 border border-slate-700/60 p-1 rounded-2xl">
+      <button id="langEn" onclick="switchLang('en')" class="px-3 py-1 text-xs font-bold rounded-xl bg-emerald-500 text-slate-950 transition-all">EN</button>
+      <button id="langTa" onclick="switchLang('ta')" class="px-3 py-1 text-xs font-bold rounded-xl text-slate-400 transition-all">தமிழ்</button>
     </div>
+  </header>
 
-    <!-- Form -->
-    <form id="alertForm" onsubmit="handleSend(event)">
-      <span class="section-title" id="lblIssueTitle">Select Option</span>
+  <!-- Inactive Tag Notice -->
+  <div id="inactiveScreen" class="hidden max-w-md mx-auto w-full px-4 py-12 text-center">
+    <div class="p-8 rounded-3xl bg-rose-500/10 border border-rose-500/30">
+      <div class="w-16 h-16 mx-auto mb-4 bg-rose-500/20 rounded-2xl flex items-center justify-center text-rose-400 text-3xl">⚠️</div>
+      <h3 class="text-xl font-bold text-white mb-2" id="inactiveTitle">PingMe Tag Inactive</h3>
+      <p class="text-sm text-slate-300 leading-relaxed" id="inactiveDesc">This tag has been temporarily disabled or its subscription period has expired. The owner has been notified.</p>
+    </div>
+  </div>
 
-      <div class="issue-list" id="issueContainer">
-        <!-- Option 1: Vehicle -->
-        <div class="issue-card selected" onclick="chooseIssue(this, 'Vehicle Alert / Parking')">
-          <div class="issue-card-content">
-            <span class="issue-icon">🚗</span>
-            <span class="issue-text" data-en="Vehicle Alert (Parking / Lights / Tyre)" data-ta="வாகன எச்சரிக்கை (பார்க்கிங் / விளக்கு / டயர்)">Vehicle Alert (Parking / Lights / Tyre)</span>
-          </div>
-          <div class="custom-radio"></div>
-        </div>
+  <!-- Main Interaction Form -->
+  <main id="appForm" class="max-w-md mx-auto w-full p-4 space-y-5">
 
-        <!-- Option 2: Keys & Luggage Combined -->
-        <div class="issue-card" onclick="chooseIssue(this, 'Keys & Luggage Alert')">
-          <div class="issue-card-content">
-            <span class="issue-icon">🧳</span>
-            <span class="issue-text" data-en="Keys & Luggage / Baggage Found" data-ta="சாவிகள் & உடமைகள் கண்டெடுக்கப்பட்டது">Keys & Luggage / Baggage Found</span>
-          </div>
-          <div class="custom-radio"></div>
-        </div>
-
-        <!-- Option 3: Free Custom Typing -->
-        <div class="issue-card" onclick="chooseIssue(this, 'Custom Message')">
-          <div class="issue-card-content">
-            <span class="issue-icon">✍️</span>
-            <span class="issue-text" data-en="Other / Type Anything Custom" data-ta="பிற தகவல் / உங்கள் செய்தியைத் தட்டச்சு செய்க">Other / Type Anything Custom</span>
-          </div>
-          <div class="custom-radio"></div>
-        </div>
-      </div>
-
-      <!-- Note Input -->
-      <div class="note-box">
-        <label for="customNote" class="section-title" id="lblNoteTitle" style="margin-bottom:6px;">Type Details / Message</label>
-        <textarea id="customNote" placeholder="Type your message or details here..."></textarea>
-      </div>
-
-      <!-- Submit Button -->
-      <button type="submit" id="submitBtn" class="btn-submit">
-        <span id="btnText">Send Instant Alert</span>
+    <!-- Category Selector -->
+    <div class="grid grid-cols-3 gap-2">
+      <button type="button" onclick="setCategory('vehicle')" id="tab-vehicle" class="py-3 px-2 rounded-2xl border bg-amber-500/10 border-amber-500/40 text-amber-300 text-xs font-bold flex flex-col items-center gap-1.5 transition">
+        <span class="text-lg">🚗</span>
+        <span id="labelVeh">Vehicle</span>
       </button>
-    </form>
-
-    <div class="footer-secure">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-      <span id="lblSecure">Privacy Shield Enabled • No personal numbers revealed</span>
+      <button type="button" onclick="setCategory('luggage')" id="tab-luggage" class="py-3 px-2 rounded-2xl border bg-slate-800/60 border-slate-700 text-slate-400 text-xs font-bold flex flex-col items-center gap-1.5 transition">
+        <span class="text-lg">🧳</span>
+        <span id="labelLug">Luggage</span>
+      </button>
+      <button type="button" onclick="setCategory('others')" id="tab-others" class="py-3 px-2 rounded-2xl border bg-slate-800/60 border-slate-700 text-slate-400 text-xs font-bold flex flex-col items-center gap-1.5 transition">
+        <span class="text-lg">💬</span>
+        <span id="labelOth">Others</span>
+      </button>
     </div>
-  </div>
+
+    <!-- Quick Preset Buttons -->
+    <div class="space-y-2">
+      <label id="quickSelectLabel" class="text-xs uppercase tracking-wider text-slate-400 font-bold mono">Quick Alert Templates</label>
+      <div id="presetsList" class="grid grid-cols-1 gap-2"></div>
+    </div>
+
+    <!-- Message Customization Box -->
+    <div class="space-y-2">
+      <label id="customMsgLabel" class="text-xs uppercase tracking-wider text-slate-400 font-bold mono">Details to Ping</label>
+      <textarea id="customMsg" rows="3" class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition" placeholder="Write message..."></textarea>
+    </div>
+
+    <!-- GPS Location Checkbox -->
+    <div class="p-3.5 bg-slate-900/70 border border-slate-800 rounded-2xl flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="text-emerald-400 text-base">📍</span>
+        <div>
+          <div id="gpsLabel" class="text-xs font-bold text-slate-200">Include My Current GPS Location</div>
+          <div id="gpsStatus" class="text-[10px] text-slate-400">Helps the owner locate their item immediately</div>
+        </div>
+      </div>
+      <input type="checkbox" id="gpsToggle" checked class="w-4 h-4 accent-emerald-500 rounded">
+    </div>
+
+    <!-- Submit Alert Button -->
+    <button id="sendBtn" onclick="submitAlert()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-extrabold text-base tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition">
+      SEND INSTANT PING
+    </button>
+  </main>
+
+  <!-- 180s Cooldown / Status Screen -->
+  <section id="cooldownScreen" class="hidden max-w-md mx-auto w-full p-6 text-center space-y-6">
+    <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+      <div class="text-emerald-400 font-extrabold text-lg" id="alertSentTitle">✓ Alert Sent to Owner!</div>
+      <div class="relative w-28 h-28 mx-auto flex items-center justify-center">
+        <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+          <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+          <path id="timerCircle" class="text-emerald-400 transition-all duration-1000" stroke-dasharray="100, 100" stroke-width="3.2" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+        </svg>
+        <span id="timerVal" class="absolute mono font-bold text-2xl text-white">03:00</span>
+      </div>
+      <p id="cooldownNotice" class="text-xs text-slate-400">Anti-spam pause enabled. The owner has received your WhatsApp alert and will reply shortly.</p>
+    </div>
+
+    <!-- WhatsApp Owner Reply Pop-up Simulation -->
+    <div id="replyPopup" class="hidden bg-gradient-to-r from-teal-500/20 to-emerald-500/20 border border-emerald-500/50 p-4 rounded-2xl text-left animate-bounce">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-xs font-bold uppercase mono text-emerald-400" id="ownerReplyHeader">Owner Response</span>
+      </div>
+      <div id="ownerMsg" class="text-sm font-semibold text-white">"Thank you! I am on my way, please wait 2 minutes."</div>
+    </div>
+
+    <!-- Share PingMe -->
+    <button onclick="sharePingMe()" class="w-full py-3.5 bg-slate-800/90 border border-slate-700 rounded-2xl font-bold text-xs uppercase tracking-wider text-slate-200 hover:bg-slate-700 transition">
+      🔗 Share PingMe With Friends
+    </button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="max-w-md mx-auto w-full py-6 px-4 text-center">
+    <div class="text-[11px] text-slate-400 mono">
+      Protected by <span class="font-bold text-emerald-400">PingMe</span> • All Rights Reserved
+    </div>
+  </footer>
 
   <script>
-    let currentLang = 'en';
-    let selectedIssue = 'Vehicle Alert / Parking';
+    // Paste your deployed Google Apps Script URL here:
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwg8Cc_eLEHlMQgfWyA6Dl5JhUUwBi4OQzuzHA0IlSbewUrVUsh0dQC6833cvGZ3qydpw/exec';
 
-    const translations = {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tagId = urlParams.get('id') || 'PING-DEMO';
+    document.getElementById('tagDisplay').innerText = 'ID: ' + tagId;
+
+    let currentLang = 'en';
+    let currentCat = 'vehicle';
+    let gpsCoords = { lat: null, lng: null };
+
+    const content = {
       en: {
-        tagline: "One Scan. Instant Alert.",
-        tagLabel: "Item / Vehicle Tag",
-        issueTitle: "Select Option",
-        noteTitle: "Type Details / Message",
-        notePlaceholder: "Type your message or details here...",
-        btnSend: "Send Instant Alert",
-        btnSending: "Transmitting Alert...",
-        secureNote: "Privacy Shield Enabled • No personal numbers revealed"
+        tagline: "Scan • Ping • Connect",
+        vehicle: "Vehicle", luggage: "Luggage", others: "Others",
+        quick: "Quick Alert Templates", details: "Details to Ping",
+        gps: "Include My Current GPS Location",
+        btn: "SEND INSTANT PING",
+        sent: "✓ Alert Sent to Owner!",
+        wait: "Anti-spam pause enabled. The owner has received your WhatsApp alert and will reply shortly.",
+        replyTitle: "Owner Response",
+        presets: {
+          vehicle: [
+            "Your car/bike is blocking another vehicle",
+            "Vehicle headlight/interior light is left ON",
+            "Flat tyre / Air pressure very low",
+            "Vehicle parked in a tow-away / restricted zone"
+          ],
+          luggage: [
+            "Found your keys. Safe with me here",
+            "Found your bag/luggage. Please contact",
+            "Item left behind at the counter"
+          ],
+          others: [
+            "Courier delivery package arrived",
+            "Urgent: Please call or check your phone",
+            "Visitor waiting for you at the entrance"
+          ]
+        }
       },
       ta: {
-        tagline: "ஒரு ஸ்கேன். உடனடி எச்சரிக்கை.",
-        tagLabel: "பொருளின் / வாகன டேக் எண்",
-        issueTitle: "விருப்பத்தைத் தேர்வுசெய்க",
-        noteTitle: "செய்தி / குறிப்பை உள்ளிடுக",
-        notePlaceholder: "உங்கள் செய்தியை இங்கே தட்டச்சு செய்யவும்...",
-        btnSend: "உடனடி எச்சரிக்கை அனுப்புக",
-        btnSending: "எச்சரிக்கை அனுப்பப்படுகிறது...",
-        secureNote: "பாதுகாப்பானது • தொடர்பு எண்கள் யாருக்கும் பகிரப்படாது"
+        tagline: "ஸ்கேன் • பிங் • தொடர்பு",
+        vehicle: "வாகனம்", luggage: "பொருட்கள்", others: "மற்றவை",
+        quick: "உடனடி தகவல் மாதிரிகள்", details: "அனுப்ப வேண்டிய தகவல்",
+        gps: "எனது தற்போதைய GPS இருப்பிடத்தை இணைக்கவும்",
+        btn: "உடனே தகவல் அனுப்பு",
+        sent: "✓ தகவல் உரிமையாளருக்கு சென்றது!",
+        wait: "அடுத்த தகவல் அனுப்ப 3 நிமிடங்கள் காத்திருக்கவும். உரிமையாளர் பதிலளிப்பார்.",
+        replyTitle: "உரிமையாளரின் பதில்",
+        presets: {
+          vehicle: [
+            "உங்கள் வாகனம் வழியை மறித்து நிற்கிறது",
+            "வாகன விளக்கு (Light) அணையாமல் எரிகிறது",
+            "வாகன டயர் பஞ்சர் ஆகியுள்ளது",
+            "நோ-பார்க்கிங் பகுதியில் நிறுத்தப்பட்டுள்ளது"
+          ],
+          luggage: [
+            "உங்கள் சாவி கிடைத்துள்ளது, என்னிடம் உள்ளது",
+            "உங்கள் பை/பொருட்கள் கிடைத்துள்ளது",
+            "பொருள் கவுண்டரில் தவறவிடப்பட்டுள்ளது"
+          ],
+          others: [
+            "கொரியர் பார்சல் வந்துள்ளது",
+            "அவசரம்: தயவுசெய்து அழைக்கவும்",
+            "பார்வையாளர் உங்களுக்காக காத்திருக்கிறார்"
+          ]
+        }
       }
     };
 
-    function setLanguage(lang) {
+    // Splash dismiss
+    setTimeout(() => {
+      const splash = document.getElementById('splash');
+      splash.classList.add('opacity-0', 'pointer-events-none');
+    }, 2000);
+
+    // Initial check for Active status
+    async function checkTagStatus() {
+      if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') return;
+      try {
+        const res = await fetch(`${SCRIPT_URL}?id=${tagId}`);
+        const data = await res.json();
+        if (data.success && data.status && data.status.toLowerCase() !== 'active') {
+          document.getElementById('appForm').classList.add('hidden');
+          document.getElementById('inactiveScreen').classList.remove('hidden');
+        }
+      } catch (e) {
+        console.error("Status check failed", e);
+      }
+    }
+    checkTagStatus();
+
+    function switchLang(lang) {
       currentLang = lang;
-      document.getElementById('btnEn').classList.toggle('active', lang === 'en');
-      document.getElementById('btnTa').classList.toggle('active', lang === 'ta');
+      document.getElementById('langEn').className = lang === 'en' ? 'px-3 py-1 text-xs font-bold rounded-xl bg-emerald-500 text-slate-950 transition-all' : 'px-3 py-1 text-xs font-bold rounded-xl text-slate-400 transition-all';
+      document.getElementById('langTa').className = lang === 'ta' ? 'px-3 py-1 text-xs font-bold rounded-xl bg-emerald-500 text-slate-950 transition-all' : 'px-3 py-1 text-xs font-bold rounded-xl text-slate-400 transition-all';
+      
+      const c = content[lang];
+      document.getElementById('labelVeh').innerText = c.vehicle;
+      document.getElementById('labelLug').innerText = c.luggage;
+      document.getElementById('labelOth').innerText = c.others;
+      document.getElementById('quickSelectLabel').innerText = c.quick;
+      document.getElementById('customMsgLabel').innerText = c.details;
+      document.getElementById('gpsLabel').innerText = c.gps;
+      document.getElementById('sendBtn').innerText = c.btn;
+      document.getElementById('alertSentTitle').innerText = c.sent;
+      document.getElementById('cooldownNotice').innerText = c.wait;
+      document.getElementById('ownerReplyHeader').innerText = c.replyTitle;
+      renderPresets();
+    }
 
-      const t = translations[lang];
-      document.getElementById('subTagline').innerText = t.tagline;
-      document.getElementById('lblTag').innerText = t.tagLabel;
-      document.getElementById('lblIssueTitle').innerText = t.issueTitle;
-      document.getElementById('lblNoteTitle').innerText = t.noteTitle;
-      document.getElementById('customNote').placeholder = t.notePlaceholder;
-      document.getElementById('btnText').innerText = t.btnSend;
-      document.getElementById('lblSecure').innerText = t.secureNote;
+    function setCategory(cat) {
+      currentCat = cat;
+      ['vehicle', 'luggage', 'others'].forEach(c => {
+        const el = document.getElementById('tab-' + c);
+        if (c === cat) {
+          el.className = "py-3 px-2 rounded-2xl border bg-emerald-500/15 border-emerald-500/50 text-emerald-300 text-xs font-bold flex flex-col items-center gap-1.5 transition";
+        } else {
+          el.className = "py-3 px-2 rounded-2xl border bg-slate-800/60 border-slate-700 text-slate-400 text-xs font-bold flex flex-col items-center gap-1.5 transition";
+        }
+      });
+      renderPresets();
+    }
 
-      document.querySelectorAll('.issue-text').forEach(el => {
-        el.innerText = el.getAttribute(`data-${lang}`);
+    function renderPresets() {
+      const container = document.getElementById('presetsList');
+      container.innerHTML = '';
+      const list = content[currentLang].presets[currentCat] || [];
+      list.forEach(txt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = "w-full text-left text-xs bg-slate-900/60 hover:bg-slate-800 border border-slate-700/80 p-3 rounded-xl text-slate-200 transition";
+        btn.innerText = txt;
+        btn.onclick = () => { document.getElementById('customMsg').value = txt; };
+        container.appendChild(btn);
       });
     }
 
-    function chooseIssue(card, issueValue) {
-      document.querySelectorAll('.issue-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedIssue = issueValue;
-      if (issueValue === 'Custom Message') {
-        document.getElementById('customNote').focus();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { gpsCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+        () => { document.getElementById('gpsStatus').innerText = "Location access denied or unavailable"; }
+      );
+    }
+
+    async function submitAlert() {
+      const message = document.getElementById('customMsg').value.trim();
+      if (!message) {
+        alert(currentLang === 'en' ? 'Please select or type a message.' : 'தயவுசெய்து ஒரு தகவலை தேர்வுசெய்யவும் அல்லது உள்ளிடவும்.');
+        return;
       }
+
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.innerText = "SENDING...";
+      sendBtn.disabled = true;
+
+      const includeGps = document.getElementById('gpsToggle').checked;
+      const payload = {
+        qrId: tagId,
+        category: currentCat,
+        message: message,
+        lat: includeGps ? gpsCoords.lat : null,
+        lng: includeGps ? gpsCoords.lng : null
+      };
+
+      try {
+        if (SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+          const res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          const result = await res.json();
+          if (result.code === 'INACTIVE') {
+            document.getElementById('appForm').classList.add('hidden');
+            document.getElementById('inactiveScreen').classList.remove('hidden');
+            return;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      document.getElementById('appForm').classList.add('hidden');
+      document.getElementById('cooldownScreen').classList.remove('hidden');
+      startCooldown(180);
     }
 
-    function getQueryParam(p) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(p) || '';
+    function startCooldown(seconds) {
+      let remaining = seconds;
+      const total = seconds;
+      const timerVal = document.getElementById('timerVal');
+      const circle = document.getElementById('timerCircle');
+
+      const interval = setInterval(() => {
+        remaining--;
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        timerVal.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        
+        const offset = ((total - remaining) / total) * 100;
+        circle.setAttribute('stroke-dasharray', `${100 - offset}, 100`);
+
+        // Simulated owner reply at 15s mark
+        if (remaining === total - 15) {
+          document.getElementById('replyPopup').classList.remove('hidden');
+        }
+
+        if (remaining <= 0) {
+          clearInterval(interval);
+          location.reload();
+        }
+      }, 1000);
     }
 
-    const tagId = getQueryParam('id') || 'VP-1001';
-    document.getElementById('displayTag').innerText = tagId;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const splash = document.getElementById('splashScreen');
-        splash.style.opacity = '0';
-        splash.style.visibility = 'hidden';
-        document.getElementById('mainContainer').classList.add('ready');
-      }, 2000);
-    });
-
-    function handleSend(event) {
-      event.preventDefault();
-      const note = document.getElementById('customNote').value;
-      const submitBtn = document.getElementById('submitBtn');
-      const btnText = document.getElementById('btnText');
-
-      submitBtn.disabled = true;
-      btnText.innerText = translations[currentLang].btnSending;
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          function(pos) {
-            submitData(tagId, selectedIssue, note, pos.coords.latitude, pos.coords.longitude);
-          },
-          function(err) {
-            submitData(tagId, selectedIssue, note, '', '');
-          },
-          { timeout: 6000 }
-        );
+    function sharePingMe() {
+      const shareData = {
+        title: 'PingMe - Smart QR Alerts',
+        text: 'Protect your vehicle and luggage with instant WhatsApp and Email alerts using PingMe!',
+        url: window.location.origin + window.location.pathname
+      };
+      if (navigator.share) {
+        navigator.share(shareData).catch(() => {});
       } else {
-        submitData(tagId, selectedIssue, note, '', '');
+        navigator.clipboard.writeText(shareData.url);
+        alert('PingMe link copied to clipboard!');
       }
     }
 
-    function submitData(tag, issue, note, lat, lng) {
-      // PASTE YOUR REAL APPS SCRIPT /exec URL IN PLACE OF THE SCRIPT URL BELOW:
-      const defaultScriptURL = "https://script.google.com/macros/s/AKfycbx71ctmZpfyxrq49kPWXqKhA_6rPTaOb5EXZ19Nub8P-nAx4ycix01vtWRvuLiFJ5Nt/exec";
-      
-      const scriptURL = getQueryParam('script') || defaultScriptURL;
-      const finalUrl = `${scriptURL}?id=${encodeURIComponent(tag)}&issue=${encodeURIComponent(issue)}&note=${encodeURIComponent(note)}&lat=${lat}&lng=${lng}`;
-      window.location.href = finalUrl;
-    }
+    setCategory('vehicle');
   </script>
 </body>
 </html>
