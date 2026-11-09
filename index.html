@@ -2,379 +2,1184 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>PingMe - One Scan. Instant Connection.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PingMe - Smart Tag Alert</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Mukta+Malar:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #080D18;
-      --card-bg: #151F30;
-      --border: #1E2D45;
-      --teal: #20D3A7;
-      --teal-hover: #17B890;
-      --white: #FFFFFF;
-      --muted: #8E9BAE;
-      --danger: #EF4444;
+      --primary-blue: #0056D2;
+      --primary-orange: #FF5E00;
+      --brand-gradient: linear-gradient(135deg, #0056D2 0%, #0077FF 40%, #FF5E00 100%);
+      --bg-page: #F4F7FC;
+      --card-white: #FFFFFF;
+      --text-main: #1D2939;
+      --text-muted: #667085;
+      --border-soft: #E4E7EC;
+      --accent-green: #12B76A;
+      --accent-amber: #F79009;
+      --accent-red: #F04438;
+      --shadow-card: 0 12px 32px rgba(16, 24, 40, 0.08);
+      --shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.04);
+      --radius-app: 28px;
+      --radius-element: 16px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: var(--bg);
-      color: var(--white);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 16px;
+      padding: 12px;
     }
 
-    .container {
+    body.lang-ta {
+      font-family: 'Mukta Malar', 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .mobile-app-shell {
       width: 100%;
-      max-width: 420px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      max-width: 410px;
+      background: var(--card-white);
+      border-radius: var(--radius-app);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      border: 1px solid rgba(228, 231, 236, 0.85);
+      display: flex;
+      flex-direction: column;
+      min-height: 620px;
+      position: relative;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
+    /* TOP HEADER */
+    .app-topbar {
+      padding: 16px 18px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #F2F4F7;
+      background: #FFFFFF;
     }
 
-    .logo-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, var(--teal), #10B981);
-      color: #04101A;
-      font-weight: 900;
-      font-size: 14px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+    .btn-back-nav {
+      background: #F2F4F7;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 17px;
+      color: #344054;
+      transition: all 0.2s ease;
+    }
+    .btn-back-nav:active { transform: scale(0.92); }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    h2 {
+    .brand-wordmark h1 {
       font-size: 20px;
+      font-weight: 800;
+      color: #0052CC;
+      line-height: 1;
+      letter-spacing: -0.3px;
+    }
+    .brand-wordmark h1 span { color: #FF5E00; }
+    .brand-wordmark p {
+      font-size: 9.5px;
+      color: #667085;
       font-weight: 700;
+      margin-top: 2px;
+      letter-spacing: 0.2px;
+    }
+
+    .lang-switcher-pill {
+      background: #EFF6FF;
+      border: 1.5px solid #BFDBFE;
+      color: #0056D2;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 86, 210, 0.08);
+    }
+    .lang-switcher-pill:active { transform: scale(0.94); }
+
+    /* VIEW SCREENS */
+    .app-screen {
+      display: none;
+      flex-direction: column;
+      padding: 22px 18px;
+      flex: 1;
+      animation: pageIn 0.22s ease forwards;
+    }
+    .app-screen.active { display: flex; }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .screen-header-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #101828;
+      text-align: center;
+      line-height: 1.3;
       margin-bottom: 4px;
     }
-
-    p.subtitle {
+    .screen-header-desc {
       font-size: 13px;
-      color: var(--muted);
-    }
-
-    .vehicle-tag {
-      background: #0B1422;
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      padding: 12px;
+      color: var(--text-muted);
       text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .vehicle-tag .label {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    .vehicle-tag .value {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--teal);
-      margin-top: 2px;
-    }
-
-    .issue-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .btn-issue {
-      background: #0B1422;
-      border: 1px solid var(--border);
-      color: var(--white);
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 13.5px;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-issue:hover, .btn-issue.active {
-      border-color: var(--teal);
-      background: #112038;
-      color: var(--teal);
-    }
-
-    .custom-box {
       margin-bottom: 18px;
     }
 
-    textarea {
-      width: 100%;
-      height: 70px;
-      background: #0B1422;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      color: var(--white);
+    /* SCREEN 1: 3 CATEGORY CARDS */
+    .category-selection-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .glossy-category-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-element);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .glossy-category-card:hover, .glossy-category-card:active {
+      border-color: #0056D2;
+      background: #FAFCFF;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 86, 210, 0.12);
+    }
+
+    .category-3d-box {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .box-veh { background: #EFF8FF; border: 1px solid #D1E9FF; }
+    .box-keys { background: #FEF6EE; border: 1px solid #FEE4E2; }
+    .box-other { background: #FDF2FA; border: 1px solid #FCE7F6; }
+
+    .category-meta h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1D2939;
+      margin-bottom: 2px;
+    }
+    .category-meta p {
       font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* SCREEN 2: MESSAGE SELECTION */
+    .cat-selected-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius-element);
+      background: #F8FAFC;
+      border: 1px solid var(--border-soft);
+      margin-bottom: 16px;
+    }
+    .cat-selected-pill .icon { font-size: 24px; }
+    .cat-selected-pill h4 { font-size: 15px; font-weight: 700; }
+
+    .msg-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .msg-radio-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: var(--radius-element);
+      border: 1.5px solid var(--border-soft);
+      background: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .msg-radio-option.selected {
+      border-color: #0056D2;
+      background: #F5F9FF;
+    }
+    .msg-radio-option input[type="radio"] {
+      margin-top: 3px;
+      accent-color: #0056D2;
+      width: 17px;
+      height: 17px;
+    }
+    .msg-radio-option span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #344054;
+      line-height: 1.35;
+    }
+
+    .custom-textarea {
+      width: 100%;
+      height: 90px;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
       resize: none;
       outline: none;
     }
+    .custom-textarea:focus { border-color: #0056D2; }
 
-    textarea:focus {
-      border-color: var(--teal);
+    /* SCREEN 3: CONFIRMATION */
+    .summary-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-element);
+      padding: 14px 16px;
+      margin-bottom: 16px;
     }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed #E4E7EC;
+      font-size: 14px;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .sum-lbl { color: var(--text-muted); font-weight: 500; }
+    .sum-val { font-weight: 700; color: #1D2939; text-align: right; max-width: 65%; }
 
-    .btn-send {
-      width: 100%;
-      background: linear-gradient(135deg, var(--teal), #10B981);
-      border: none;
+    .urgency-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin: 8px 0 16px;
+    }
+    .urgency-pill {
+      padding: 10px 4px;
       border-radius: 12px;
-      color: #04101A;
-      font-size: 15px;
-      font-weight: 800;
-      padding: 14px;
+      border: 1.5px solid var(--border-soft);
+      background: #FFFFFF;
       cursor: pointer;
-    }
-
-    .btn-send:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* COUNTDOWN & SUCCESS SCREEN */
-    .screen {
-      display: none;
       text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .urgency-pill.active-normal {
+      border-color: var(--accent-green);
+      background: #ECFDF3;
+      color: var(--accent-green);
+    }
+    .urgency-pill.active-important {
+      border-color: var(--accent-amber);
+      background: #FEF0C7;
+      color: var(--accent-amber);
+    }
+    .urgency-pill.active-urgent {
+      border-color: var(--accent-red);
+      background: #FEE4E2;
+      color: var(--accent-red);
     }
 
-    .timer-circle {
-      width: 120px;
-      height: 120px;
-      border: 4px solid var(--teal);
-      border-radius: 50%;
+    .gps-attachment-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-element);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .gps-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #344054;
+    }
+    .gps-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: #ECFDF3;
+      color: var(--accent-green);
+    }
+
+    /* BUTTONS */
+    .btn-main {
+      background: var(--brand-gradient);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-element);
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0, 86, 210, 0.25);
+      transition: all 0.2s ease;
+      margin-top: auto;
+    }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: #344054;
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-element);
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* SCREEN 4: COUNTDOWN & CHARACTER */
+    .character-wrap {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 20px auto;
-      font-size: 28px;
+      margin: 10px 0 16px;
+    }
+    .animated-character-svg {
+      width: 135px;
+      height: 135px;
+      animation: floatChar 3s ease-in-out infinite;
+    }
+    @keyframes floatChar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .countdown-svg-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 4px auto 14px;
+    }
+    .countdown-svg {
+      transform: rotate(-90deg);
+      width: 140px;
+      height: 140px;
+    }
+    .circle-bg {
+      fill: none;
+      stroke: #EAECF0;
+      stroke-width: 9;
+    }
+    .circle-progress {
+      fill: none;
+      stroke: url(#timerGrad);
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .timer-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .time-digits {
+      font-size: 26px;
       font-weight: 800;
-      color: var(--teal);
+      color: #101828;
     }
-
-    .reply-box {
-      background: #0B1422;
-      border: 1px solid var(--teal);
-      border-radius: 12px;
-      padding: 16px;
-      margin: 20px 0;
-      text-align: left;
-    }
-
-    .reply-box .title {
+    .time-unit {
       font-size: 11px;
-      color: var(--teal);
-      font-weight: 700;
+      color: var(--text-muted);
+      font-weight: 600;
       text-transform: uppercase;
-      margin-bottom: 6px;
     }
 
-    .reply-box .text {
-      font-size: 16px;
+    /* SCREEN 5: RESPONSE CARD */
+    .owner-reply-box {
+      background: #FFFFFF;
+      border: 2px solid var(--accent-green);
+      border-radius: var(--radius-element);
+      padding: 18px;
+      margin: 16px 0;
+      box-shadow: 0 10px 24px rgba(18, 183, 106, 0.12);
+      text-align: center;
+    }
+    .reply-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ECFDF3;
+      color: var(--accent-green);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .reply-bubble {
+      background: #F0FDF4;
+      border: 1px solid #DCFAE6;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
       font-weight: 600;
-      color: #FFFFFF;
+      color: #054F31;
+      line-height: 1.45;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+    /* SCREEN 6: TIMEOUT */
+    .timeout-wrap {
+      text-align: center;
+      padding: 24px 10px;
+    }
+    .timeout-icon {
+      font-size: 54px;
+      margin-bottom: 14px;
+      animation: pulse 2s infinite;
+      display: inline-block;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* SCREEN 7: SHARE SCREEN */
+    .share-wrap {
+      text-align: center;
+      padding: 20px 10px;
+    }
+    .share-banner {
+      background: #F5F9FF;
+      border: 1.5px dashed #B2CCFF;
+      border-radius: var(--radius-element);
+      padding: 16px;
+      margin: 18px 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    
-    <!-- SCREEN 1: FORM -->
-    <div id="screenForm">
-      <div class="header">
-        <div class="logo-badge">PINGME TAG</div>
-        <h2>Notify Owner</h2>
-        <p class="subtitle">Quickly report an issue directly to the owner</p>
-      </div>
+<div class="mobile-app-shell">
 
-      <div class="vehicle-tag">
-        <div class="label">Registered Vehicle / Item</div>
-        <div class="value" id="displayEntity">Loading...</div>
-      </div>
+  <!-- APP TOPBAR -->
+  <header class="app-topbar">
+    <button class="btn-back-nav" id="backBtn" style="visibility:hidden;" onclick="navigateBack()">←</button>
 
-      <div class="issue-grid">
-        <button class="btn-issue" onclick="selectIssue(this, 'Vehicle is blocking parking')">🚗 Vehicle is blocking parking</button>
-        <button class="btn-issue" onclick="selectIssue(this, 'Lights are left on')">💡 Lights are left on</button>
-        <button class="btn-issue" onclick="selectIssue(this, 'Window / Door is open')">🪟 Window or door is open</button>
-        <button class="btn-issue" onclick="selectIssue(this, 'Emergency / Towing alert')">⚠️ Emergency / Urgent notice</button>
+    <div class="brand-cluster">
+      <!-- 3D Pin & Speech Bubble Badge -->
+      <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="26" fill="url(#brandBgGrad)"/>
+        <path d="M40 28H28V40" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <path d="M80 28H92V40" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <path d="M40 92H28V80" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <path d="M80 92H92V80" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="60" cy="58" r="24" fill="#FFFFFF"/>
+        <ellipse cx="60" cy="58" rx="36" ry="14" stroke="#FF7A00" stroke-width="5" transform="rotate(-20 60 58)"/>
+        <circle cx="52" cy="58" r="4" fill="#0056D2"/>
+        <circle cx="60" cy="58" r="4" fill="#0056D2"/>
+        <circle cx="68" cy="58" r="4" fill="#0056D2"/>
+        <defs>
+          <linearGradient id="brandBgGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0052CC"/>
+            <stop offset="0.6" stop-color="#7928CA"/>
+            <stop offset="1" stop-color="#FF5E00"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="brand-wordmark">
+        <h1>Ping<span>Me</span></h1>
+        <p>One Scan. Instant Connection.</p>
       </div>
-
-      <div class="custom-box">
-        <textarea id="customNote" placeholder="Additional remarks (Optional - only type if needed)"></textarea>
-      </div>
-
-      <button id="btnSubmit" class="btn-send" onclick="sendAlert()">⚡ SEND INSTANT ALERT</button>
     </div>
 
-    <!-- SCREEN 2: LIVE COUNTDOWN -->
-    <div id="screenTimer" class="screen">
-      <div class="logo-badge">ALERT SENT</div>
-      <h2 style="margin-top:10px;">Waiting for Owner Reply</h2>
-      <p class="subtitle">Please remain on this page while the owner responds via WhatsApp</p>
+    <button class="lang-switcher-pill" onclick="switchLanguage()">
+      <span>🌐</span>
+      <span id="langText">தமிழ்</span>
+    </button>
+  </header>
 
-      <div class="timer-circle" id="countdownTimer">180s</div>
+  <!-- SCREEN 1: CATEGORY SELECTION -->
+  <section class="app-screen active" id="scr1">
+    <h2 class="screen-header-title" data-i18n="s1_title">How can we help you today?</h2>
+    <p class="screen-header-desc" data-i18n="s1_sub">Select an alert type to notify the owner</p>
 
-      <p style="font-size:12px; color:var(--muted);">Listening for live WhatsApp confirmation...</p>
-    </div>
-
-    <!-- SCREEN 3: OWNER REPLIED -->
-    <div id="screenReplied" class="screen">
-      <div class="logo-badge" style="background:#20D3A7;">RESPONSE RECEIVED</div>
-      <h2 style="margin-top:12px;">Owner Replied!</h2>
-
-      <div class="reply-box">
-        <div class="title">Message from owner:</div>
-        <div class="text" id="ownerReplyMsg">"I am coming down in 2 minutes."</div>
+    <div class="category-selection-stack">
+      <!-- Vehicle Alert -->
+      <div class="glossy-category-card" onclick="chooseCategory('VEHICLE')">
+        <div class="category-3d-box box-veh">🚗</div>
+        <div class="category-meta">
+          <h3 data-i18n="cat_veh_h">Vehicle Alert</h3>
+          <p data-i18n="cat_veh_p">Parking / Vehicle Issue</p>
+        </div>
       </div>
 
-      <p class="subtitle" style="margin-bottom:16px;">Thank you for your courteous patience.</p>
-      <div style="font-size:11px; color:var(--muted);">PingMe • மகிழ்வித்து மகிழ்!</div>
+      <!-- Keys & Luggage -->
+      <div class="glossy-category-card" onclick="chooseCategory('KEYS')">
+        <div class="category-3d-box box-keys">🔑</div>
+        <div class="category-meta">
+          <h3 data-i18n="cat_key_h">Keys & Luggage</h3>
+          <p data-i18n="cat_key_p">Lost / Found Items</p>
+        </div>
+      </div>
+
+      <!-- Other Assistance -->
+      <div class="glossy-category-card" onclick="chooseCategory('OTHER')">
+        <div class="category-3d-box box-other">📦</div>
+        <div class="category-meta">
+          <h3 data-i18n="cat_oth_h">Other Assistance</h3>
+          <p data-i18n="cat_oth_p">Delivery / Courier / General</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: MESSAGE TEMPLATES -->
+  <section class="app-screen" id="scr2">
+    <div class="cat-selected-pill">
+      <span class="icon" id="scr2Icon">🚗</span>
+      <div>
+        <h4 id="scr2Title">Vehicle Alert</h4>
+        <p style="font-size:12px;color:#667085;">One Scan. Instant Connection.</p>
+      </div>
     </div>
 
-  </div>
+    <h2 class="screen-header-title" style="text-align:left;font-size:17px;" data-i18n="s2_title">Select a message</h2>
+    <p class="screen-header-desc" style="text-align:left;margin-bottom:12px;" data-i18n="s2_sub">Choose a prefilled message or write your own</p>
 
-  <script>
-    // Set your Google Apps Script Web App /exec URL here
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzfqE7Mlk77lyp7n3juI7n292z5FK3MjE0SS19cawZDhyQ6yj5kReMNuL81DzBGy-O/exec";
+    <div class="msg-radio-group" id="templateList"></div>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const tagId = urlParams.get('tag') || "PM-CUST-1001";
-    let selectedReason = "Vehicle is blocking parking";
-    let activeSessionId = "";
-    let pollInterval = null;
-    let timerInterval = null;
-    let timeLeft = 180;
-    let userLocationLink = "";
+    <textarea class="custom-textarea" id="customInput" placeholder="Type your message here..."></textarea>
 
-    window.onload = function() {
-      // 1. Fetch Tag Info
-      fetch(SCRIPT_URL + "?action=getCustomer&tag=" + encodeURIComponent(tagId))
-        .then(r => r.json())
-        .then(res => {
-          if (res.success) {
-            document.getElementById('displayEntity').innerText = res.vehicleNumber || res.name || tagId;
-          } else {
-            document.getElementById('displayEntity').innerText = tagId;
-          }
-        })
-        .catch(() => {
-          document.getElementById('displayEntity').innerText = tagId;
-        });
+    <button class="btn-main" onclick="goToStep3()" style="margin-top:20px;">
+      <span data-i18n="btn_next">Next →</span>
+    </button>
+  </section>
 
-      // 2. Fetch Scanner GPS (if authorized)
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            userLocationLink = "https://maps.google.com/?q=" + pos.coords.latitude + "," + pos.coords.longitude;
-          },
-          err => { console.warn("GPS skipped:", err.message); },
-          { timeout: 7000 }
-        );
+  <!-- SCREEN 3: CONFIRM & SEND -->
+  <section class="app-screen" id="scr3">
+    <h2 class="screen-header-title" data-i18n="s3_title">Confirm & Send</h2>
+    <p class="screen-header-desc" data-i18n="s3_sub">Review your alert details before sending</p>
+
+    <div class="summary-box">
+      <div class="summary-row">
+        <span class="sum-lbl">🚗 <span data-i18n="lbl_cat">Category</span>:</span>
+        <span class="sum-val" id="sumCat">Vehicle Alert</span>
+      </div>
+      <div class="summary-row">
+        <span class="sum-lbl">💬 <span data-i18n="lbl_msg">Message</span>:</span>
+        <span class="sum-val" id="sumMsg">Vehicle is blocking my way</span>
+      </div>
+    </div>
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:#344054;" data-i18n="lbl_urgency">Urgency Level:</div>
+    <div class="urgency-grid">
+      <div class="urgency-pill active-normal" id="urgNorm" onclick="selectUrgency('Normal')">
+        <span>🟢</span>
+        <span data-i18n="urg_norm">Normal</span>
+      </div>
+      <div class="urgency-pill" id="urgImp" onclick="selectUrgency('Important')">
+        <span>🟡</span>
+        <span data-i18n="urg_imp">Important</span>
+      </div>
+      <div class="urgency-pill" id="urgUrg" onclick="selectUrgency('Urgent')">
+        <span>🔴</span>
+        <span data-i18n="urg_urg">Urgent</span>
+      </div>
+    </div>
+
+    <div class="gps-attachment-card">
+      <div class="gps-text">
+        <span>📍</span>
+        <span id="gpsLabel" data-i18n="gps_loc">Location will be attached automatically</span>
+      </div>
+      <span class="gps-badge" id="gpsBadge">Auto-Detect</span>
+    </div>
+
+    <button class="btn-main" id="submitAlertBtn" onclick="sendAlertToServer()">
+      <span data-i18n="btn_send_alert">🚀 Submit Alert</span>
+    </button>
+  </section>
+
+  <!-- SCREEN 4: WAITING & 180s TIMER -->
+  <section class="app-screen" id="scr4">
+    <div class="character-wrap">
+      <!-- 3D friendly assistant character -->
+      <svg class="animated-character-svg" viewBox="0 0 160 160" fill="none">
+        <circle cx="80" cy="80" r="75" fill="#EEF4FF"/>
+        <path d="M48 64C48 50 62 38 80 38C98 38 112 50 112 64C112 78 98 90 80 90C62 90 48 78 48 64Z" fill="#FFA500"/>
+        <path d="M40 50C40 50 60 30 100 35C120 38 122 52 122 52L40 50Z" fill="#0052CC"/>
+        <circle cx="70" cy="65" r="5" fill="#1D2939"/>
+        <circle cx="90" cy="65" r="5" fill="#1D2939"/>
+        <path d="M72 78Q80 85 88 78" stroke="#1D2939" stroke-width="3" stroke-linecap="round"/>
+        <rect x="55" y="92" width="50" height="55" rx="14" fill="#0052CC"/>
+        <path d="M35 105C35 95 55 95 55 95L50 135" stroke="#FFA500" stroke-width="8" stroke-linecap="round"/>
+        <path d="M125 105C125 95 105 95 105 95L110 120" stroke="#FFA500" stroke-width="8" stroke-linecap="round"/>
+        <rect x="105" y="112" width="16" height="24" rx="3" fill="#1D2939"/>
+        <circle cx="113" cy="120" r="2" fill="#00D26A"/>
+      </svg>
+    </div>
+
+    <h2 class="screen-header-title" style="color:var(--primary-blue);" data-i18n="s4_title">Your alert has been sent!</h2>
+    <p class="screen-header-desc" style="margin-bottom:10px;" data-i18n="s4_sub">Waiting for the owner to respond...</p>
+
+    <!-- Circular Progress SVG -->
+    <div class="countdown-svg-wrap">
+      <svg class="countdown-svg">
+        <defs>
+          <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0052CC"/>
+            <stop offset="100%" stop-color="#FF5E00"/>
+          </linearGradient>
+        </defs>
+        <circle class="circle-bg" cx="70" cy="70" r="65"/>
+        <circle class="circle-progress" id="timerRing" cx="70" cy="70" r="65"/>
+      </svg>
+      <div class="timer-overlay">
+        <div class="time-digits" id="timerClock">03:00</div>
+        <div class="time-unit" data-i18n="s4_unit">Remaining</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 5: REAL-TIME RESPONSE -->
+  <section class="app-screen" id="scr5">
+    <div style="text-align:center;margin:8px 0 14px;">
+      <div style="font-size:46px;">✅</div>
+      <h2 class="screen-header-title" data-i18n="s5_title">Owner's Response</h2>
+      <p class="screen-header-desc" data-i18n="s5_sub">Direct message from the registered owner</p>
+    </div>
+
+    <div class="owner-reply-box">
+      <div class="reply-tag">
+        <span>✓</span> <span data-i18n="s5_received">Response received at</span> <span id="replyTime">02:17 PM</span>
+      </div>
+      <div class="reply-bubble" id="replyBody">
+        "Thank you for informing me. I'll check immediately."
+      </div>
+      <p style="font-size:12px;color:#667085;font-weight:500;" data-i18n="s5_verified">Verified WhatsApp Reply via PingMe</p>
+    </div>
+
+    <button class="btn-main" onclick="goToStep7()">
+      <span data-i18n="btn_continue">Continue →</span>
+    </button>
+  </section>
+
+  <!-- SCREEN 6: TIMEOUT -->
+  <section class="app-screen" id="scr6">
+    <div class="timeout-wrap">
+      <div class="timeout-icon">⏳</div>
+      <h2 class="screen-header-title" data-i18n="s6_title">The waiting time is over.</h2>
+      <p class="screen-header-desc" style="margin-top:8px;" data-i18n="s6_sub">
+        Please try another way to contact the owner if required.
+      </p>
+    </div>
+
+    <button class="btn-main" onclick="goToStep7()">
+      <span data-i18n="btn_continue">Continue →</span>
+    </button>
+  </section>
+
+  <!-- SCREEN 7: FINAL & SHARE -->
+  <section class="app-screen" id="scr7">
+    <div class="share-wrap">
+      <h1 style="font-size:27px;font-weight:800;color:#0052CC;margin-bottom:2px;">That's Ping<span style="color:#FF5E00;">Me!</span></h1>
+      <p style="font-size:13.5px;color:var(--primary-blue);font-weight:700;">One Scan. Instant Connection.</p>
+
+      <div class="share-banner">
+        <h3 style="font-size:16px;font-weight:700;color:#1D2939;margin-bottom:4px;" data-i18n="s7_enjoy">Enjoying PingMe?</h3>
+        <p style="font-size:13px;color:#667085;" data-i18n="s7_sub">Share it with your friends and family!</p>
+      </div>
+
+      <button class="btn-main" onclick="sharePingMe()">
+        <span>🔗</span> <span data-i18n="btn_share">Share PingMe</span>
+      </button>
+
+      <button class="btn-outline" onclick="completeSession()">
+        <span>✓</span> <span data-i18n="btn_done">Done</span>
+      </button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // ------------------- BACKEND CONNECTION CONFIG -------------------
+  // Paste your Apps Script Web App URL ending in /exec below:
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzfqE7Mlk77lyp7n3juI7n292z5FK3MjE0SS19cawZDhyQ6yj5kReMNuL81DzBGy-O/exec";
+
+  // ------------------- BILINGUAL TRANSLATION DATA -------------------
+  const I18N = {
+    en: {
+      s1_title: "How can we help you today?",
+      s1_sub: "Select an alert type to notify the owner",
+      cat_veh_h: "Vehicle Alert",
+      cat_veh_p: "Parking / Vehicle Issue",
+      cat_key_h: "Keys & Luggage",
+      cat_key_p: "Lost / Found Items",
+      cat_oth_h: "Other Assistance",
+      cat_oth_p: "Delivery / Courier / General",
+      s2_title: "Select a message",
+      s2_sub: "Choose a prefilled message or write your own",
+      btn_next: "Next →",
+      s3_title: "Confirm & Send",
+      s3_sub: "Review your alert details before sending",
+      lbl_cat: "Category",
+      lbl_msg: "Message",
+      lbl_urgency: "Urgency Level:",
+      urg_norm: "Normal",
+      urg_imp: "Important",
+      urg_urg: "Urgent",
+      gps_loc: "Location attached automatically",
+      gps_denied: "Location permission denied",
+      btn_send_alert: "Submit Alert 🚀",
+      s4_title: "Your alert has been sent!",
+      s4_sub: "Waiting for the owner to respond...",
+      s4_unit: "Remaining",
+      s5_title: "Owner's Response",
+      s5_sub: "Direct message from the registered owner",
+      s5_received: "Response received at",
+      s5_verified: "Verified WhatsApp Reply via PingMe",
+      btn_continue: "Continue →",
+      s6_title: "The waiting time is over.",
+      s6_sub: "Please try another way to contact the owner if required.",
+      s7_enjoy: "Enjoying PingMe?",
+      s7_sub: "Share it with your friends and family!",
+      btn_share: "Share PingMe",
+      btn_done: "Done",
+      other_opt: "Other – Type your own message",
+      enter_custom_alert: "Please type your message"
+    },
+    ta: {
+      s1_title: "இன்று நாங்கள் உங்களுக்கு எவ்வாறு உதவலாம்?",
+      s1_sub: "உரிமையாளருக்கு தெரிவிக்க வகையைத் தேர்ந்தெடுக்கவும்",
+      cat_veh_h: "வாகன அறிவிப்பு",
+      cat_veh_p: "பார்க்கிங் / வாகன பிரச்சனை",
+      cat_key_h: "சாவி & உடமைகள்",
+      cat_key_p: "தொலைந்த / கண்டெடுக்கப்பட்டவை",
+      cat_oth_h: "இதர உதவிகள்",
+      cat_oth_p: "டெலிவரி / கூரியர் / பொதுவானவை",
+      s2_title: "செய்தியைத் தேர்ந்தெடுக்கவும்",
+      s2_sub: "ஒரு செய்தியை தேர்வு செய்யவும் அல்லது புதிதாக எழுதவும்",
+      btn_next: "அடுத்து →",
+      s3_title: "சரிபார்த்து அனுப்பவும்",
+      s3_sub: "அனுப்பும் முன் விவரங்களை சரிபார்க்கவும்",
+      lbl_cat: "வகை",
+      lbl_msg: "செய்தி",
+      lbl_urgency: "முக்கியத்துவ நிலை:",
+      urg_norm: "சாதாரண",
+      urg_imp: "முக்கியம்",
+      urg_urg: "அவசரம்",
+      gps_loc: "இருப்பிடம் இணைக்கப்பட்டது",
+      gps_denied: "இருப்பிட அனுமதி மறுக்கப்பட்டது",
+      btn_send_alert: "அறிவிப்பை அனுப்பவும் 🚀",
+      s4_title: "உங்கள் அறிவிப்பு அனுப்பப்பட்டது!",
+      s4_sub: "உரிமையாளரின் பதிலுக்காக காத்திருக்கிறது...",
+      s4_unit: "மீதமுள்ள நேரம்",
+      s5_title: "உரிமையாளரின் பதில்",
+      s5_sub: "உரிமையாளரிடமிருந்து நேரடியாக வந்த செய்தி",
+      s5_received: "பதில் வந்த நேரம்",
+      s5_verified: "வாட்ஸ்அப் வழியாக உறுதிப்படுத்தப்பட்ட பதில்",
+      btn_continue: "தொடரவும் →",
+      s6_title: "காத்திருக்கும் நேரம் முடிந்தது.",
+      s6_sub: "தேவைப்பட்டால் வேறு வழியில் உரிமையாளரை தொடர்பு கொள்ளவும்.",
+      s7_enjoy: "PingMe பிடித்திருக்கிறதா?",
+      s7_sub: "நண்பர்கள் மற்றும் குடும்பத்தினருடன் பகிருங்கள்!",
+      btn_share: "PingMe-ஐ பகிரவும்",
+      btn_done: "முடிந்தது",
+      other_opt: "மற்றவை – உங்கள் சொந்த செய்தியை தட்டச்சு செய்யவும்",
+      enter_custom_alert: "உங்கள் செய்தியை உள்ளிடவும்"
+    }
+  };
+
+  const CATEGORIES = {
+    VEHICLE: {
+      icon: "🚗",
+      titleEn: "Vehicle Alert",
+      titleTa: "வாகன அறிவிப்பு",
+      templatesEn: [
+        "Your vehicle is blocking my way.",
+        "Please check your vehicle.",
+        "There is an issue with your vehicle."
+      ],
+      templatesTa: [
+        "உங்கள் வாகனம் எனது வழியை மறைத்துள்ளது.",
+        "தயவுசெய்து உங்கள் வாகனத்தை சரிபார்க்கவும்.",
+        "உங்கள் வாகனத்தில் ஏதோ பிரச்சனை உள்ளது."
+      ]
+    },
+    KEYS: {
+      icon: "🔑",
+      titleEn: "Keys & Luggage",
+      titleTa: "சாவி & உடமைகள்",
+      templatesEn: [
+        "I found your lost item.",
+        "I have lost my keys or belongings.",
+        "Please contact me regarding a lost or found item."
+      ],
+      templatesTa: [
+        "உங்கள் தொலைந்த பொருள் என்னிடம் கிடைத்துள்ளது.",
+        "எனது சாவி அல்லது உடைமை தொலைந்துவிட்டது.",
+        "தொலைந்த அல்லது கிடைத்த பொருள் தொடர்பாக தொடர்பு கொள்ளவும்."
+      ]
+    },
+    OTHER: {
+      icon: "📦",
+      titleEn: "Other Assistance",
+      titleTa: "இதர உதவிகள்",
+      templatesEn: [
+        "Your parcel or courier has arrived.",
+        "Your food or medicine delivery is here.",
+        "Someone is waiting for you."
+      ],
+      templatesTa: [
+        "உங்கள் பார்சல் அல்லது கூரியர் வந்துள்ளது.",
+        "உங்கள் உணவு அல்லது மருந்து டெலிவரி வந்துள்ளது.",
+        "உங்களுக்காக ஒருவர் காத்திருக்கிறார்."
+      ]
+    }
+  };
+
+  // State Management
+  let currentLang = 'en';
+  let targetCustomerId = new URLSearchParams(window.location.search).get('id') || "PM-CUST-1001";
+  let chosenCategory = 'VEHICLE';
+  let chosenMessage = '';
+  let chosenUrgency = 'Normal';
+  let detectedGpsUrl = '';
+  let activeTimer = null;
+  let activePoll = null;
+  const TOTAL_COUNTDOWN = 180;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initGeolocation();
+    resumeWaitingSession();
+  });
+
+  function switchLanguage() {
+    currentLang = currentLang === 'en' ? 'ta' : 'en';
+    document.body.className = currentLang === 'ta' ? 'lang-ta' : '';
+    document.getElementById('langText').innerText = currentLang === 'en' ? 'தமிழ்' : 'English';
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.getAttribute('data-i18n');
+      if (I18N[currentLang][k]) el.innerText = I18N[currentLang][k];
+    });
+
+    if (document.getElementById('scr2').classList.contains('active')) {
+      populateTemplates();
+    }
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    const back = document.getElementById('backBtn');
+    back.style.visibility = (id === 'scr2' || id === 'scr3') ? 'visible' : 'hidden';
+  }
+
+  function navigateBack() {
+    if (document.getElementById('scr2').classList.contains('active')) showScreen('scr1');
+    else if (document.getElementById('scr3').classList.contains('active')) showScreen('scr2');
+  }
+
+  function chooseCategory(cat) {
+    chosenCategory = cat;
+    const meta = CATEGORIES[cat];
+    document.getElementById('scr2Icon').innerText = meta.icon;
+    document.getElementById('scr2Title').innerText = currentLang === 'ta' ? meta.titleTa : meta.titleEn;
+    populateTemplates();
+    showScreen('scr2');
+  }
+
+  function populateTemplates() {
+    const meta = CATEGORIES[chosenCategory];
+    const list = currentLang === 'ta' ? meta.templatesTa : meta.templatesEn;
+    const box = document.getElementById('templateList');
+    box.innerHTML = '';
+
+    list.forEach((t, i) => {
+      const checked = (i === 0);
+      if (checked) chosenMessage = t;
+      const lbl = document.createElement('label');
+      lbl.className = 'msg-radio-option' + (checked ? ' selected' : '');
+      lbl.innerHTML = `
+        <input type="radio" name="tpl" value="${encodeURIComponent(t)}" ${checked ? 'checked' : ''} onchange="handleRadio(this)">
+        <span>${t}</span>
+      `;
+      box.appendChild(lbl);
+    });
+
+    const otherLbl = document.createElement('label');
+    otherLbl.className = 'msg-radio-option';
+    otherLbl.innerHTML = `
+      <input type="radio" name="tpl" value="__OTHER__" onchange="handleRadio(this)">
+      <span>${I18N[currentLang].other_opt}</span>
+    `;
+    box.appendChild(otherLbl);
+
+    const txt = document.getElementById('customInput');
+    txt.style.display = 'none';
+    txt.value = '';
+  }
+
+  function handleRadio(r) {
+    document.querySelectorAll('.msg-radio-option').forEach(l => l.classList.remove('selected'));
+    r.parentElement.classList.add('selected');
+
+    const txt = document.getElementById('customInput');
+    if (r.value === '__OTHER__') {
+      txt.style.display = 'block';
+      txt.focus();
+      chosenMessage = '';
+    } else {
+      txt.style.display = 'none';
+      chosenMessage = decodeURIComponent(r.value);
+    }
+  }
+
+  function goToStep3() {
+    const txt = document.getElementById('customInput');
+    if (txt.style.display === 'block') {
+      const val = txt.value.trim();
+      if (!val) {
+        alert(I18N[currentLang].enter_custom_alert);
+        return;
       }
+      chosenMessage = val;
+    }
+
+    const meta = CATEGORIES[chosenCategory];
+    document.getElementById('sumCat').innerText = currentLang === 'ta' ? meta.titleTa : meta.titleEn;
+    document.getElementById('sumMsg').innerText = chosenMessage;
+    selectUrgency('Normal');
+    showScreen('scr3');
+  }
+
+  function selectUrgency(u) {
+    chosenUrgency = u;
+    document.getElementById('urgNorm').className = 'urgency-pill' + (u === 'Normal' ? ' active-normal' : '');
+    document.getElementById('urgImp').className = 'urgency-pill' + (u === 'Important' ? ' active-important' : '');
+    document.getElementById('urgUrg').className = 'urgency-pill' + (u === 'Urgent' ? ' active-urgent' : '');
+  }
+
+  function initGeolocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        detectedGpsUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        document.getElementById('gpsBadge').innerText = "✓ Attached";
+        document.getElementById('gpsBadge').style.background = "#ECFDF3";
+        document.getElementById('gpsBadge').style.color = "#12B76A";
+      },
+      err => {
+        document.getElementById('gpsLabel').innerText = I18N[currentLang].gps_denied;
+        document.getElementById('gpsBadge').innerText = "Optional";
+        document.getElementById('gpsBadge').style.background = "#F2F4F7";
+        document.getElementById('gpsBadge').style.color = "#667085";
+      },
+      { timeout: 7000, enableHighAccuracy: true }
+    );
+  }
+
+  function sendAlertToServer() {
+    const btn = document.getElementById('submitAlertBtn');
+    btn.disabled = true;
+    btn.innerText = "Sending Alert...";
+
+    const payload = {
+      action: "submitAlert",
+      customerId: targetCustomerId,
+      category: chosenCategory,
+      message: chosenMessage,
+      urgency: chosenUrgency,
+      locationUrl: detectedGpsUrl
     };
 
-    function selectIssue(btn, issue) {
-      document.querySelectorAll('.btn-issue').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedReason = issue;
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      btn.disabled = false;
+      btn.innerText = I18N[currentLang].btn_send_alert;
+
+      const now = Date.now();
+      localStorage.setItem('pingme_sess', JSON.stringify({
+        customerId: targetCustomerId,
+        timestamp: now
+      }));
+
+      runCountdown(now);
+      pollForOwnerReply(targetCustomerId);
+      showScreen('scr4');
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.innerText = I18N[currentLang].btn_send_alert;
+      alert("Submission failed. Check network connection.");
+    });
+  }
+
+  function resumeWaitingSession() {
+    const raw = localStorage.getItem('pingme_sess');
+    if (!raw) return;
+
+    try {
+      const obj = JSON.parse(raw);
+      const passed = Math.floor((Date.now() - obj.timestamp) / 1000);
+      if (passed < TOTAL_COUNTDOWN) {
+        runCountdown(obj.timestamp);
+        pollForOwnerReply(obj.customerId);
+        showScreen('scr4');
+      } else {
+        localStorage.removeItem('pingme_sess');
+      }
+    } catch(e) {}
+  }
+
+  function runCountdown(startTime) {
+    if (activeTimer) clearInterval(activeTimer);
+
+    const ring = document.getElementById('timerRing');
+    const clock = document.getElementById('timerClock');
+    const totalDash = 408;
+
+    function tick() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const left = Math.max(0, TOTAL_COUNTDOWN - elapsed);
+
+      const m = String(Math.floor(left / 60)).padStart(2, '0');
+      const s = String(left % 60).padStart(2, '0');
+      clock.innerText = `${m}:${s}`;
+
+      const frac = left / TOTAL_COUNTDOWN;
+      ring.style.strokeDashoffset = totalDash * (1 - frac);
+
+      if (left <= 0) {
+        clearInterval(activeTimer);
+        if (activePoll) clearInterval(activePoll);
+        localStorage.removeItem('pingme_sess');
+        showScreen('scr6');
+      }
     }
 
-    function sendAlert() {
-      const btn = document.getElementById('btnSubmit');
-      btn.disabled = true;
-      btn.innerText = "Transmitting Alert...";
+    tick();
+    activeTimer = setInterval(tick, 1000);
+  }
 
-      const customNote = document.getElementById('customNote').value.trim();
-
-      const payload = {
-        action: "sendAlert",
-        tagId: tagId,
-        category: selectedReason,
-        message: customNote, // Empty if user didn't type anything extra
-        locationLink: userLocationLink
-      };
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success && res.sessionId) {
-          activeSessionId = res.sessionId;
-          startLiveCountdown();
-        } else {
-          alert("Notice: " + (res.message || "Failed to notify owner."));
-          btn.disabled = false;
-          btn.innerText = "⚡ SEND INSTANT ALERT";
-        }
-      })
-      .catch(err => {
-        alert("Alert transmitted (network receipt delayed).");
-        startLiveCountdown();
-      });
-    }
-
-    function startLiveCountdown() {
-      document.getElementById('screenForm').style.display = "none";
-      document.getElementById('screenTimer').style.display = "block";
-
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('countdownTimer').innerText = timeLeft + "s";
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          clearInterval(pollInterval);
-          document.getElementById('countdownTimer').innerText = "0s";
-        }
-      }, 1000);
-
-      // Poll Apps Script every 3 seconds for Meta WhatsApp reply
-      pollInterval = setInterval(checkOwnerResponse, 3000);
-    }
-
-    function checkOwnerResponse() {
-      if (!activeSessionId) return;
-
-      fetch(SCRIPT_URL + "?action=checkSession&sessionId=" + encodeURIComponent(activeSessionId))
+  function pollForOwnerReply(custId) {
+    if (activePoll) clearInterval(activePoll);
+    activePoll = setInterval(() => {
+      fetch(`${SCRIPT_URL}?checkResponse=true&customerId=${encodeURIComponent(custId)}`)
         .then(r => r.json())
         .then(res => {
-          if (res.status === "REPLIED") {
-            clearInterval(timerInterval);
-            clearInterval(pollInterval);
+          if (res && res.hasResponse) {
+            clearInterval(activeTimer);
+            clearInterval(activePoll);
+            localStorage.removeItem('pingme_sess');
 
-            document.getElementById('screenTimer').style.display = "none";
-            document.getElementById('screenReplied').style.display = "block";
-            document.getElementById('ownerReplyMsg').innerText = '"' + (res.ownerReply || "Thank you, taking action now.") + '"';
+            document.getElementById('replyTime').innerText = res.responseTime || "Just now";
+            document.getElementById('replyBody').innerText = `"${res.response}"`;
+            showScreen('scr5');
           }
         })
-        .catch(e => console.log("Polling tick:", e));
+        .catch(() => {});
+    }, 3000);
+  }
+
+  function goToStep7() {
+    showScreen('scr7');
+  }
+
+  function sharePingMe() {
+    const promo = "https://milircrafts.github.io/pingme/";
+    const data = {
+      title: "PingMe - One Scan. Instant Connection.",
+      text: "Instant QR notification alert system!",
+      url: promo
+    };
+
+    if (navigator.share) {
+      navigator.share(data).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(promo);
+      alert("PingMe link copied: " + promo);
     }
-  </script>
+  }
+
+  function completeSession() {
+    localStorage.removeItem('pingme_sess');
+    showScreen('scr1');
+  }
+</script>
+
 </body>
 </html>
