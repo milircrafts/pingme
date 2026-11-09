@@ -768,7 +768,7 @@
 <script>
   // ------------------- BACKEND CONNECTION CONFIG -------------------
   // Paste your Apps Script Web App URL ending in /exec below:
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzfqE7Mlk77lyp7n3juI7n292z5FK3MjE0SS19cawZDhyQ6yj5kReMNuL81DzBGy-O/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKXOuYbxC8KJJRh18ZkTIh2rhF1wFFIS8fcWrmrnIOGiVfDWAioSG1eU5IUMS_R0kj/exec";
 
   // ------------------- BILINGUAL TRANSLATION DATA -------------------
   const I18N = {
@@ -1051,32 +1051,35 @@
     btn.disabled = true;
     btn.innerText = "Acquiring Location & Sending...";
 
+    // 1. Acquire GPS position if not yet resolved
     if (!detectedGpsUrl && navigator.geolocation) {
       try {
         const pos = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            timeout: 4000,
+            timeout: 5000,
             enableHighAccuracy: true
           });
         });
         detectedGpsUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-      } catch (e) {}
+      } catch (e) {
+        detectedGpsUrl = "Location not attached";
+      }
     }
 
-    const payload = {
-      action: "submitAlert",
-      customerId: targetCustomerId,
-      category: chosenCategory,
-      message: chosenMessage,
-      urgency: chosenUrgency,
-      locationUrl: detectedGpsUrl || "Location not attached"
-    };
+    // 2. Prepare payload as URL-Encoded Form (bypasses CORS preflight check)
+    const params = new URLSearchParams();
+    params.append("action", "submitAlert");
+    params.append("customerId", targetCustomerId);
+    params.append("category", chosenCategory);
+    params.append("message", chosenMessage);
+    params.append("urgency", chosenUrgency);
+    params.append("locationUrl", detectedGpsUrl || "Location not attached");
 
+    // 3. Dispatch to Google Apps Script
     fetch(SCRIPT_URL, {
       method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString()
     })
     .then(() => {
       btn.disabled = false;
@@ -1092,6 +1095,25 @@
       pollForOwnerReply(targetCustomerId);
       showScreen('scr4');
     })
+    .catch(() => {
+      // Fallback via GET parameter if POST is blocked
+      const fallbackUrl = `${SCRIPT_URL}?${params.toString()}`;
+      new Image().src = fallbackUrl;
+
+      btn.disabled = false;
+      btn.innerText = I18N[currentLang].btn_send_alert;
+
+      const now = Date.now();
+      localStorage.setItem('pingme_sess', JSON.stringify({
+        customerId: targetCustomerId,
+        timestamp: now
+      }));
+
+      runCountdown(now);
+      pollForOwnerReply(targetCustomerId);
+      showScreen('scr4');
+    });
+  }
     .catch(() => {
       btn.disabled = false;
       btn.innerText = I18N[currentLang].btn_send_alert;
