@@ -668,7 +668,6 @@
   <!-- SCREEN 4: WAITING & 180s TIMER -->
   <section class="app-screen" id="scr4">
     <div class="character-wrap">
-      <!-- 3D friendly assistant character -->
       <svg class="animated-character-svg" viewBox="0 0 160 160" fill="none">
         <circle cx="80" cy="80" r="75" fill="#EEF4FF"/>
         <path d="M48 64C48 50 62 38 80 38C98 38 112 50 112 64C112 78 98 90 80 90C62 90 48 78 48 64Z" fill="#FFA500"/>
@@ -687,7 +686,6 @@
     <h2 class="screen-header-title" style="color:var(--primary-blue);" data-i18n="s4_title">Your alert has been sent!</h2>
     <p class="screen-header-desc" style="margin-bottom:10px;" data-i18n="s4_sub">Waiting for the owner to respond...</p>
 
-    <!-- Circular Progress SVG -->
     <div class="countdown-svg-wrap">
       <svg class="countdown-svg">
         <defs>
@@ -770,7 +768,7 @@
 <script>
   // ------------------- BACKEND CONNECTION CONFIG -------------------
   // Paste your Apps Script Web App URL ending in /exec below:
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzfqE7Mlk77lyp7n3juI7n292z5FK3MjE0SS19cawZDhyQ6yj5kReMNuL81DzBGy-O/exec";
+  const SCRIPT_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
   // ------------------- BILINGUAL TRANSLATION DATA -------------------
   const I18N = {
@@ -1033,24 +1031,37 @@
     navigator.geolocation.getCurrentPosition(
       pos => {
         detectedGpsUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        document.getElementById('gpsBadge').innerText = "✓ Attached";
-        document.getElementById('gpsBadge').style.background = "#ECFDF3";
-        document.getElementById('gpsBadge').style.color = "#12B76A";
+        const badge = document.getElementById('gpsBadge');
+        badge.innerText = "✓ Attached";
+        badge.style.background = "#ECFDF3";
+        badge.style.color = "#12B76A";
       },
       err => {
-        document.getElementById('gpsLabel').innerText = I18N[currentLang].gps_denied;
-        document.getElementById('gpsBadge').innerText = "Optional";
-        document.getElementById('gpsBadge').style.background = "#F2F4F7";
-        document.getElementById('gpsBadge').style.color = "#667085";
+        const badge = document.getElementById('gpsBadge');
+        badge.innerText = "Denied";
+        badge.style.background = "#FEE4E2";
+        badge.style.color = "#D92D20";
       },
       { timeout: 7000, enableHighAccuracy: true }
     );
   }
 
-  function sendAlertToServer() {
+  async function sendAlertToServer() {
     const btn = document.getElementById('submitAlertBtn');
     btn.disabled = true;
-    btn.innerText = "Sending Alert...";
+    btn.innerText = "Acquiring Location & Sending...";
+
+    if (!detectedGpsUrl && navigator.geolocation) {
+      try {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 4000,
+            enableHighAccuracy: true
+          });
+        });
+        detectedGpsUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+      } catch (e) {}
+    }
 
     const payload = {
       action: "submitAlert",
@@ -1058,7 +1069,7 @@
       category: chosenCategory,
       message: chosenMessage,
       urgency: chosenUrgency,
-      locationUrl: detectedGpsUrl
+      locationUrl: detectedGpsUrl || "Location not attached"
     };
 
     fetch(SCRIPT_URL, {
