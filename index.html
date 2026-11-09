@@ -1059,6 +1059,33 @@
       `;
     }
 
+    // ROBUST GEOLOCATION HELPER (GPS + CELL/WIFI FALLBACK)
+    async function captureUserLocation() {
+      if (!navigator.geolocation) return "";
+      
+      const getPos = (highAccuracy, timeoutMs) => new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: highAccuracy,
+          timeout: timeoutMs,
+          maximumAge: 120000
+        });
+      });
+
+      try {
+        // First try high-accuracy GPS (4.5s max)
+        const pos = await getPos(true, 4500);
+        return `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+      } catch (err) {
+        try {
+          // Fallback to fast network/Wi-Fi positioning (3.5s)
+          const pos = await getPos(false, 3500);
+          return `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        } catch (fallbackErr) {
+          return "";
+        }
+      }
+    }
+
     async function handleAlertSubmit() {
       const customVal = document.getElementById("customMsg").value.trim();
       const message = customVal || selectedTemplateText;
@@ -1082,18 +1109,8 @@
       submitBtn.innerText = I18N[currentLang].sending;
 
       let locationLink = "";
-      if (document.getElementById("gpsCheck").checked && navigator.geolocation) {
-        try {
-          const pos = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              timeout: 7000,
-              enableHighAccuracy: true
-            });
-          });
-          locationLink = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        } catch (e) {
-          locationLink = "";
-        }
+      if (document.getElementById("gpsCheck").checked) {
+        locationLink = await captureUserLocation();
       }
 
       const payload = {
@@ -1195,7 +1212,6 @@
         const resp = await fetch(`${APPS_SCRIPT_URL}?action=checkStatus&sessionId=${encodeURIComponent(activeSessionId)}`);
         const res = await resp.json();
         
-        // Handles both RESPONDED and RESOLVED statuses
         if (res.status === "RESOLVED" || res.status === "RESPONDED" || res.hasResponse) {
           clearInterval(countdownInterval);
           clearInterval(pollInterval);
