@@ -63,7 +63,6 @@
       position: relative;
     }
 
-    /* TOP HEADER */
     .app-topbar {
       padding: 16px 18px 12px;
       display: flex;
@@ -127,7 +126,6 @@
     }
     .lang-switcher-pill:active { transform: scale(0.94); }
 
-    /* VIEW SCREENS */
     .app-screen {
       display: none;
       flex-direction: column;
@@ -357,7 +355,6 @@
       color: var(--accent-green);
     }
 
-    /* BUTTONS */
     .btn-main {
       background: var(--brand-gradient);
       color: #FFFFFF;
@@ -531,7 +528,6 @@
     <button class="btn-back-nav" id="backBtn" style="visibility:hidden;" onclick="navigateBack()">←</button>
 
     <div class="brand-cluster">
-      <!-- 3D Pin & Speech Bubble Badge -->
       <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="120" height="120" rx="26" fill="url(#brandBgGrad)"/>
         <path d="M40 28H28V40" stroke="white" stroke-width="7" stroke-linecap="round"/>
@@ -569,7 +565,6 @@
     <p class="screen-header-desc" data-i18n="s1_sub">Select an alert type to notify the owner</p>
 
     <div class="category-selection-stack">
-      <!-- Vehicle Alert -->
       <div class="glossy-category-card" onclick="chooseCategory('VEHICLE')">
         <div class="category-3d-box box-veh">🚗</div>
         <div class="category-meta">
@@ -578,7 +573,6 @@
         </div>
       </div>
 
-      <!-- Keys & Luggage -->
       <div class="glossy-category-card" onclick="chooseCategory('KEYS')">
         <div class="category-3d-box box-keys">🔑</div>
         <div class="category-meta">
@@ -587,7 +581,6 @@
         </div>
       </div>
 
-      <!-- Other Assistance -->
       <div class="glossy-category-card" onclick="chooseCategory('OTHER')">
         <div class="category-3d-box box-other">📦</div>
         <div class="category-meta">
@@ -947,6 +940,10 @@
   }
 
   function chooseCategory(cat) {
+    localStorage.removeItem('pingme_sess');
+    if (activeTimer) clearInterval(activeTimer);
+    if (activePoll) clearInterval(activePoll);
+
     chosenCategory = cat;
     const meta = CATEGORIES[cat];
     document.getElementById('scr2Icon').innerText = meta.icon;
@@ -966,19 +963,13 @@
       if (checked) chosenMessage = t;
       const lbl = document.createElement('label');
       lbl.className = 'msg-radio-option' + (checked ? ' selected' : '');
-      lbl.innerHTML = `
-        <input type="radio" name="tpl" value="${encodeURIComponent(t)}" ${checked ? 'checked' : ''} onchange="handleRadio(this)">
-        <span>${t}</span>
-      `;
+      lbl.innerHTML = '<input type="radio" name="tpl" value="' + encodeURIComponent(t) + '" ' + (checked ? 'checked' : '') + ' onchange="handleRadio(this)"><span>' + t + '</span>';
       box.appendChild(lbl);
     });
 
     const otherLbl = document.createElement('label');
     otherLbl.className = 'msg-radio-option';
-    otherLbl.innerHTML = `
-      <input type="radio" name="tpl" value="__OTHER__" onchange="handleRadio(this)">
-      <span>${I18N[currentLang].other_opt}</span>
-    `;
+    otherLbl.innerHTML = '<input type="radio" name="tpl" value="__OTHER__" onchange="handleRadio(this)"><span>' + I18N[currentLang].other_opt + '</span>';
     box.appendChild(otherLbl);
 
     const txt = document.getElementById('customInput');
@@ -1030,17 +1021,18 @@
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       pos => {
-        detectedGpsUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        detectedGpsUrl = 'https://maps.google.com/?q=' + pos.coords.latitude + ',' + pos.coords.longitude;
         const badge = document.getElementById('gpsBadge');
         badge.innerText = "✓ Attached";
         badge.style.background = "#ECFDF3";
         badge.style.color = "#12B76A";
       },
       err => {
+        document.getElementById('gpsLabel').innerText = I18N[currentLang].gps_denied;
         const badge = document.getElementById('gpsBadge');
-        badge.innerText = "Denied";
-        badge.style.background = "#FEE4E2";
-        badge.style.color = "#D92D20";
+        badge.innerText = "Optional";
+        badge.style.background = "#F2F4F7";
+        badge.style.color = "#667085";
       },
       { timeout: 7000, enableHighAccuracy: true }
     );
@@ -1051,22 +1043,20 @@
     btn.disabled = true;
     btn.innerText = "Acquiring Location & Sending...";
 
-    // 1. Acquire GPS position if not yet resolved
     if (!detectedGpsUrl && navigator.geolocation) {
       try {
         const pos = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            timeout: 5000,
+            timeout: 4000,
             enableHighAccuracy: true
           });
         });
-        detectedGpsUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        detectedGpsUrl = 'https://maps.google.com/?q=' + pos.coords.latitude + ',' + pos.coords.longitude;
       } catch (e) {
         detectedGpsUrl = "Location not attached";
       }
     }
 
-    // 2. Prepare payload as URL-Encoded Form (bypasses CORS preflight check)
     const params = new URLSearchParams();
     params.append("action", "submitAlert");
     params.append("customerId", targetCustomerId);
@@ -1075,7 +1065,6 @@
     params.append("urgency", chosenUrgency);
     params.append("locationUrl", detectedGpsUrl || "Location not attached");
 
-    // 3. Dispatch to Google Apps Script
     fetch(SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -1096,8 +1085,7 @@
       showScreen('scr4');
     })
     .catch(() => {
-      // Fallback via GET parameter if POST is blocked
-      const fallbackUrl = `${SCRIPT_URL}?${params.toString()}`;
+      const fallbackUrl = SCRIPT_URL + '?' + params.toString();
       new Image().src = fallbackUrl;
 
       btn.disabled = false;
@@ -1112,12 +1100,6 @@
       runCountdown(now);
       pollForOwnerReply(targetCustomerId);
       showScreen('scr4');
-    });
-  }
-    .catch(() => {
-      btn.disabled = false;
-      btn.innerText = I18N[currentLang].btn_send_alert;
-      alert("Submission failed. Check network connection.");
     });
   }
 
@@ -1135,7 +1117,9 @@
       } else {
         localStorage.removeItem('pingme_sess');
       }
-    } catch(e) {}
+    } catch(e) {
+      localStorage.removeItem('pingme_sess');
+    }
   }
 
   function runCountdown(startTime) {
@@ -1151,7 +1135,7 @@
 
       const m = String(Math.floor(left / 60)).padStart(2, '0');
       const s = String(left % 60).padStart(2, '0');
-      clock.innerText = `${m}:${s}`;
+      clock.innerText = m + ':' + s;
 
       const frac = left / TOTAL_COUNTDOWN;
       ring.style.strokeDashoffset = totalDash * (1 - frac);
@@ -1171,7 +1155,7 @@
   function pollForOwnerReply(custId) {
     if (activePoll) clearInterval(activePoll);
     activePoll = setInterval(() => {
-      fetch(`${SCRIPT_URL}?checkResponse=true&customerId=${encodeURIComponent(custId)}`)
+      fetch(SCRIPT_URL + '?checkResponse=true&customerId=' + encodeURIComponent(custId))
         .then(r => r.json())
         .then(res => {
           if (res && res.hasResponse) {
@@ -1180,7 +1164,7 @@
             localStorage.removeItem('pingme_sess');
 
             document.getElementById('replyTime').innerText = res.responseTime || "Just now";
-            document.getElementById('replyBody').innerText = `"${res.response}"`;
+            document.getElementById('replyBody').innerText = '"' + res.response + '"';
             showScreen('scr5');
           }
         })
