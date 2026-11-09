@@ -641,7 +641,7 @@
 
       <div class="location-wrapper">
         <label class="location-toggle">
-          <input type="checkbox" id="gpsCheck">
+          <input type="checkbox" id="gpsCheck" checked>
           <span>📍</span>
           <span id="gpsLabel">Share my approximate location</span>
         </label>
@@ -701,11 +701,12 @@
         <div class="response-content" id="ownerMessageContent">I'm on my way! Please give me 2 minutes.</div>
       </div>
 
+      <!-- THANK YOU & VIRAL SHARE COMPONENT -->
       <div style="margin-top:16px; padding:16px; background:#0B1422; border-radius:14px; border:1px dashed var(--card-border);">
-        <p style="font-size:13px; font-weight:600; color:#fff;" id="shareHeading">💚 Enjoying PingMe?</p>
-        <p style="font-size:12px; color:var(--text-muted); margin:4px 0 10px;" id="shareSubtext">Help your friends discover a smarter way to stay connected!</p>
+        <p style="font-size:13px; font-weight:700; color:#20D3A7;" id="thankYouMsg">🙏 Thank you for being a responsible citizen!</p>
+        <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;" id="shareSubtext">Protect your vehicle with PingMe Smart QR — alerts without sharing your personal phone number.</p>
         <button class="btn-share" onclick="sharePingMeApp()">
-          <span>🔗</span> <span id="shareBtnText">SHARE PINGME</span>
+          <span>📤</span> <span id="shareBtnText">SHARE PINGME ON WHATSAPP</span>
         </button>
       </div>
     </div>
@@ -858,9 +859,10 @@
         respReceived: "🎉 RESPONSE RECEIVED!",
         respHeading: "Owner Responded",
         respTitle: "OWNER'S MESSAGE:",
+        thankYouMsg: "🙏 Thank you for being a responsible citizen!",
         shareHeading: "💚 Enjoying PingMe?",
-        shareSubtext: "Help your friends discover a smarter way to stay connected!",
-        shareBtn: "SHARE PINGME",
+        shareSubtext: "Protect your vehicle with PingMe Smart QR — alerts without sharing your personal phone number.",
+        shareBtn: "SHARE PINGME ON WHATSAPP",
         timeoutBadge: "WAITING TIME COMPLETED",
         timeoutHeading: "No Response Yet",
         timeoutMsg: "The 180 seconds have completed. Your alert was securely delivered to the owner's WhatsApp.",
@@ -888,9 +890,10 @@
         respReceived: "🎉 பதில் வந்துவிட்டது!",
         respHeading: "உரிமையாளர் பதிலளித்துள்ளார்",
         respTitle: "உரிமையாளரின் பதில்:",
+        thankYouMsg: "🙏 பொறுப்புடன் உதவியதற்கு மனமார்ந்த நன்றிகள்!",
         shareHeading: "💚 பிங்மீ பிடித்திருக்கிறதா?",
-        shareSubtext: "உங்கள் நண்பர்களுக்கும் இந்த புதிய வழியை பகிருங்கள்!",
-        shareBtn: "பிங்மீ பகிர்க",
+        shareSubtext: "உங்கள் வாகனத்திற்கும் பிங்மீ QR பெறுங்கள் — மொபைல் எண் தெரியாமல் தகவல் பெறலாம்.",
+        shareBtn: "வாட்ஸ்அப்பில் பகிர்க",
         timeoutBadge: "காத்திருப்பு நேரம் முடிந்தது",
         timeoutHeading: "பதில் இன்னும் வரவில்லை",
         timeoutMsg: "180 வினாடிகள் முடிவடைந்துவிட்டது. உங்கள் தகவல் வாட்ஸ்அப்பில் சென்றடைந்துள்ளது.",
@@ -974,7 +977,7 @@
       document.getElementById("waitInstructions").innerText = texts.waitInstructions;
       document.getElementById("respTitle").innerText = texts.respTitle;
       document.getElementById("respHeading").innerText = texts.respHeading;
-      document.getElementById("shareHeading").innerText = texts.shareHeading;
+      document.getElementById("thankYouMsg").innerText = texts.thankYouMsg;
       document.getElementById("shareSubtext").innerText = texts.shareSubtext;
       document.getElementById("shareBtnText").innerText = texts.shareBtn;
       document.getElementById("timeoutBadge").innerText = texts.timeoutBadge;
@@ -1079,21 +1082,24 @@
       submitBtn.innerText = I18N[currentLang].sending;
 
       let locationLink = "";
-      if (document.getElementById("gpsCheck").checked) {
+      if (document.getElementById("gpsCheck").checked && navigator.geolocation) {
         try {
-          const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 }));
+          const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              timeout: 7000,
+              enableHighAccuracy: true
+            });
+          });
           locationLink = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
         } catch (e) {
-          locationLink = "Location permission denied";
+          locationLink = "";
         }
       }
 
-      // Ensure tagId and tag match Google Apps Script doPost handler expectations
       const payload = {
         action: "submitAlert",
         tagId: qrToken,
         tag: qrToken,
-        token: qrToken,
         category: activeCategory,
         message: message,
         locationLink: locationLink
@@ -1108,7 +1114,7 @@
         const result = await response.json();
 
         if (result.success) {
-          activeSessionId = result.sessionId || ("SES_" + Date.now());
+          activeSessionId = result.sessionId || ("PING_" + Date.now());
           remainingSeconds = 180;
           
           localStorage.setItem("pingme_session_" + qrToken, JSON.stringify({
@@ -1186,9 +1192,11 @@
     async function checkOwnerResponse() {
       if (!activeSessionId) return;
       try {
-        const resp = await fetch(`${APPS_SCRIPT_URL}?action=checkResponse&sessionId=${encodeURIComponent(activeSessionId)}`);
+        const resp = await fetch(`${APPS_SCRIPT_URL}?action=checkStatus&sessionId=${encodeURIComponent(activeSessionId)}`);
         const res = await resp.json();
-        if (res.hasResponse && res.status === "RESPONDED") {
+        
+        // Handles both RESPONDED and RESOLVED statuses
+        if (res.status === "RESOLVED" || res.status === "RESPONDED" || res.hasResponse) {
           clearInterval(countdownInterval);
           clearInterval(pollInterval);
           localStorage.removeItem("pingme_session_" + qrToken);
@@ -1200,7 +1208,7 @@
     function showResponseScreen(replyText) {
       document.getElementById("waitingScreen").style.display = "none";
       document.getElementById("responseScreen").style.display = "block";
-      document.getElementById("ownerMessageContent").innerText = replyText || "I have received your alert. Thank you!";
+      document.getElementById("ownerMessageContent").innerText = replyText || "I'm on my way! Thank you for alerting me.";
     }
 
     function showTimeoutScreen() {
@@ -1209,13 +1217,14 @@
     }
 
     function sharePingMeApp() {
-      const shareUrl = window.location.origin + window.location.pathname;
-      const shareText = "Check out PingMe – Smart QR Alert & Contact System. No app required!";
+      const shareUrl = "https://milircrafts.github.io/pingme/";
+      const shareText = "Hey! Check out PingMe - Smart Vehicle QR tag. People can alert you for wrong parking or emergencies without knowing your phone number! 🚗✨ Try it here: " + shareUrl;
+      
       if (navigator.share) {
-        navigator.share({ title: "PingMe", text: shareText, url: shareUrl }).catch(() => {});
+        navigator.share({ title: "PingMe Smart QR", text: shareText, url: shareUrl }).catch(() => {});
       } else {
-        navigator.clipboard.writeText(shareUrl);
-        alert(currentLang === "en" ? "Link copied to clipboard!" : "இணைப்பு நகலெடுக்கப்பட்டது!");
+        const waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
+        window.open(waUrl, "_blank");
       }
     }
   </script>
