@@ -61,7 +61,7 @@
       position: relative;
     }
 
-    /* TOP BANNER FOR SCREEN 1 */
+    /* TOP BANNER */
     .top-scene-banner {
       width: 100%;
       height: 140px;
@@ -77,7 +77,7 @@
       display: block;
     }
 
-    /* APP TOPBAR */
+    /* TOPBAR */
     .app-topbar {
       padding: 12px 18px;
       display: flex;
@@ -179,7 +179,7 @@
       font-weight: 500;
     }
 
-    /* SCREEN 1: CATEGORY CARDS */
+    /* SCREEN 1 CARDS */
     .category-selection-stack {
       display: flex;
       flex-direction: column;
@@ -240,16 +240,17 @@
       font-weight: 500;
     }
 
-    /* SCREEN 2 & 3: HERO ARTWORK */
+    /* SCREEN 2 & 3 HERO */
     .screen-hero-art {
       display: flex;
       justify-content: center;
       align-items: center;
       margin-bottom: 12px;
+      min-height: 80px;
     }
     .hero-img-vehicle {
       width: 120px;
-      height: 75px;
+      height: 80px;
       object-fit: contain;
       filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
     }
@@ -310,7 +311,7 @@
     }
     .custom-textarea:focus { border-color: #0056D2; }
 
-    /* SCREEN 3: CONFIRMATION */
+    /* SCREEN 3 CONFIRM */
     .summary-box {
       background: #F8FAFC;
       border: 1px solid var(--border-soft);
@@ -433,7 +434,7 @@
       gap: 6px;
     }
 
-    /* MASCOT ARTWORK CONTAINERS */
+    /* MASCOT CARDS */
     .mascot-art-card {
       width: 100%;
       height: 195px;
@@ -541,7 +542,6 @@
       text-transform: uppercase;
     }
 
-    /* SCREEN 5: RESPONSE CARD */
     .owner-reply-box {
       background: #FFFFFF;
       border: 2px solid var(--accent-green);
@@ -576,7 +576,6 @@
       margin-bottom: 8px;
     }
 
-    /* SCREEN 6 & 7 */
     .timeout-wrap {
       text-align: center;
       padding: 6px 0;
@@ -598,7 +597,7 @@
 
 <div class="mobile-app-shell">
 
-  <!-- TOP BANNER (Screen 1 only) -->
+  <!-- TOP BANNER (Screen 1) -->
   <div class="top-scene-banner" id="topBanner">
     <img src="assets/top-banner.png" alt="PingMe Landscape">
   </div>
@@ -662,7 +661,7 @@
     </div>
   </section>
 
-<!-- SCREEN 2: MESSAGE TEMPLATES -->
+  <!-- SCREEN 2: MESSAGE TEMPLATES -->
   <section class="app-screen" id="scr2">
     <div class="screen-hero-art">
       <img id="scr2HeroImg" src="assets/hero-vehicle.png" alt="Category Hero" class="hero-img-vehicle">
@@ -729,7 +728,7 @@
     </button>
   </section>
 
-  <!-- SCREEN 4: WAITING WITH BOY LOOKING AT PHONE -->
+  <!-- SCREEN 4: WAITING -->
   <section class="app-screen" id="scr4">
     <div class="mascot-art-card mac-waiting">
       <img src="assets/boy-waiting.png" alt="Waiting for owner" class="mascot-png-waiting float-mascot">
@@ -756,7 +755,7 @@
     </div>
   </section>
 
-  <!-- SCREEN 5: RESPONSE WITH HAPPY BOY & SHIELD -->
+  <!-- SCREEN 5: RESPONSE -->
   <section class="app-screen" id="scr5">
     <div class="mascot-art-card mac-success">
       <img src="assets/response-shield.png" alt="Response verified" class="mascot-png-shield">
@@ -781,7 +780,7 @@
     </button>
   </section>
 
-  <!-- SCREEN 6: TIMEOUT WITH HOURGLASS & SAD BOY -->
+  <!-- SCREEN 6: TIMEOUT -->
   <section class="app-screen" id="scr6">
     <div class="timeout-wrap">
       <div class="mascot-art-card mac-timeout">
@@ -800,7 +799,7 @@
     </button>
   </section>
 
-  <!-- SCREEN 7: FINAL SHARE SCREEN -->
+  <!-- SCREEN 7: FINAL -->
   <section class="app-screen" id="scr7">
     <div class="share-wrap">
       <div class="mascot-art-card mac-share">
@@ -828,10 +827,10 @@
 </div>
 
 <script>
-  // ------------------- BACKEND CONNECTION CONFIG -------------------
+  // BACKEND CONFIG
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec";
 
-  // ------------------- BILINGUAL TRANSLATION DATA -------------------
+  // BILINGUAL TRANSLATION DATA
   const I18N = {
     en: {
       s1_title: "How can we help you today?",
@@ -963,7 +962,12 @@
     }
   };
 
-  // State Management
+  const CATEGORY_HEROES = {
+    VEHICLE: "assets/hero-vehicle.png",
+    KEYS: "assets/icon-keys-luggage.png",
+    OTHER: "assets/icon-other.png"
+  };
+
   let currentLang = 'en';
   let targetCustomerId = new URLSearchParams(window.location.search).get('id') || "PM-CUST-1001";
   let chosenCategory = 'VEHICLE';
@@ -1004,19 +1008,15 @@
     }
 
     const back = document.getElementById('backBtn');
-    back.style.visibility = (id === 'scr2' || id === 'scr3') ? 'visible' : 'hidden';
+    if (back) {
+      back.style.visibility = (id === 'scr2' || id === 'scr3') ? 'visible' : 'hidden';
+    }
   }
 
   function navigateBack() {
     if (document.getElementById('scr2').classList.contains('active')) showScreen('scr1');
     else if (document.getElementById('scr3').classList.contains('active')) showScreen('scr2');
   }
-
-const CATEGORY_HEROES = {
-    VEHICLE: "assets/hero-vehicle.png",
-    KEYS: "assets/icon-keys-luggage.png",
-    OTHER: "assets/icon-other.png"
-  };
 
   function chooseCategory(cat) {
     localStorage.removeItem('pingme_sess');
@@ -1025,9 +1025,11 @@ const CATEGORY_HEROES = {
 
     chosenCategory = cat;
     const meta = CATEGORIES[cat];
-    document.getElementById('scr2Title').innerText = currentLang === 'ta' ? meta.titleTa : meta.titleEn;
+    const titleEl = document.getElementById('scr2Title');
+    if (titleEl) {
+      titleEl.innerText = currentLang === 'ta' ? meta.titleTa : meta.titleEn;
+    }
 
-    // Dynamically swap the hero image to match the chosen category
     const heroImg = document.getElementById('scr2HeroImg');
     if (heroImg && CATEGORY_HEROES[cat]) {
       heroImg.src = CATEGORY_HEROES[cat];
@@ -1036,7 +1038,6 @@ const CATEGORY_HEROES = {
 
     populateTemplates();
     showScreen('scr2');
-  }
   }
 
   function populateTemplates() {
@@ -1110,16 +1111,21 @@ const CATEGORY_HEROES = {
       pos => {
         detectedGpsUrl = 'https://maps.google.com/?q=' + pos.coords.latitude + ',' + pos.coords.longitude;
         const badge = document.getElementById('gpsBadge');
-        badge.innerText = "✓ Attached";
-        badge.style.background = "#ECFDF3";
-        badge.style.color = "#12B76A";
+        if (badge) {
+          badge.innerText = "✓ Attached";
+          badge.style.background = "#ECFDF3";
+          badge.style.color = "#12B76A";
+        }
       },
       err => {
-        document.getElementById('gpsLabel').innerText = I18N[currentLang].gps_denied;
+        const lbl = document.getElementById('gpsLabel');
+        if (lbl) lbl.innerText = I18N[currentLang].gps_denied;
         const badge = document.getElementById('gpsBadge');
-        badge.innerText = "Optional";
-        badge.style.background = "#F2F4F7";
-        badge.style.color = "#667085";
+        if (badge) {
+          badge.innerText = "Optional";
+          badge.style.background = "#F2F4F7";
+          badge.style.color = "#667085";
+        }
       },
       { timeout: 7000, enableHighAccuracy: true }
     );
