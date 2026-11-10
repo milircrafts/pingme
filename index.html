@@ -907,9 +907,9 @@
   // BACKEND CONFIG
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec";
 
-  // EDITABLE PROMOTION DEFAULTS (CAN BE OVERRIDDEN BY SCRIPT / GOOGLE SHEET)
+// EDITABLE PROMOTION DEFAULTS WITH YOUR WHATSAPP NUMBER
   let promoConfig = {
-    orderPhone: "919003000000", // Will fallback or load from Sheet Config
+    orderPhone: "917092920106",
     orderMessage: "Hi! I'm interested in getting my own PingMe Smart QR Tag.\n\nI recently experienced PingMe and would like to know more about the available options, pricing and ordering process.\n\nPlease share the details. Thank you!",
     shareUrl: "https://milircrafts.github.io/pingme/"
   };
@@ -1401,27 +1401,25 @@
     showScreen('scr7');
   }
 
-  // WHATSAPP DIRECT ORDER ACTION
+// WHATSAPP DIRECT ORDER ACTION
   function orderProductWhatsApp() {
     const phone = promoConfig.orderPhone;
     const msg = encodeURIComponent(promoConfig.orderMessage);
     window.open("https://wa.me/" + phone + "?text=" + msg, "_blank");
   }
 
-  // SMART SHARE PINGME ACTION
+// SMART SHARE PINGME ACTION
   function sharePingMe() {
-    const promo = promoConfig.shareUrl;
-    const data = {
-      title: "PingMe - One Scan. Instant Connection.",
-      text: "Instant QR notification alert system! Get your own Smart QR Tag for cars, bikes & bags.",
-      url: promo
-    };
+    const phone = promoConfig.orderPhone;
+    const shareText = "Hey! Check out PingMe Smart QR Tags. 🚗🔑📦\n\nIf someone blocks your vehicle in parking or finds your lost keys/bags, they scan your tag to notify you on WhatsApp instantly — without seeing your phone number!\n\n• No App Needed\n• 100% Privacy Protected\n• Instant WhatsApp Alerts\n\n👉 Order your own Smart QR Tag directly here:\nhttps://wa.me/" + phone + "?text=" + encodeURIComponent("Hi! A friend recommended PingMe to me. I would like to order a Smart QR Tag.");
 
     if (navigator.share) {
-      navigator.share(data).catch(() => {});
+      navigator.share({
+        title: "PingMe Smart QR Tags",
+        text: shareText
+      }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(promo);
-      alert("PingMe link copied: " + promo);
+      window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText), "_blank");
     }
   }
 
