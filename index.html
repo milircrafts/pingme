@@ -662,10 +662,10 @@
     </div>
   </section>
 
-  <!-- SCREEN 2: MESSAGE TEMPLATES -->
+<!-- SCREEN 2: MESSAGE TEMPLATES -->
   <section class="app-screen" id="scr2">
     <div class="screen-hero-art">
-      <img src="assets/hero-vehicle.png" alt="Vehicle Alert" class="hero-img-vehicle">
+      <img id="scr2HeroImg" src="assets/hero-vehicle.png" alt="Category Hero" class="hero-img-vehicle">
     </div>
 
     <h2 class="screen-header-title" id="scr2Title" style="text-align:center;">Vehicle Alert</h2>
@@ -1012,6 +1012,12 @@
     else if (document.getElementById('scr3').classList.contains('active')) showScreen('scr2');
   }
 
+const CATEGORY_HEROES = {
+    VEHICLE: "assets/hero-vehicle.png",
+    KEYS: "assets/icon-keys-luggage.png",
+    OTHER: "assets/icon-other.png"
+  };
+
   function chooseCategory(cat) {
     localStorage.removeItem('pingme_sess');
     if (activeTimer) clearInterval(activeTimer);
@@ -1020,8 +1026,17 @@
     chosenCategory = cat;
     const meta = CATEGORIES[cat];
     document.getElementById('scr2Title').innerText = currentLang === 'ta' ? meta.titleTa : meta.titleEn;
+
+    // Dynamically swap the hero image to match the chosen category
+    const heroImg = document.getElementById('scr2HeroImg');
+    if (heroImg && CATEGORY_HEROES[cat]) {
+      heroImg.src = CATEGORY_HEROES[cat];
+      heroImg.alt = meta.titleEn;
+    }
+
     populateTemplates();
     showScreen('scr2');
+  }
   }
 
   function populateTemplates() {
