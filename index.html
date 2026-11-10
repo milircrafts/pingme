@@ -58,14 +58,23 @@
       border-bottom: 1px solid #F1F5F9;
       background: #FFFFFF;
     }
-    .header-logo { height: 28px; object-fit: contain; }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 19px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .header-logo { height: 26px; object-fit: contain; }
     .lang-toggle {
       font-size: 11px;
       font-weight: 700;
       background: #EFF6FF;
       color: var(--primary);
       border: 1px solid #DBEAFE;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
       cursor: pointer;
     }
@@ -84,22 +93,29 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .mascot-container {
-      text-align: center;
-      margin-bottom: 12px;
+    /* Embedded Vector Badges (Never Broken) */
+    .hero-badge {
+      width: 72px;
+      height: 72px;
+      margin: 4px auto 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      box-shadow: 0 8px 16px rgba(0, 82, 204, 0.1);
     }
-    .mascot-img {
-      height: 96px;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
-    }
+    .badge-blue { background: #EFF6FF; color: #0052CC; }
+    .badge-amber { background: #FEF3C7; color: #D97706; }
+    .badge-green { background: #DCFCE7; color: #16A34A; }
+    .badge-red { background: #FEE2E2; color: #DC2626; }
 
     .title {
       font-size: 20px;
       font-weight: 800;
       color: var(--text);
       text-align: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       line-height: 1.3;
     }
     .subtitle {
@@ -121,24 +137,35 @@
       background: #F8FAFC;
       border: 1.5px solid var(--border);
       border-radius: 14px;
-      padding: 14px;
+      padding: 13px 15px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
     }
     .option-card:hover, .option-card.selected {
       border-color: var(--primary);
       background: #EFF6FF;
       transform: translateY(-1px);
     }
-    .option-card img { width: 36px; height: 36px; object-fit: contain; }
+    .option-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
     .option-info { text-align: left; }
     .option-title { font-size: 14px; font-weight: 700; color: var(--text); }
     .option-desc { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
 
-    /* Templates / Pills */
+    /* Templates / Quick Pills */
     .pill-container {
       display: flex;
       flex-wrap: wrap;
@@ -148,9 +175,9 @@
     .pill {
       background: #F1F5F9;
       border: 1px solid var(--border);
-      padding: 7px 12px;
+      padding: 8px 13px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
@@ -162,7 +189,7 @@
       border-color: var(--primary);
     }
 
-    /* Custom Text Input */
+    /* Custom Textarea */
     .custom-input {
       width: 100%;
       padding: 12px 14px;
@@ -173,6 +200,7 @@
       margin-bottom: 16px;
       font-family: inherit;
       resize: none;
+      background: #FFFFFF;
     }
     .custom-input:focus { border-color: var(--primary); }
 
@@ -189,7 +217,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
     .btn-primary { background: var(--primary); color: #FFF; }
     .btn-primary:hover { background: var(--primary-dark); }
@@ -201,7 +229,7 @@
       position: relative;
       width: 130px;
       height: 130px;
-      margin: 16px auto;
+      margin: 14px auto 18px;
     }
     .timer-svg { transform: rotate(-90deg); width: 130px; height: 130px; }
     .timer-circle-bg { fill: none; stroke: #E2E8F0; stroke-width: 8; }
@@ -235,17 +263,18 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
     .splash-logo {
-      width: 140px;
-      height: auto;
-      margin-bottom: 16px;
-      animation: pulse 1.2s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      width: 84px;
+      height: 84px;
+      border-radius: 20px;
+      background: #EFF6FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      margin-bottom: 14px;
     }
 
     /* Response Bubble */
@@ -254,7 +283,7 @@
       border: 1.5px solid #A7F3D0;
       border-radius: 14px;
       padding: 16px;
-      margin: 14px 0;
+      margin: 16px 0;
       text-align: center;
     }
     .reply-text { font-size: 16px; font-weight: 800; color: #065F46; }
@@ -265,38 +294,39 @@
 
   <div class="app-container">
     
-    <!-- 1.2s Initial Logo Splash Screen -->
+    <!-- 1.2s Fast Logo Splash Screen -->
     <div id="splashScreen">
-      <img src="assets/pingme-logo.png" class="splash-logo" alt="PingMe Logo">
-      <div style="font-size:18px; font-weight:800; color:#0052CC;">Ping<span style="color:#FF5E00;">Me</span></div>
+      <div class="splash-logo">🔔</div>
+      <div style="font-size:22px; font-weight:800; color:#0052CC;">Ping<span style="color:#FF5E00;">Me</span></div>
       <div style="font-size:12px; color:#64748B; margin-top:4px; font-weight:600;">One Scan. Instant Connection.</div>
     </div>
 
     <!-- Header Bar -->
     <div class="header-bar">
-      <img src="assets/pingme-logo.png" class="header-logo" alt="PingMe">
+      <div class="header-brand">
+        <img src="assets/pingme-logo.png" onerror="this.style.display='none'" class="header-logo" alt="">
+        <span>Ping<span style="color:#FF5E00;">Me</span></span>
+      </div>
       <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">தமிழ்</button>
     </div>
 
     <!-- SCREEN 1: CATEGORY SELECTION -->
     <div class="screen active" id="screen1">
-      <div class="mascot-container">
-        <img src="assets/mascot-welcome.png" class="mascot-img" alt="Welcome Mascot">
-      </div>
+      <div class="hero-badge badge-blue">🚗</div>
       <h2 class="title" data-en="Contact Owner" data-ta="உரிமையாளரை அழைக்க">Contact Owner</h2>
       <p class="subtitle" id="ownerAssetTag" data-en="Choose an alert category below" data-ta="கீழே உள்ள வகையை தேர்ந்தெடுக்கவும்">Choose an alert category below</p>
 
       <div class="grid-options">
         <div class="option-card" onclick="selectCategory('Vehicle Blocking')">
-          <img src="assets/icon-car.png" alt="Vehicle">
+          <div class="option-icon">🚗</div>
           <div class="option-info">
             <div class="option-title" data-en="Vehicle Alert" data-ta="வாகன எச்சரிக்கை">Vehicle Alert</div>
-            <div class="option-desc" data-en="Vehicle blocking, parked wrong, or headlight on" data-ta="வழி மறைப்பு அல்லது தவறான பார்க்கிங்">Vehicle blocking, parked wrong, or headlight on</div>
+            <div class="option-desc" data-en="Vehicle blocking, parked wrong, or lights ON" data-ta="வழி மறைப்பு அல்லது தவறான பார்க்கிங்">Vehicle blocking, parked wrong, or lights ON</div>
           </div>
         </div>
 
         <div class="option-card" onclick="selectCategory('Lost Item')">
-          <img src="assets/icon-keys.png" alt="Lost Item">
+          <div class="option-icon">🔑</div>
           <div class="option-info">
             <div class="option-title" data-en="Lost & Found" data-ta="பொருட்கள் மீட்பு">Lost & Found</div>
             <div class="option-desc" data-en="Found keys, wallet, luggage, or device" data-ta="சாவி, பை அல்லது உடமைகள் கண்டெடுக்கப்பட்டது">Found keys, wallet, luggage, or device</div>
@@ -304,10 +334,10 @@
         </div>
 
         <div class="option-card" onclick="selectCategory('General')">
-          <img src="assets/icon-alert.png" alt="General Alert">
+          <div class="option-icon">📢</div>
           <div class="option-info">
             <div class="option-title" data-en="General Notice" data-ta="பொதுவான தகவல்">General Notice</div>
-            <div class="option-desc" data-en="Urgent assistance or general notification" data-ta="அவசர உதவி அல்லது இதர தகவல்">Urgent assistance or general notification</div>
+            <div class="option-desc" data-en="Urgent assistance or important notification" data-ta="அவசர உதவி அல்லது இதர தகவல்">Urgent assistance or important notification</div>
           </div>
         </div>
       </div>
@@ -315,15 +345,13 @@
 
     <!-- SCREEN 2: TEMPLATE MESSAGE SELECTION -->
     <div class="screen" id="screen2">
-      <div class="mascot-container">
-        <img src="assets/mascot-thinking.png" class="mascot-img" alt="Select Template">
-      </div>
+      <div class="hero-badge badge-amber">💬</div>
       <h2 class="title" data-en="Select Message" data-ta="செய்தியை தேர்ந்தெடுக்கவும்">Select Message</h2>
       <p class="subtitle" data-en="Tap a quick message or type your own" data-ta="விரைவு செய்தியை தொடவும் அல்லது தட்டச்சு செய்யவும்">Tap a quick message or type your own</p>
 
       <div class="pill-container" id="pillsContainer"></div>
 
-      <textarea class="custom-input" id="customMessage" rows="3" placeholder="Add specific notes (e.g. Near gate 2)..."></textarea>
+      <textarea class="custom-input" id="customMessage" rows="3" placeholder="Add specific notes (e.g. Near Gate 2)..."></textarea>
 
       <button class="btn btn-primary" onclick="proceedToConfirmation()" data-en="Continue" data-ta="தொடரவும்">Continue</button>
       <button class="btn btn-secondary" onclick="showScreen(1)" data-en="Back" data-ta="பின்னால்">Back</button>
@@ -331,18 +359,16 @@
 
     <!-- SCREEN 3: CONFIRMATION & GPS ATTACH -->
     <div class="screen" id="screen3">
-      <div class="mascot-container">
-        <img src="assets/mascot-ready.png" class="mascot-img" alt="Confirm Message">
-      </div>
+      <div class="hero-badge badge-blue">📍</div>
       <h2 class="title" data-en="Ready to Notify" data-ta="அனுப்ப தயார்">Ready to Notify</h2>
       <p class="subtitle" data-en="Confirm and attach your current location" data-ta="இருப்பிடத்தை இணைத்து அனுப்பவும்">Confirm and attach your current location</p>
 
-      <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; text-align:left;">
+      <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:14px; padding:15px; margin-bottom:16px; text-align:left;">
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;" data-en="Category" data-ta="வகை">Category</div>
-        <div style="font-size:13.5px; font-weight:800; color:var(--text); margin-top:2px;" id="confCategory">Vehicle Blocking</div>
+        <div style="font-size:14px; font-weight:800; color:var(--text); margin-top:2px;" id="confCategory">Vehicle Blocking</div>
 
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-top:10px;" data-en="Message" data-ta="செய்தி">Message</div>
-        <div style="font-size:13px; font-weight:600; color:var(--text); margin-top:2px;" id="confMessage">Your vehicle is blocking my way.</div>
+        <div style="font-size:13px; font-weight:600; color:var(--text); margin-top:2px;" id="confMessage">"Your vehicle is blocking my way."</div>
 
         <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-top:10px;" data-en="GPS Location" data-ta="இருப்பிடம்">GPS Location</div>
         <div style="font-size:12px; font-weight:700; color:var(--primary); margin-top:2px;" id="confLocation">📍 Attaching location...</div>
@@ -365,20 +391,14 @@
         <div class="timer-text" id="timerDisplay">180</div>
       </div>
 
-      <div class="mascot-container">
-        <img src="assets/mascot-waiting.png" class="mascot-img" alt="Waiting Mascot">
-      </div>
-
-      <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:0 10px;" data-en="The owner received your WhatsApp & Email alert. Please hold on for a moment." data-ta="உரிமையாளருக்கு வாட்ஸ்அப் மற்றும் மின்னஞ்சல் சென்றுள்ளது. சிறிது நேரம் காத்திருக்கவும்.">
+      <p style="font-size:12.5px; color:var(--text-muted); text-align:center; padding:0 12px; line-height:1.5;" data-en="The owner received your WhatsApp & Email alert. Please hold on for a moment." data-ta="உரிமையாளருக்கு வாட்ஸ்அப் மற்றும் மின்னஞ்சல் சென்றுள்ளது. சிறிது நேரம் காத்திருக்கவும்.">
         The owner received your WhatsApp & Email alert. Please hold on for a moment.
       </p>
     </div>
 
     <!-- SCREEN 5: TIMEOUT SCREEN -->
     <div class="screen" id="screen5">
-      <div class="mascot-container">
-        <img src="assets/mascot-timeout.png" class="mascot-img" alt="Timeout Mascot">
-      </div>
+      <div class="hero-badge badge-amber">⏱️</div>
       <h2 class="title" data-en="No Live Reply Yet" data-ta="பதில் இன்னும் வரவில்லை">No Live Reply Yet</h2>
       <p class="subtitle" data-en="The alert and location remain delivered to the owner's WhatsApp." data-ta="எச்சரிக்கை உரிமையாளரின் வாட்ஸ்அப்பில் பதிவு செய்யப்பட்டுள்ளது.">
         The alert and location remain delivered to the owner's WhatsApp.
@@ -389,9 +409,7 @@
 
     <!-- SCREEN 6: OWNER RESPONDED LIVE -->
     <div class="screen" id="screen6">
-      <div class="mascot-container">
-        <img src="assets/mascot-happy.png" class="mascot-img" alt="Replied Mascot">
-      </div>
+      <div class="hero-badge badge-green">✅</div>
       <h2 class="title" data-en="Owner Responded!" data-ta="உரிமையாளர் பதிலளித்தார்!">Owner Responded!</h2>
 
       <div class="reply-card">
@@ -404,9 +422,7 @@
 
     <!-- SCREEN 7: REFERRAL / PROMO SCREEN -->
     <div class="screen" id="screen7">
-      <div class="mascot-container">
-        <img src="assets/mascot-share.png" class="mascot-img" alt="Share Mascot">
-      </div>
+      <div class="hero-badge badge-blue">🛡️</div>
       <h2 class="title" data-en="Get Your Own PingMe Tag" data-ta="உங்கள் பிங்மீ டேக் பெறுக">Get Your Own PingMe Tag</h2>
       <p class="subtitle" data-en="Protect your car, bike, keys, and luggage with smart privacy QR tags." data-ta="உங்கள் வாகனம் மற்றும் உடைமைகளுக்கு ஸ்மார்ட் QR டேக் பெற்றிடுங்கள்.">
         Protect your car, bike, keys, and luggage with smart privacy QR tags.
@@ -421,9 +437,7 @@
 
     <!-- INACTIVE / BLOCKED TAG SCREEN -->
     <div class="screen" id="screenInactive">
-      <div class="mascot-container">
-        <img src="assets/mascot-timeout.png" class="mascot-img" alt="Inactive Tag">
-      </div>
+      <div class="hero-badge badge-red">🚫</div>
       <h2 class="title" style="color:var(--danger);" data-en="Tag Currently Inactive" data-ta="டேக் முடக்கப்பட்டுள்ளது">Tag Currently Inactive</h2>
       <p class="subtitle" id="inactiveReason" data-en="This PingMe QR tag is temporarily inactive or has reached its notification limits. Please contact the owner directly." data-ta="இந்த பிங்மீ டேக் தற்காலிகமாக முடக்கப்பட்டுள்ளது. உரிமையாளரை நேரடியாக தொடர்பு கொள்ளவும்.">
         This PingMe QR tag is temporarily inactive or has reached its notification limits. Please contact the owner directly.
@@ -436,7 +450,7 @@
     // =========================================================================
     // CONFIGURATION & GLOBAL STATE
     // =========================================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec"; // Backend endpoint
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec";
     const urlParams = new URLSearchParams(window.location.search);
     const customerId = urlParams.get("id") || "PM-CUST-1002";
 
@@ -467,11 +481,8 @@
       ]
     };
 
-    // =========================================================================
     // 1. SESSION LOCK CHECK ON PAGE LOAD
-    // =========================================================================
     (function initSessionGate() {
-      // If this visitor has already closed/completed an alert for this tag
       if (sessionStorage.getItem("pingme_locked_" + customerId) === "true") {
         document.addEventListener("DOMContentLoaded", function() {
           fadeOutSplash();
@@ -481,9 +492,8 @@
       }
 
       window.addEventListener("load", function() {
-        // Fetch customer status, limits, and vehicle info
         fetchCustomerTagDetails();
-        setTimeout(fadeOutSplash, 1200);
+        setTimeout(fadeOutSplash, 1100);
       });
     })();
 
@@ -491,20 +501,17 @@
       const splash = document.getElementById("splashScreen");
       if (splash) {
         splash.style.opacity = "0";
-        setTimeout(() => splash.style.display = "none", 400);
+        setTimeout(() => splash.style.display = "none", 350);
       }
     }
 
-    // =========================================================================
     // 2. TAG DETAILS & INACTIVITY VERIFICATION
-    // =========================================================================
     function fetchCustomerTagDetails() {
       fetch(APPS_SCRIPT_URL + "?customerId=" + encodeURIComponent(customerId))
         .then(res => res.json())
         .then(cust => {
           if (!cust || !cust.name) return;
 
-          // Check if tag is active & has remaining alerts
           if (cust.status === "Inactive" || cust.status === "Suspended") {
             showInactiveScreen(cust.status === "Inactive" ? "Tag Deactivated" : "Account Suspended");
             return;
@@ -518,9 +525,8 @@
             document.getElementById("ownerAssetTag").innerText = "Item / Vehicle: " + cust.vehicle;
           }
         })
-        .catch(err => console.warn("Tag fetch fallback to default:", err));
+        .catch(() => {});
 
-      // Fetch dynamic promo config for screen 7
       fetch(APPS_SCRIPT_URL + "?action=getPromoConfig")
         .then(res => res.json())
         .then(cfg => {
@@ -539,9 +545,7 @@
       if (reason) document.getElementById("inactiveReason").innerText = reason;
     }
 
-    // =========================================================================
     // 3. UI SCREEN ROUTING & LANGUAGE
-    // =========================================================================
     function showScreen(idx) {
       for (let i = 1; i <= 7; i++) {
         const s = document.getElementById("screen" + i);
@@ -595,26 +599,23 @@
       document.getElementById("confCategory").innerText = selectedCat;
       document.getElementById("confMessage").innerText = `"${finalMsg}"`;
 
-      // Request GPS Location quietly
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           pos => {
             locationUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
             document.getElementById("confLocation").innerText = "📍 GPS Location Attached ✓";
           },
-          err => {
+          () => {
             locationUrl = "Location not attached";
             document.getElementById("confLocation").innerText = "📍 Location access skipped";
           },
-          { timeout: 6000 }
+          { timeout: 5000 }
         );
       }
       showScreen(3);
     }
 
-    // =========================================================================
     // 4. SUBMIT ALERT & COUNTDOWN / POLLING
-    // =========================================================================
     function submitAlertPayload() {
       const btn = document.getElementById("btnSendAlert");
       btn.innerText = "Dispatching Alert...";
@@ -652,8 +653,7 @@
           btn.disabled = false;
         }
       })
-      .catch(err => {
-        console.error("Alert submission error:", err);
+      .catch(() => {
         alert("Network issue. Please check connection.");
         btn.innerText = "🚀 Send Instant Alert";
         btn.disabled = false;
@@ -676,7 +676,7 @@
         if (countdownRemaining <= 0) {
           clearInterval(timerInterval);
           if (pollInterval) clearInterval(pollInterval);
-          showScreen(5); // Show Timeout Screen
+          showScreen(5);
         }
       }, 1000);
     }
@@ -695,25 +695,20 @@
 
               document.getElementById("liveReplyBody").innerText = `"${data.response}"`;
               document.getElementById("liveReplyTime").innerText = data.responseTime || "Just now";
-              showScreen(6); // Show Live Reply Screen
+              showScreen(6);
             }
           })
           .catch(() => {});
       }, 3000);
     }
 
-    // =========================================================================
     // 5. SESSION LOCK COMPLETION & CLOSE LOGIC
-    // =========================================================================
     function handleSessionCompletion() {
-      // 1. Lock this tag in session storage
       sessionStorage.setItem("pingme_locked_" + customerId, "true");
 
-      // 2. Clear all background pollers and timers
       if (timerInterval) clearInterval(timerInterval);
       if (pollInterval) clearInterval(pollInterval);
 
-      // 3. Render the locked screen state
       showSessionLockedScreen();
     }
 
@@ -744,7 +739,6 @@
       `;
       document.querySelector(".app-container").appendChild(lockCard);
 
-      // Lock browser back-button navigation
       history.pushState(null, "", window.location.href);
       window.onpopstate = function() {
         history.pushState(null, "", window.location.href);
