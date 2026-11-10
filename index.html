@@ -760,7 +760,6 @@
 
 <script>
   // ------------------- BACKEND CONNECTION CONFIG -------------------
-  // Paste your Apps Script Web App URL ending in /exec below:
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec";
 
   // ------------------- BILINGUAL TRANSLATION DATA -------------------
@@ -1057,49 +1056,64 @@
       }
     }
 
-    const params = new URLSearchParams();
-    params.append("action", "submitAlert");
-    params.append("customerId", targetCustomerId);
-    params.append("category", chosenCategory);
-    params.append("message", chosenMessage);
-    params.append("urgency", chosenUrgency);
-    params.append("locationUrl", detectedGpsUrl || "Location not attached");
+    const payload = {
+      action: "submitAlert",
+      customerId: targetCustomerId,
+      category: chosenCategory,
+      message: chosenMessage,
+      urgency: chosenUrgency,
+      locationUrl: detectedGpsUrl || "Location not attached"
+    };
 
     fetch(SCRIPT_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString()
+      body: JSON.stringify(payload)
     })
-    .then(() => {
+    .then(r => r.json())
+    .then(data => {
       btn.disabled = false;
       btn.innerText = I18N[currentLang].btn_send_alert;
 
       const now = Date.now();
+      const sessionId = (data && data.sessionId) ? data.sessionId : "";
+
       localStorage.setItem('pingme_sess', JSON.stringify({
         customerId: targetCustomerId,
+        sessionId: sessionId,
         timestamp: now
       }));
 
       runCountdown(now);
-      pollForOwnerReply(targetCustomerId);
+      pollForOwnerReply(sessionId, targetCustomerId);
       showScreen('scr4');
     })
     .catch(() => {
-      const fallbackUrl = SCRIPT_URL + '?' + params.toString();
-      new Image().src = fallbackUrl;
-
-      btn.disabled = false;
-      btn.innerText = I18N[currentLang].btn_send_alert;
-
-      const now = Date.now();
-      localStorage.setItem('pingme_sess', JSON.stringify({
-        customerId: targetCustomerId,
-        timestamp: now
-      }));
-
-      runCountdown(now);
-      pollForOwnerReply(targetCustomerId);
-      showScreen('scr4');
+      // Fallback via URL query params if direct JSON POST encounters CORS
+      const params = new URLSearchParams(payload);
+      fetch(SCRIPT_URL + '?' + params.toString())
+        .then(r => r.json())
+        .then(data => {
+          btn.disabled = false;
+          btn.innerText = I18N[currentLang].btn_send_alert;
+          const now = Date.now();
+          const sessionId = (data && data.sessionId) ? data.sessionId : "";
+          localStorage.setItem('pingme_sess', JSON.stringify({
+            customerId: targetCustomerId,
+            sessionId: sessionId,
+            timestamp: now
+          }));
+          runCountdown(now);
+          pollForOwnerReply(sessionId, targetCustomerId);
+          showScreen('scr4');
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.innerText = I18N[currentLang].btn_send_alert;
+          const now = Date.now();
+          runCountdown(now);
+          pollForOwnerReply("", targetCustomerId);
+          showScreen('scr4');
+        });
     });
   }
 
@@ -1112,7 +1126,7 @@
       const passed = Math.floor((Date.now() - obj.timestamp) / 1000);
       if (passed < TOTAL_COUNTDOWN) {
         runCountdown(obj.timestamp);
-        pollForOwnerReply(obj.customerId);
+        pollForOwnerReply(obj.sessionId || "", obj.customerId);
         showScreen('scr4');
       } else {
         localStorage.removeItem('pingme_sess');
@@ -1152,10 +1166,14 @@
     activeTimer = setInterval(tick, 1000);
   }
 
-  function pollForOwnerReply(custId) {
+  function pollForOwnerReply(sessionId, custId) {
     if (activePoll) clearInterval(activePoll);
+
     activePoll = setInterval(() => {
-      fetch(SCRIPT_URL + '?checkResponse=true&customerId=' + encodeURIComponent(custId))
+      // Query by sessionId or customerId fallback
+      const pollUrl = SCRIPT_URL + '?action=checkResponse&sessionId=' + encodeURIComponent(sessionId) + '&customerId=' + encodeURIComponent(custId);
+
+      fetch(pollUrl)
         .then(r => r.json())
         .then(res => {
           if (res && res.hasResponse) {
