@@ -580,17 +580,72 @@
       text-align: center;
       padding: 6px 0;
     }
+
+    /* SCREEN 7 PRODUCT PROMO CARD */
     .share-wrap {
       text-align: center;
-      padding: 12px 10px;
+      padding: 6px 4px 10px;
     }
-    .share-banner {
-      background: #F5F9FF;
-      border: 1.5px dashed #B2CCFF;
+    .product-promo-card {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin: 14px 0 16px;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    .promo-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .promo-category-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .promo-benefit-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      border-top: 1px dashed #E2E8F0;
+      padding-top: 8px;
+    }
+    .promo-pill {
+      background: #EFF6FF;
+      color: #0056D2;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+      border: 1px solid #BFDBFE;
+    }
+    .btn-wa-order {
+      background: linear-gradient(135deg, #12B76A 0%, #059669 100%);
+      color: #FFFFFF;
+      border: none;
       border-radius: var(--radius-element);
-      padding: 16px;
-      margin: 14px 0 18px;
+      padding: 15px;
+      font-size: 15.5px;
+      font-weight: 800;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px rgba(18, 183, 106, 0.32);
+      transition: all 0.2s ease;
+      margin-bottom: 10px;
     }
+    .btn-wa-order:active { transform: scale(0.98); }
   </style>
 </head>
 <body>
@@ -799,26 +854,48 @@
     </button>
   </section>
 
-  <!-- SCREEN 7: FINAL -->
+  <!-- SCREEN 7: PRODUCT PROMO & WHATSAPP ORDER SCREEN -->
   <section class="app-screen" id="scr7">
     <div class="share-wrap">
       <div class="mascot-art-card mac-share">
         <img src="assets/boy-share.png" alt="That's PingMe" class="mascot-png-share">
       </div>
 
-      <h1 style="font-size:26px;font-weight:900;color:#0052CC;margin-bottom:2px;">That's Ping<span style="color:#FF5E00;">Me!</span></h1>
-      <p style="font-size:13.5px;color:var(--primary-blue);font-weight:800;">One Scan. Instant Connection.</p>
+      <h1 style="font-size:24px;font-weight:900;color:#0052CC;margin-bottom:2px;">That's Ping<span style="color:#FF5E00;">Me!</span> 💙</h1>
+      <p style="font-size:13px;color:var(--primary-blue);font-weight:800;">One Scan. Instant Connection.</p>
 
-      <div class="share-banner">
-        <h3 style="font-size:16px;font-weight:800;color:#1D2939;margin-bottom:4px;" data-i18n="s7_enjoy">Enjoying PingMe?</h3>
-        <p style="font-size:13px;color:#667085;font-weight:500;" data-i18n="s7_sub">Share it with your friends and family!</p>
+      <!-- PROMOTIONAL CARD -->
+      <div class="product-promo-card">
+        <div class="promo-header-row">
+          <span style="font-size:14.5px;font-weight:800;color:#0F172A;" data-i18n="promo_head">Want your own PingMe Smart QR Tag?</span>
+        </div>
+        <div style="font-size:12px;color:#64748B;font-weight:600;margin-bottom:6px;" data-i18n="promo_get_for">Get one for your:</div>
+        <div class="promo-category-list">
+          <div>🚗 <span data-i18n="promo_item_veh">Car or Bike</span></div>
+          <div>🔑 <span data-i18n="promo_item_keys">Keys & Luggage</span></div>
+          <div>📦 <span data-i18n="promo_item_oth">Everyday belongings</span></div>
+        </div>
+
+        <div style="font-size:12px;color:#64748B;font-weight:700;margin-top:6px;" data-i18n="promo_why">Why PingMe?</div>
+        <div class="promo-benefit-pills">
+          <span class="promo-pill" data-i18n="ben_no_app">✓ No App Needed</span>
+          <span class="promo-pill" data-i18n="ben_priv">✓ Privacy Protected</span>
+          <span class="promo-pill" data-i18n="ben_wa">✓ Instant WhatsApp Alerts</span>
+        </div>
       </div>
 
-      <button class="btn-main" onclick="sharePingMe()">
-        <span>🔗</span> <span data-i18n="btn_share">Share PingMe</span>
+      <!-- PRIMARY: WHATSAPP ORDER BUTTON -->
+      <button class="btn-wa-order" onclick="orderProductWhatsApp()">
+        <span>🟢</span> <span data-i18n="btn_order_wa">GET YOUR OWN – ORDER VIA WHATSAPP</span>
       </button>
 
-      <button class="btn-outline" onclick="completeSession()">
+      <!-- SECONDARY: SHARE BUTTON -->
+      <button class="btn-outline" onclick="sharePingMe()" style="margin-top:0;margin-bottom:8px;">
+        <span>🔗</span> <span data-i18n="btn_share_friends">SHARE PINGME WITH FRIENDS</span>
+      </button>
+
+      <!-- TERTIARY: DONE BUTTON -->
+      <button class="btn-outline" onclick="completeSession()" style="margin-top:0;border-color:transparent;background:#F8FAFC;padding:10px;">
         <span>✓</span> <span data-i18n="btn_done">Done</span>
       </button>
     </div>
@@ -829,6 +906,13 @@
 <script>
   // BACKEND CONFIG
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec";
+
+  // EDITABLE PROMOTION DEFAULTS (CAN BE OVERRIDDEN BY SCRIPT / GOOGLE SHEET)
+  let promoConfig = {
+    orderPhone: "919003000000", // Will fallback or load from Sheet Config
+    orderMessage: "Hi! I'm interested in getting my own PingMe Smart QR Tag.\n\nI recently experienced PingMe and would like to know more about the available options, pricing and ordering process.\n\nPlease share the details. Thank you!",
+    shareUrl: "https://milircrafts.github.io/pingme/"
+  };
 
   // BILINGUAL TRANSLATION DATA
   const I18N = {
@@ -865,9 +949,17 @@
       btn_continue: "Continue →",
       s6_title: "The waiting time is over.",
       s6_sub: "Please try another way to contact the owner if required.",
-      s7_enjoy: "Enjoying PingMe?",
-      s7_sub: "Share it with your friends and family!",
-      btn_share: "Share PingMe",
+      promo_head: "Want your own PingMe Smart QR Tag?",
+      promo_get_for: "Get one for your:",
+      promo_item_veh: "Car or Bike",
+      promo_item_keys: "Keys & Luggage",
+      promo_item_oth: "Everyday belongings",
+      promo_why: "Why PingMe?",
+      ben_no_app: "✓ No App Needed",
+      ben_priv: "✓ Privacy Protected",
+      ben_wa: "✓ Instant WhatsApp Alerts",
+      btn_order_wa: "GET YOUR OWN – ORDER VIA WHATSAPP",
+      btn_share_friends: "SHARE PINGME WITH FRIENDS",
       btn_done: "Done",
       other_opt: "Other – Type your own message",
       enter_custom_alert: "Please type your message"
@@ -905,9 +997,17 @@
       btn_continue: "தொடரவும் →",
       s6_title: "காத்திருக்கும் நேரம் முடிந்தது.",
       s6_sub: "தேவைப்பட்டால் வேறு வழியில் உரிமையாளரை தொடர்பு கொள்ளவும்.",
-      s7_enjoy: "PingMe பிடித்திருக்கிறதா?",
-      s7_sub: "நண்பர்கள் மற்றும் குடும்பத்தினருடன் பகிருங்கள்!",
-      btn_share: "PingMe-ஐ பகிரவும்",
+      promo_head: "உங்கள் சொந்த PingMe ஸ்மார்ட் QR டேக் வேண்டுமா?",
+      promo_get_for: "இவைகளுக்கு பெற்றுக்கொள்ளுங்கள்:",
+      promo_item_veh: "கார் அல்லது பைக்",
+      promo_item_keys: "சாவி மற்றும் உடமைகள்",
+      promo_item_oth: "அன்றாட பொருட்கள்",
+      promo_why: "ஏன் PingMe?",
+      ben_no_app: "✓ ஆப் தேவையில்லை",
+      ben_priv: "✓ பாதுகாப்பு & பிரைவசி",
+      ben_wa: "✓ உடனடி வாட்ஸ்அப் அறிவிப்பு",
+      btn_order_wa: "வாட்ஸ்அப் மூலம் ஆர்டர் செய்ய",
+      btn_share_friends: "நண்பர்களுடன் பகிருங்கள்",
       btn_done: "முடிந்தது",
       other_opt: "மற்றவை – உங்கள் சொந்த செய்தியை தட்டச்சு செய்யவும்",
       enter_custom_alert: "உங்கள் செய்தியை உள்ளிடவும்"
@@ -981,7 +1081,22 @@
   window.addEventListener('DOMContentLoaded', () => {
     initGeolocation();
     resumeWaitingSession();
+    fetchLivePromoConfig();
   });
+
+  // Fetch optional dynamic promo overrides from Apps Script Config
+  function fetchLivePromoConfig() {
+    fetch(SCRIPT_URL + '?action=getPromoConfig')
+      .then(r => r.json())
+      .then(cfg => {
+        if (cfg && cfg.orderPhone) {
+          promoConfig.orderPhone = cfg.orderPhone;
+          if (cfg.orderMessage) promoConfig.orderMessage = cfg.orderMessage;
+          if (cfg.shareUrl) promoConfig.shareUrl = cfg.shareUrl;
+        }
+      })
+      .catch(() => {});
+  }
 
   function switchLanguage() {
     currentLang = currentLang === 'en' ? 'ta' : 'en';
@@ -1286,11 +1401,19 @@
     showScreen('scr7');
   }
 
+  // WHATSAPP DIRECT ORDER ACTION
+  function orderProductWhatsApp() {
+    const phone = promoConfig.orderPhone;
+    const msg = encodeURIComponent(promoConfig.orderMessage);
+    window.open("https://wa.me/" + phone + "?text=" + msg, "_blank");
+  }
+
+  // SMART SHARE PINGME ACTION
   function sharePingMe() {
-    const promo = "https://milircrafts.github.io/pingme/";
+    const promo = promoConfig.shareUrl;
     const data = {
       title: "PingMe - One Scan. Instant Connection.",
-      text: "Instant QR notification alert system!",
+      text: "Instant QR notification alert system! Get your own Smart QR Tag for cars, bikes & bags.",
       url: promo
     };
 
