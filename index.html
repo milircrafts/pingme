@@ -12,17 +12,15 @@
     :root {
       --primary-blue: #0056D2;
       --primary-orange: #FF5E00;
-      --brand-gradient: linear-gradient(135deg, #0056D2 0%, #0077FF 40%, #FF5E00 100%);
-      --bg-page: #E9EDF5;
+      --brand-gradient: linear-gradient(135deg, #0056D2 0%, #0077FF 45%, #FF5E00 100%);
+      --bg-page: #E4ECF7;
       --card-white: #FFFFFF;
-      --text-main: #1D2939;
+      --text-main: #101828;
       --text-muted: #667085;
       --border-soft: #E4E7EC;
       --accent-green: #12B76A;
       --accent-amber: #F79009;
       --accent-red: #F04438;
-      --shadow-card: 0 16px 40px rgba(16, 24, 40, 0.12);
-      --shadow-sm: 0 4px 12px rgba(16, 24, 40, 0.05);
       --radius-app: 32px;
       --radius-element: 18px;
     }
@@ -54,50 +52,29 @@
       max-width: 410px;
       background: var(--card-white);
       border-radius: var(--radius-app);
-      box-shadow: var(--shadow-card);
+      box-shadow: 0 20px 48px rgba(15, 34, 75, 0.16);
       overflow: hidden;
       border: 3px solid #FFFFFF;
       display: flex;
       flex-direction: column;
-      min-height: 640px;
+      min-height: 650px;
       position: relative;
     }
 
-    /* TOP BANNER ILLUSTRATION FOR SCREEN 1 */
+    /* TOP BANNER FOR SCREEN 1 */
     .top-scene-banner {
       width: 100%;
-      height: 110px;
-      background: linear-gradient(180deg, #A0E2FF 0%, #D8F3FF 60%, #E8F7FF 100%);
+      height: 140px;
       position: relative;
       overflow: hidden;
-      border-bottom: 2px solid #D0ECFB;
+      background: #A0E2FF;
+      display: block;
     }
-    .sun-disc {
-      position: absolute;
-      top: 14px;
-      right: 28px;
-      width: 38px;
-      height: 38px;
-      background: radial-gradient(circle, #FFE600 30%, #FFA800 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 18px rgba(255, 200, 0, 0.7);
-    }
-    .cloud-pill {
-      position: absolute;
-      background: #FFFFFF;
-      border-radius: 20px;
-      opacity: 0.85;
-    }
-    .c1 { width: 44px; height: 16px; top: 22px; left: 30px; }
-    .c2 { width: 55px; height: 18px; top: 40px; left: 160px; }
-    .ground-hill {
-      position: absolute;
-      bottom: -35px;
-      left: -20px;
-      right: -20px;
-      height: 75px;
-      background: linear-gradient(180deg, #5AD427 0%, #349E08 100%);
-      border-radius: 50%;
+    .top-scene-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     /* APP TOPBAR */
@@ -109,23 +86,23 @@
       border-bottom: 1px solid #F2F4F7;
       background: #FFFFFF;
       position: relative;
-      z-index: 2;
+      z-index: 5;
     }
 
     .btn-back-nav {
       background: #F2F4F7;
       border: none;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 17px;
+      font-size: 18px;
       color: #344054;
-      font-weight: 700;
-      transition: all 0.2s ease;
+      font-weight: 800;
+      transition: transform 0.15s ease;
     }
     .btn-back-nav:active { transform: scale(0.92); }
 
@@ -134,9 +111,14 @@
       align-items: center;
       gap: 10px;
     }
+    .brand-logo-img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
 
     .brand-wordmark h1 {
-      font-size: 20px;
+      font-size: 21px;
       font-weight: 900;
       color: #0052CC;
       line-height: 1;
@@ -146,7 +128,7 @@
     .brand-wordmark p {
       font-size: 9.5px;
       color: #667085;
-      font-weight: 700;
+      font-weight: 800;
       margin-top: 2px;
       letter-spacing: 0.2px;
     }
@@ -170,7 +152,7 @@
     .app-screen {
       display: none;
       flex-direction: column;
-      padding: 18px;
+      padding: 18px 20px 22px;
       flex: 1;
       animation: pageIn 0.22s ease forwards;
     }
@@ -182,11 +164,11 @@
     }
 
     .screen-header-title {
-      font-size: 19px;
-      font-weight: 800;
+      font-size: 20px;
+      font-weight: 900;
       color: #101828;
       text-align: center;
-      line-height: 1.3;
+      line-height: 1.25;
       margin-bottom: 4px;
     }
     .screen-header-desc {
@@ -194,46 +176,54 @@
       color: var(--text-muted);
       text-align: center;
       margin-bottom: 16px;
+      font-weight: 500;
     }
 
     /* SCREEN 1: CATEGORY CARDS */
     .category-selection-stack {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 4px;
+      gap: 13px;
+      margin-top: 2px;
     }
 
     .glossy-category-card {
       background: #FFFFFF;
       border: 1.5px solid var(--border-soft);
       border-radius: var(--radius-element);
-      padding: 15px;
+      padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 14px;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.04);
     }
     .glossy-category-card:hover, .glossy-category-card:active {
       border-color: #0056D2;
       background: #FAFCFF;
       transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0, 86, 210, 0.12);
+      box-shadow: 0 10px 22px rgba(0, 86, 210, 0.12);
     }
 
-    .category-3d-box {
-      width: 58px;
-      height: 58px;
+    .cat-art-box {
+      width: 60px;
+      height: 60px;
       border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
       flex-shrink: 0;
-      box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 4px 8px rgba(0,0,0,0.05);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.9), 0 4px 10px rgba(0,0,0,0.06);
+      overflow: hidden;
     }
+    .cat-art-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 4px;
+    }
+
     .box-veh { background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%); border: 1.5px solid #7DD3FC; }
     .box-keys { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 1.5px solid #FCD34D; }
     .box-other { background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border: 1.5px solid #F472B6; }
@@ -245,29 +235,36 @@
       margin-bottom: 2px;
     }
     .category-meta p {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--text-muted);
       font-weight: 500;
     }
 
-    /* SCREEN 2: MESSAGE SELECTION */
-    .cat-selected-pill {
+    /* SCREEN 2 & 3: HERO ARTWORK */
+    .screen-hero-art {
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: var(--radius-element);
-      background: #F8FAFC;
-      border: 1px solid var(--border-soft);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
-    .cat-selected-pill .icon { font-size: 24px; }
-    .cat-selected-pill h4 { font-size: 15px; font-weight: 800; }
+    .hero-img-vehicle {
+      width: 120px;
+      height: 75px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+    }
+    .hero-img-checklist {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.10));
+    }
 
     .msg-radio-group {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-top: 4px;
     }
 
     .msg-radio-option {
@@ -293,7 +290,7 @@
     }
     .msg-radio-option span {
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       color: #344054;
       line-height: 1.35;
     }
@@ -316,7 +313,7 @@
     /* SCREEN 3: CONFIRMATION */
     .summary-box {
       background: #F8FAFC;
-      border: 1.5px solid var(--border-soft);
+      border: 1px solid var(--border-soft);
       border-radius: var(--radius-element);
       padding: 14px 16px;
       margin-bottom: 16px;
@@ -347,7 +344,7 @@
       cursor: pointer;
       text-align: center;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-muted);
       transition: all 0.2s ease;
       display: flex;
@@ -412,7 +409,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 14px rgba(0, 86, 210, 0.25);
+      box-shadow: 0 6px 18px rgba(0, 86, 210, 0.28);
       transition: all 0.2s ease;
       margin-top: auto;
     }
@@ -436,26 +433,68 @@
       gap: 6px;
     }
 
-    /* MASCOT WRAPPERS */
-    .mascot-container {
+    /* MASCOT ARTWORK CONTAINERS */
+    .mascot-art-card {
+      width: 100%;
+      height: 195px;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      margin: 4px 0 14px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      margin: 6px 0 12px;
+      justify-content: center;
     }
-    .mascot-svg {
-      width: 155px;
-      height: 155px;
-      filter: drop-shadow(0 8px 16px rgba(0, 86, 210, 0.15));
+    .mac-waiting {
+      background: linear-gradient(180deg, #A1E2FF 0%, #D2F2FF 55%, #E9FBFF 100%);
+      border: 2px solid #BAE6FD;
+    }
+    .mac-success {
+      background: linear-gradient(180deg, #BFF6D4 0%, #E2FDED 60%, #F0FDF4 100%);
+      border: 2px solid #BBF7D0;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .mac-timeout {
+      background: linear-gradient(180deg, #FFE1DE 0%, #FFF0EE 60%, #FEF3F2 100%);
+      border: 2px solid #FECDD3;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .mac-share {
+      background: linear-gradient(180deg, #FFE8CC 0%, #FFF4E5 60%, #FFFDF8 100%);
+      border: 2px solid #FED7AA;
     }
 
-    /* SCREEN 4: COUNTDOWN & CHARACTER */
-    .float-anim {
-      animation: mascotFloat 3s ease-in-out infinite;
+    .mascot-png-waiting {
+      height: 175px;
+      object-fit: contain;
     }
-    @keyframes mascotFloat {
+    .mascot-png-boy {
+      height: 130px;
+      object-fit: contain;
+    }
+    .mascot-png-shield {
+      height: 48px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+    }
+    .mascot-png-hourglass {
+      height: 46px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(245, 158, 11, 0.3));
+    }
+    .mascot-png-share {
+      height: 175px;
+      object-fit: contain;
+    }
+
+    .float-mascot {
+      animation: mascotHover 3s ease-in-out infinite;
+    }
+    @keyframes mascotHover {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-7px); }
     }
 
     .countdown-svg-wrap {
@@ -537,26 +576,14 @@
       margin-bottom: 8px;
     }
 
-    /* SCREEN 6: TIMEOUT */
+    /* SCREEN 6 & 7 */
     .timeout-wrap {
       text-align: center;
-      padding: 14px 10px;
+      padding: 6px 0;
     }
-    .timeout-badge {
-      display: inline-block;
-      font-size: 42px;
-      margin-bottom: 4px;
-      animation: pulseAlert 2s infinite;
-    }
-    @keyframes pulseAlert {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    /* SCREEN 7: SHARE SCREEN */
     .share-wrap {
       text-align: center;
-      padding: 16px 10px;
+      padding: 12px 10px;
     }
     .share-banner {
       background: #F5F9FF;
@@ -573,10 +600,7 @@
 
   <!-- TOP BANNER (Screen 1 only) -->
   <div class="top-scene-banner" id="topBanner">
-    <div class="sun-disc"></div>
-    <div class="cloud-pill c1"></div>
-    <div class="cloud-pill c2"></div>
-    <div class="ground-hill"></div>
+    <img src="assets/top-banner.png" alt="PingMe Landscape">
   </div>
 
   <!-- APP TOPBAR -->
@@ -584,25 +608,7 @@
     <button class="btn-back-nav" id="backBtn" style="visibility:hidden;" onclick="navigateBack()">←</button>
 
     <div class="brand-cluster">
-      <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="120" height="120" rx="26" fill="url(#brandBgGrad)"/>
-        <path d="M40 28H28V40" stroke="white" stroke-width="7" stroke-linecap="round"/>
-        <path d="M80 28H92V40" stroke="white" stroke-width="7" stroke-linecap="round"/>
-        <path d="M40 92H28V80" stroke="white" stroke-width="7" stroke-linecap="round"/>
-        <path d="M80 92H92V80" stroke="white" stroke-width="7" stroke-linecap="round"/>
-        <circle cx="60" cy="58" r="24" fill="#FFFFFF"/>
-        <ellipse cx="60" cy="58" rx="36" ry="14" stroke="#FF7A00" stroke-width="5" transform="rotate(-20 60 58)"/>
-        <circle cx="52" cy="58" r="4" fill="#0056D2"/>
-        <circle cx="60" cy="58" r="4" fill="#0056D2"/>
-        <circle cx="68" cy="58" r="4" fill="#0056D2"/>
-        <defs>
-          <linearGradient id="brandBgGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#0052CC"/>
-            <stop offset="0.6" stop-color="#7928CA"/>
-            <stop offset="1" stop-color="#FF5E00"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img">
       <div class="brand-wordmark">
         <h1>Ping<span>Me</span></h1>
         <p>One Scan. Instant Connection.</p>
@@ -621,24 +627,33 @@
     <p class="screen-header-desc" data-i18n="s1_sub">Select an alert type to notify the owner</p>
 
     <div class="category-selection-stack">
+      <!-- 1. VEHICLE CARD -->
       <div class="glossy-category-card" onclick="chooseCategory('VEHICLE')">
-        <div class="category-3d-box box-veh">🚗</div>
+        <div class="cat-art-box box-veh">
+          <img src="assets/icon-vehicle.png" alt="Vehicle Alert">
+        </div>
         <div class="category-meta">
           <h3 data-i18n="cat_veh_h">Vehicle Alert</h3>
           <p data-i18n="cat_veh_p">Parking / Vehicle Issue</p>
         </div>
       </div>
 
+      <!-- 2. KEYS & LUGGAGE CARD -->
       <div class="glossy-category-card" onclick="chooseCategory('KEYS')">
-        <div class="category-3d-box box-keys">🔑</div>
+        <div class="cat-art-box box-keys">
+          <img src="assets/icon-keys-luggage.png" alt="Keys & Luggage">
+        </div>
         <div class="category-meta">
           <h3 data-i18n="cat_key_h">Keys & Luggage</h3>
           <p data-i18n="cat_key_p">Lost / Found Items</p>
         </div>
       </div>
 
+      <!-- 3. OTHER ASSISTANCE CARD -->
       <div class="glossy-category-card" onclick="chooseCategory('OTHER')">
-        <div class="category-3d-box box-other">📦</div>
+        <div class="cat-art-box box-other">
+          <img src="assets/icon-other.png" alt="Other Assistance">
+        </div>
         <div class="category-meta">
           <h3 data-i18n="cat_oth_h">Other Assistance</h3>
           <p data-i18n="cat_oth_p">Delivery / Courier / General</p>
@@ -649,16 +664,12 @@
 
   <!-- SCREEN 2: MESSAGE TEMPLATES -->
   <section class="app-screen" id="scr2">
-    <div class="cat-selected-pill">
-      <span class="icon" id="scr2Icon">🚗</span>
-      <div>
-        <h4 id="scr2Title">Vehicle Alert</h4>
-        <p style="font-size:12px;color:#667085;font-weight:600;">One Scan. Instant Connection.</p>
-      </div>
+    <div class="screen-hero-art">
+      <img src="assets/hero-vehicle.png" alt="Vehicle Alert" class="hero-img-vehicle">
     </div>
 
-    <h2 class="screen-header-title" style="text-align:left;font-size:17px;" data-i18n="s2_title">Select a message</h2>
-    <p class="screen-header-desc" style="text-align:left;margin-bottom:12px;" data-i18n="s2_sub">Choose a prefilled message or write your own</p>
+    <h2 class="screen-header-title" id="scr2Title" style="text-align:center;">Vehicle Alert</h2>
+    <p class="screen-header-desc" data-i18n="s2_sub">Select a message or write your own</p>
 
     <div class="msg-radio-group" id="templateList"></div>
 
@@ -671,11 +682,12 @@
 
   <!-- SCREEN 3: CONFIRM & SEND -->
   <section class="app-screen" id="scr3">
-    <div style="text-align:center;margin-bottom:10px;">
-      <div style="font-size:38px;">📋</div>
-      <h2 class="screen-header-title" data-i18n="s3_title">Confirm & Send</h2>
-      <p class="screen-header-desc" data-i18n="s3_sub">Review your alert details before sending</p>
+    <div class="screen-hero-art">
+      <img src="assets/hero-checklist.png" alt="Checklist" class="hero-img-checklist">
     </div>
+
+    <h2 class="screen-header-title" data-i18n="s3_title">Confirm & Send</h2>
+    <p class="screen-header-desc" data-i18n="s3_sub">Review your alert details before sending</p>
 
     <div class="summary-box">
       <div class="summary-row">
@@ -717,46 +729,10 @@
     </button>
   </section>
 
-  <!-- SCREEN 4: WAITING & 180s TIMER -->
+  <!-- SCREEN 4: WAITING WITH BOY LOOKING AT PHONE -->
   <section class="app-screen" id="scr4">
-    <!-- BOY CARTOON MASCOT (WAITING LOOKING AT PHONE) -->
-    <div class="mascot-container">
-      <svg class="mascot-svg float-anim" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="100" cy="100" r="95" fill="#EEF6FF"/>
-        <!-- Torso & Blue Shirt -->
-        <path d="M68 155C68 135 80 125 100 125C120 125 132 135 132 155L140 200H60L68 155Z" fill="#0056D2"/>
-        <path d="M92 125L100 140L108 125H92Z" fill="#FFFFFF"/>
-        <!-- Neck -->
-        <rect x="90" y="112" width="20" height="18" rx="6" fill="#FCD5B5"/>
-        <!-- Head -->
-        <circle cx="100" cy="85" r="38" fill="#FCD5B5"/>
-        <!-- Brown Hair -->
-        <path d="M64 78C64 56 80 44 100 44C120 44 136 56 136 78C136 82 135 88 135 88C130 76 122 72 100 72C78 72 70 76 65 88C65 88 64 82 64 78Z" fill="#5B311B"/>
-        <!-- Cap (Red and White) -->
-        <path d="M62 70C62 46 80 34 100 34C120 34 138 46 138 70H62Z" fill="#E62E2E"/>
-        <path d="M120 62C138 60 162 65 168 74C168 74 150 78 130 76L120 62Z" fill="#C21C1C"/>
-        <circle cx="100" cy="55" r="14" fill="#FFFFFF"/>
-        <circle cx="100" cy="55" r="6" fill="#0056D2"/>
-        <!-- Eyes (Looking up attentively) -->
-        <ellipse cx="88" cy="84" rx="5" ry="7" fill="#1D2939"/>
-        <circle cx="89" cy="82" r="2.5" fill="#FFFFFF"/>
-        <ellipse cx="112" cy="84" rx="5" ry="7" fill="#1D2939"/>
-        <circle cx="113" cy="82" r="2.5" fill="#FFFFFF"/>
-        <!-- Eyebrows (Interested) -->
-        <path d="M82 74Q88 70 94 74" stroke="#5B311B" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M106 74Q112 70 118 74" stroke="#5B311B" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Nose & Expectant Mouth -->
-        <path d="M100 88V93" stroke="#E0A37E" stroke-width="2" stroke-linecap="round"/>
-        <path d="M94 100Q100 106 106 100" stroke="#8E4B23" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Cheeks -->
-        <circle cx="78" cy="94" r="5" fill="#FFA5A5" opacity="0.6"/>
-        <circle cx="122" cy="94" r="5" fill="#FFA5A5" opacity="0.6"/>
-        <!-- Right Hand Holding Phone -->
-        <path d="M130 145C138 135 152 140 155 150C157 158 150 170 140 175L130 145Z" fill="#FCD5B5"/>
-        <rect x="142" y="125" width="28" height="48" rx="6" fill="#1D2939" transform="rotate(-15 142 125)"/>
-        <rect x="146" y="129" width="22" height="40" rx="4" fill="#00E5FF" transform="rotate(-15 146 129)"/>
-        <circle cx="152" cy="148" r="4" fill="#FFFFFF"/>
-      </svg>
+    <div class="mascot-art-card mac-waiting">
+      <img src="assets/boy-waiting.png" alt="Waiting for owner" class="mascot-png-waiting float-mascot">
     </div>
 
     <h2 class="screen-header-title" style="color:var(--primary-blue);" data-i18n="s4_title">Your alert has been sent!</h2>
@@ -780,45 +756,15 @@
     </div>
   </section>
 
-  <!-- SCREEN 5: REAL-TIME RESPONSE -->
+  <!-- SCREEN 5: RESPONSE WITH HAPPY BOY & SHIELD -->
   <section class="app-screen" id="scr5">
-    <!-- BOY CARTOON MASCOT (HAPPY THUMBS UP) -->
-    <div class="mascot-container">
-      <svg class="mascot-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="100" cy="100" r="95" fill="#EDFDF5"/>
-        <!-- Torso & Blue Shirt -->
-        <path d="M68 155C68 135 80 125 100 125C120 125 132 135 132 155L140 200H60L68 155Z" fill="#0056D2"/>
-        <path d="M92 125L100 140L108 125H92Z" fill="#FFFFFF"/>
-        <!-- Neck -->
-        <rect x="90" y="112" width="20" height="18" rx="6" fill="#FCD5B5"/>
-        <!-- Head -->
-        <circle cx="100" cy="85" r="38" fill="#FCD5B5"/>
-        <!-- Brown Hair -->
-        <path d="M64 78C64 56 80 44 100 44C120 44 136 56 136 78C136 82 135 88 135 88C130 76 122 72 100 72C78 72 70 76 65 88C65 88 64 82 64 78Z" fill="#5B311B"/>
-        <!-- Cap -->
-        <path d="M62 70C62 46 80 34 100 34C120 34 138 46 138 70H62Z" fill="#E62E2E"/>
-        <path d="M120 62C138 60 162 65 168 74C168 74 150 78 130 76L120 62Z" fill="#C21C1C"/>
-        <circle cx="100" cy="55" r="14" fill="#FFFFFF"/>
-        <circle cx="100" cy="55" r="6" fill="#12B76A"/>
-        <!-- Eyes (Happy Arcs) -->
-        <path d="M82 85C84 80 92 80 94 85" stroke="#1D2939" stroke-width="3.5" stroke-linecap="round"/>
-        <path d="M106 85C108 80 116 80 118 85" stroke="#1D2939" stroke-width="3.5" stroke-linecap="round"/>
-        <!-- Big Smiling Mouth -->
-        <path d="M88 95C88 108 112 108 112 95Z" fill="#B91C1C"/>
-        <path d="M92 95C95 99 105 99 108 95H92Z" fill="#FFFFFF"/>
-        <!-- Cheeks -->
-        <circle cx="76" cy="94" r="7" fill="#FF8A8A" opacity="0.7"/>
-        <circle cx="124" cy="94" r="7" fill="#FF8A8A" opacity="0.7"/>
-        <!-- Thumbs Up Hand -->
-        <path d="M140 135C148 128 160 130 165 140C168 148 162 155 152 160L135 150Z" fill="#FCD5B5"/>
-        <path d="M155 130C155 120 162 120 165 130L165 145" stroke="#FCD5B5" stroke-width="8" stroke-linecap="round"/>
-      </svg>
+    <div class="mascot-art-card mac-success">
+      <img src="assets/response-shield.png" alt="Response verified" class="mascot-png-shield">
+      <img src="assets/boy-happy.png" alt="Happy owner response" class="mascot-png-boy">
     </div>
 
-    <div style="text-align:center;">
-      <h2 class="screen-header-title" data-i18n="s5_title">Owner's Response</h2>
-      <p class="screen-header-desc" data-i18n="s5_sub">Direct message from the registered owner</p>
-    </div>
+    <h2 class="screen-header-title" data-i18n="s5_title">Owner's Response</h2>
+    <p class="screen-header-desc" data-i18n="s5_sub">Direct message from the registered owner</p>
 
     <div class="owner-reply-box">
       <div class="reply-tag">
@@ -835,33 +781,12 @@
     </button>
   </section>
 
-  <!-- SCREEN 6: TIMEOUT -->
+  <!-- SCREEN 6: TIMEOUT WITH HOURGLASS & SAD BOY -->
   <section class="app-screen" id="scr6">
     <div class="timeout-wrap">
-      <div class="timeout-badge">⏳</div>
-      <!-- BOY CARTOON MASCOT (SAD / WORRIED) -->
-      <div class="mascot-container">
-        <svg class="mascot-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="100" cy="100" r="95" fill="#FEF3F2"/>
-          <!-- Torso Drooping -->
-          <path d="M72 165C72 145 82 135 100 135C118 135 128 145 128 165L135 200H65L72 165Z" fill="#0056D2"/>
-          <rect x="91" y="122" width="18" height="18" rx="6" fill="#FCD5B5"/>
-          <!-- Head Slightly Tilted -->
-          <circle cx="100" cy="95" r="38" fill="#FCD5B5"/>
-          <path d="M64 88C64 66 80 54 100 54C120 54 136 66 136 88C136 92 135 98 135 98C130 86 122 82 100 82C78 82 70 86 65 98C65 98 64 92 64 88Z" fill="#5B311B"/>
-          <!-- Cap Slanted -->
-          <path d="M60 80C60 56 78 44 98 44C118 44 136 56 136 80H60Z" fill="#E62E2E" transform="rotate(-6 100 80)"/>
-          <!-- Sad Drooping Eyebrows -->
-          <path d="M82 82Q88 88 94 84" stroke="#5B311B" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M106 84Q112 88 118 82" stroke="#5B311B" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- Sad Big Puppy Eyes -->
-          <ellipse cx="88" cy="95" rx="5" ry="7" fill="#1D2939"/>
-          <ellipse cx="112" cy="95" rx="5" ry="7" fill="#1D2939"/>
-          <!-- Tear Drop -->
-          <path d="M122 104C122 108 126 112 129 112C132 112 135 108 135 104C135 100 129 95 129 95C129 95 122 100 122 104Z" fill="#00B4D8"/>
-          <!-- Frown Mouth -->
-          <path d="M92 112Q100 105 108 112" stroke="#8E4B23" stroke-width="3" stroke-linecap="round"/>
-        </svg>
+      <div class="mascot-art-card mac-timeout">
+        <img src="assets/timeout-hourglass.png" alt="Time over" class="mascot-png-hourglass">
+        <img src="assets/boy-sad.png" alt="No response received" class="mascot-png-boy">
       </div>
 
       <h2 class="screen-header-title" data-i18n="s6_title">The waiting time is over.</h2>
@@ -875,33 +800,11 @@
     </button>
   </section>
 
-  <!-- SCREEN 7: FINAL & SHARE -->
+  <!-- SCREEN 7: FINAL SHARE SCREEN -->
   <section class="app-screen" id="scr7">
     <div class="share-wrap">
-      <!-- BOY CARTOON MASCOT (HOLDING PINGME CARD) -->
-      <div class="mascot-container">
-        <svg class="mascot-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="100" cy="100" r="95" fill="#FFF5EA"/>
-          <!-- Torso -->
-          <path d="M68 155C68 135 80 125 100 125C120 125 132 135 132 155L140 200H60L68 155Z" fill="#0056D2"/>
-          <rect x="90" y="112" width="20" height="18" rx="6" fill="#FCD5B5"/>
-          <circle cx="100" cy="85" r="38" fill="#FCD5B5"/>
-          <path d="M62 70C62 46 80 34 100 34C120 34 138 46 138 70H62Z" fill="#E62E2E"/>
-          <path d="M120 62C138 60 162 65 168 74H130L120 62Z" fill="#C21C1C"/>
-          <circle cx="100" cy="55" r="14" fill="#FFFFFF"/>
-          <circle cx="100" cy="55" r="6" fill="#FF5E00"/>
-          <!-- Smiling Eyes -->
-          <ellipse cx="88" cy="84" rx="4.5" ry="6" fill="#1D2939"/>
-          <circle cx="89" cy="82" r="2" fill="#FFFFFF"/>
-          <ellipse cx="112" cy="84" rx="4.5" ry="6" fill="#1D2939"/>
-          <circle cx="113" cy="82" r="2" fill="#FFFFFF"/>
-          <path d="M92 98Q100 106 108 98" stroke="#8E4B23" stroke-width="3" stroke-linecap="round"/>
-          <!-- Phone Card Extended in Hand -->
-          <rect x="135" y="115" width="40" height="60" rx="8" fill="#FFFFFF" stroke="#0056D2" stroke-width="2.5"/>
-          <rect x="142" y="125" width="26" height="26" rx="4" fill="#0056D2"/>
-          <circle cx="155" cy="138" r="5" fill="#FFFFFF"/>
-          <circle cx="155" cy="165" r="3" fill="#FF5E00"/>
-        </svg>
+      <div class="mascot-art-card mac-share">
+        <img src="assets/boy-share.png" alt="That's PingMe" class="mascot-png-share">
       </div>
 
       <h1 style="font-size:26px;font-weight:900;color:#0052CC;margin-bottom:2px;">That's Ping<span style="color:#FF5E00;">Me!</span></h1>
@@ -1116,7 +1019,6 @@
 
     chosenCategory = cat;
     const meta = CATEGORIES[cat];
-    document.getElementById('scr2Icon').innerText = meta.icon;
     document.getElementById('scr2Title').innerText = currentLang === 'ta' ? meta.titleTa : meta.titleEn;
     populateTemplates();
     showScreen('scr2');
