@@ -58,7 +58,7 @@
       transition: opacity 0.3s ease;
     }
     .splash-content { text-align: center; }
-    .splash-logo { width: 90px; height: 90px; border-radius: 50%; margin-bottom: 14px; }
+    .splash-logo { width: 90px; height: 90px; border-radius: 50%; margin-bottom: 14px; object-fit: contain; }
     .splash-spinner {
       width: 28px; height: 28px;
       border: 3px solid rgba(255,255,255,0.15);
@@ -93,27 +93,38 @@
       align-items: center;
       margin-bottom: 18px;
     }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: contain;
+    }
     .brand-group {
       display: flex;
       flex-direction: column;
     }
     .brand-title {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       color: #0284c7;
       letter-spacing: -0.5px;
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
+      line-height: 1.1;
     }
     .brand-title span { color: #ef4444; }
     .brand-tagline {
-      font-size: 8.5px;
+      font-size: 8px;
       font-weight: 800;
       color: #475569;
       letter-spacing: 0.6px;
       text-transform: uppercase;
-      margin-top: -2px;
     }
     .lang-toggle-capsule {
       background: #f1f5f9;
@@ -132,7 +143,7 @@
     /* Hero Banner Area */
     .hero-banner {
       width: 100%;
-      height: 125px;
+      height: 130px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -140,7 +151,7 @@
     }
     .hero-banner img {
       max-width: 100%;
-      max-height: 125px;
+      max-height: 130px;
       object-fit: contain;
     }
 
@@ -203,8 +214,8 @@
       text-align: left;
     }
     .cat-img-box {
-      width: 58px;
-      height: 52px;
+      width: 60px;
+      height: 54px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -493,7 +504,7 @@
   <!-- SPLASH SCREEN OVERLAY -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
-      <img src="assets/pingme-logo.png" alt="PingMe" class="splash-logo" onerror="this.style.display='none'">
+      <img src="assets/pingme-logo.png" alt="PingMe" class="splash-logo" onerror="this.src='./assets/pingme-logo.png'">
       <div class="splash-spinner"></div>
     </div>
   </div>
@@ -503,9 +514,12 @@
     <!-- SCREEN 1: CATEGORY SELECTION -->
     <div id="screen1" class="app-card active">
       <div class="header-bar">
-        <div class="brand-group">
-          <div class="brand-title">Ping<span>Me</span></div>
-          <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+        <div class="brand-wrap">
+          <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img" onerror="this.src='./assets/pingme-logo.png'">
+          <div class="brand-group">
+            <div class="brand-title">Ping<span>Me</span></div>
+            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+          </div>
         </div>
         <button class="lang-toggle-capsule" onclick="toggleLanguage()">
           🌐 <span id="langDisplay">தமிழ் | ENG</span>
@@ -523,7 +537,7 @@
         <div class="cat-btn" onclick="selectCategory('parking')">
           <div class="cat-left">
             <div class="cat-img-box">
-              <img src="assets/cartoon-car.png" alt="Parking" onerror="this.onerror=null; this.src='https://api.iconify.design/fluent-emoji:red-car.svg'">
+              <img src="assets/car-bike-3d.png" alt="Parking" onerror="this.src='./assets/car-bike-3d.png'">
             </div>
             <div class="cat-title-text" id="catParkingText">Car & Bike<br>Parking</div>
           </div>
@@ -534,7 +548,7 @@
         <div class="cat-btn" onclick="selectCategory('lost_found')">
           <div class="cat-left">
             <div class="cat-img-box">
-              <img src="assets/cartoon-lost.png" alt="Luggage" onerror="this.onerror=null; this.src='https://api.iconify.design/fluent-emoji:luggage.svg'">
+              <img src="assets/luggage-keys-3d.png" alt="Luggage" onerror="this.src='./assets/luggage-keys-3d.png'">
             </div>
             <div class="cat-title-text" id="catLostText">Lost & Found<br>Keys & Bags</div>
           </div>
@@ -545,7 +559,7 @@
         <div class="cat-btn" onclick="selectCategory('emergency')">
           <div class="cat-left">
             <div class="cat-img-box">
-              <img src="assets/cartoon-help.png" alt="Assistance" onerror="this.onerror=null; this.src='https://api.iconify.design/fluent-emoji:bellhop-bell.svg'">
+              <img src="assets/support-bell-3d.png" alt="Assistance" onerror="this.src='./assets/support-bell-3d.png'">
             </div>
             <div class="cat-title-text" id="catHelpText">Other<br>General<br>Assistance</div>
           </div>
@@ -561,9 +575,12 @@
     <!-- SCREEN 2: SELECT MESSAGE & PHOTO ATTACHMENT -->
     <div id="screen2" class="app-card">
       <div class="header-bar">
-        <div class="brand-group">
-          <div class="brand-title">Ping<span>Me</span></div>
-          <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+        <div class="brand-wrap">
+          <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img" onerror="this.src='./assets/pingme-logo.png'">
+          <div class="brand-group">
+            <div class="brand-title">Ping<span>Me</span></div>
+            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+          </div>
         </div>
         <button class="lang-toggle-capsule" onclick="toggleLanguage()">
           🌐 <span id="langDisplay2">தமிழ் | ENG</span>
@@ -578,7 +595,7 @@
 
       <!-- Hero 3D Illustration -->
       <div class="hero-banner">
-        <img id="screen2HeroImg" src="assets/cartoon-car.png" alt="Category Hero" onerror="this.src='https://api.iconify.design/fluent-emoji:sport-utility-vehicle.svg'">
+        <img id="screen2HeroImg" src="assets/hero-vehicle.png" alt="Hero Vehicle" onerror="this.src='assets/car-bike-3d.png'">
       </div>
 
       <div style="text-align: center; margin-bottom: 12px;">
@@ -621,9 +638,12 @@
     <!-- SCREEN 3: WAITING FOR RESPONSE, ACK & WHATSAPP SHARE -->
     <div id="screen3" class="app-card">
       <div class="header-bar">
-        <div class="brand-group">
-          <div class="brand-title">Ping<span>Me</span></div>
-          <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+        <div class="brand-wrap">
+          <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img" onerror="this.src='./assets/pingme-logo.png'">
+          <div class="brand-group">
+            <div class="brand-title">Ping<span>Me</span></div>
+            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+          </div>
         </div>
         <button class="lang-toggle-capsule" onclick="toggleLanguage()">
           🌐 <span id="langDisplay3">தமிழ் | ENG</span>
@@ -632,7 +652,7 @@
 
       <!-- Hero Mascot on Paper Plane -->
       <div class="hero-banner">
-        <img src="assets/pilot-mascot.png" alt="PingMe Mascot" onerror="this.src='https://api.iconify.design/fluent-emoji:airplane-arrival.svg'">
+        <img src="assets/mascot-airplane-3d.png" alt="PingMe Mascot" onerror="this.src='./assets/mascot-airplane-3d.png'">
       </div>
 
       <div style="text-align: center; margin-bottom: 10px;">
@@ -849,9 +869,9 @@
     function selectCategory(cat) {
       currentCategory = cat;
       var hero = document.getElementById('screen2HeroImg');
-      if (cat === 'parking') hero.src = 'assets/cartoon-car.png';
-      else if (cat === 'lost_found') hero.src = 'assets/cartoon-lost.png';
-      else hero.src = 'assets/cartoon-help.png';
+      if (cat === 'parking') hero.src = 'assets/hero-vehicle.png';
+      else if (cat === 'lost_found') hero.src = 'assets/luggage-keys-3d.png';
+      else hero.src = 'assets/support-bell-3d.png';
 
       renderMessageOptions();
       showScreen('screen2');
@@ -913,65 +933,77 @@
       document.getElementById('thumbWrap').style.display = 'none';
     }
 
-    // Instant Optimistic Submit & Timer
-    function handleSendAlert() {
-      var btn = document.getElementById('sendAlertBtn');
-      btn.disabled = true;
-
+    function getOrGenSessionId() {
       if (!currentSessionId) {
-        currentSessionId = 'SESS_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+        currentSessionId = 'INC-' + Date.now();
         try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
       }
+      return currentSessionId;
+    }
 
+    // ACCURATE LIVE LOCATION FETCH + INSTANT DISPATCH
+    function handleSendAlert() {
+      var btn = document.getElementById('sendAlertBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>📍 Acquiring Location...</span>';
+      }
+
+      var sessId = getOrGenSessionId();
       var cooldownEnd = Date.now() + (165 * 1000);
       try { localStorage.setItem('pingme_cooldown_' + tagId, cooldownEnd.toString()); } catch(e){}
 
-      // Transition immediately to Screen 3 (< 50ms)
-      startCountdown(165);
-      showScreen('screen3');
-      startAckPolling();
-
-      // Background dispatch (GPS + Apps Script)
       var noteVal = document.getElementById('customNoteInput').value.trim();
 
+      // Ensure GPS resolves before dispatching alert payload
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function(pos) {
-            var mapUrl = 'https://maps.google.com/?q=' + pos.coords.latitude + ',' + pos.coords.longitude;
-            dispatchBackend(mapUrl, noteVal);
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+            var mapUrl = 'https://maps.google.com/?q=' + lat + ',' + lng;
+            proceedWithDispatch(mapUrl, noteVal, sessId);
           },
-          function() {
-            dispatchBackend('', noteVal);
+          function(err) {
+            // If GPS denied/timed out, proceed cleanly without hanging
+            proceedWithDispatch('', noteVal, sessId);
           },
-          { timeout: 3500 }
+          { enableHighAccuracy: true, timeout: 2500, maximumAge: 0 }
         );
       } else {
-        dispatchBackend('', noteVal);
+        proceedWithDispatch('', noteVal, sessId);
       }
     }
 
-    function dispatchBackend(locationUrl, noteVal) {
-      var postData = {
-        action: 'submitAlert',
-        customerId: tagId,
-        category: currentCategory,
-        message: selectedMessage,
-        urgency: 'Normal',
-        locationUrl: locationUrl,
-        notes: noteVal,
-        clientSessionId: currentSessionId,
-        photoBase64: attachedPhotoBase64
-      };
+    function proceedWithDispatch(locationUrl, noteVal, sessId) {
+      startCountdown(165);
+      showScreen('screen3');
+      startAckPolling();
+      dispatchBackend(locationUrl, noteVal, sessId);
+    }
 
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(postData)
-      }).catch(function() {
-        var img = new Image();
-        img.src = SCRIPT_URL + '?action=submitAlert&customerId=' + encodeURIComponent(tagId) + '&category=' + encodeURIComponent(currentCategory) + '&message=' + encodeURIComponent(selectedMessage) + '&locationUrl=' + encodeURIComponent(locationUrl) + '&notes=' + encodeURIComponent(noteVal) + '&clientSessionId=' + encodeURIComponent(currentSessionId);
-      });
+    function dispatchBackend(locationUrl, noteVal, sessId) {
+      // Direct GET query containing both parameter names (locationUrl & location)
+      var targetUrl = SCRIPT_URL + 
+        '?action=submitAlert' +
+        '&customerId=' + encodeURIComponent(tagId) +
+        '&tagId=' + encodeURIComponent(tagId) +
+        '&category=' + encodeURIComponent(currentCategory) +
+        '&message=' + encodeURIComponent(selectedMessage) +
+        '&urgency=Normal' +
+        '&locationUrl=' + encodeURIComponent(locationUrl) +
+        '&location=' + encodeURIComponent(locationUrl) +
+        '&notes=' + encodeURIComponent(noteVal) +
+        '&sessionId=' + encodeURIComponent(sessId) +
+        '&clientSessionId=' + encodeURIComponent(sessId);
+
+      // Reliable multi-channel transmission
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(targetUrl);
+      } else {
+        var p = new Image();
+        p.src = targetUrl;
+      }
     }
 
     function startCountdown(seconds) {
@@ -998,25 +1030,32 @@
       document.getElementById('timerCounter').textContent = str;
     }
 
-    // Live Owner Reply Polling
+    // Live Owner Reply Polling (Checks every 4s)
     function startAckPolling() {
       clearInterval(pollTimer);
+      var sessId = getOrGenSessionId();
+
       pollTimer = setInterval(function() {
-        if (!currentSessionId) return;
-        fetch(SCRIPT_URL + '?action=checkStatus&sessionId=' + encodeURIComponent(currentSessionId))
+        if (!sessId) return;
+
+        var pollUrl = SCRIPT_URL + '?action=checkStatus&sessionId=' + encodeURIComponent(sessId) + '&tagId=' + encodeURIComponent(tagId) + '&t=' + Date.now();
+
+        fetch(pollUrl)
           .then(function(res) { return res.json(); })
           .then(function(data) {
-            if (data && data.acknowledged) {
+            if (data && (data.acknowledged || data.reply || data.replyText || data.ownerReply || data.status === 'RESOLVED')) {
               clearInterval(pollTimer);
-              var box = document.getElementById('ackBlock');
-              if (box) {
-                document.getElementById('ackMessageText').textContent = '"' + (data.replyText || 'Coming in 2 mins!') + '"';
+              var replyMsg = data.replyText || data.reply || data.ownerReply || 'Coming in 2 mins!';
+              var ackBox = document.getElementById('ackBlock');
+              if (ackBox) {
+                document.getElementById('ackMessageText').textContent = '"' + replyMsg + '"';
                 document.getElementById('ackTimestamp').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                box.style.display = 'block';
+                ackBox.style.display = 'block';
               }
             }
-          }).catch(function() {});
-      }, 5000);
+          })
+          .catch(function(err) {});
+      }, 4000);
     }
 
     function shareViaWhatsApp() {
