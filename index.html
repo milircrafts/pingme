@@ -936,12 +936,12 @@
     }
 
     function getOrGenSessionId() {
-      if (!currentSessionId) {
-        currentSessionId = 'INC-' + Date.now();
-        try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
-      }
-      return currentSessionId;
-    }
+  if (!currentSessionId) {
+    currentSessionId = 'SESS-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
+  }
+  return currentSessionId;
+}
 
     // DISPATCH WITH LOCATION CONFIRMATION
     function handleSendAlert() {
@@ -1010,8 +1010,7 @@
     }
 
     // POLLING USING BOTH SESSION ID & TAG ID
-    // POLLING USING BOTH SESSION ID & TAG ID
-    function startAckPolling(sessId) {
+      function startAckPolling(sessId) {
       clearInterval(pollTimer);
 
       pollTimer = setInterval(function() {
