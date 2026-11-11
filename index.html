@@ -1214,79 +1214,44 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Cooldown check
+      // 1. Language Switcher Toggle
+      const langBtn = document.getElementById('langToggle');
+      if (langBtn) {
+        langBtn.onclick = () => {
+          currentLang = (currentLang === 'en') ? 'ta' : 'en';
+          updateLanguage();
+        };
+      }
+
+      // 2. Category Card Click Handlers (Go from Screen 1 to Screen 2)
+      document.querySelectorAll('.category-card').forEach(card => {
+        card.onclick = () => {
+          const cat = card.getAttribute('data-category');
+          if (cat) selectCategory(cat);
+        };
+      });
+
+      // 3. Back Button (Screen 2 back to Screen 1)
+      const backBtn = document.getElementById('backToCategoriesBtn');
+      if (backBtn) {
+        backBtn.onclick = () => showScreen('screen1');
+      }
+
+      // 4. Send Alert Button
+      const sendBtn = document.getElementById('sendAlertBtn');
+      if (sendBtn) {
+        sendBtn.onclick = handleSendAlert;
+      }
+
+      // 5. Cooldown check runs LAST so click events are already registered
       const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
       if (activeCooldown) {
         const remSeconds = Math.floor((parseInt(activeCooldown, 10) - Date.now()) / 1000);
         if (remSeconds > 0) {
           startScreen3Timer(remSeconds);
           showScreen('screen3');
-          return;
         } else {
           localStorage.removeItem(`pingme_cooldown_${tagId}`);
         }
       }
-
-      // Language Switcher Toggle
-      document.getElementById('langToggle').onclick = () => {
-        const nextLang = currentLang === 'en' ? 'ta' : 'en';
-        applyLanguage(nextLang);
-      };
-
-      // Categories
-      document.querySelectorAll('.category-card').forEach(btn => {
-        btn.onclick = () => selectCategory(btn.dataset.category);
-      });
-
-      // Back Button
-      document.getElementById('backBtn').onclick = () => showScreen('screen1');
-
-      // Notes Character Counter (0 / 120)
-      const noteInput = document.getElementById('customNoteInput');
-      const countEl = document.getElementById('charCount');
-      noteInput.oninput = () => {
-        countEl.textContent = noteInput.value.length;
-      };
-
-      // Photo Zone
-      const photoInput = document.getElementById('photoInput');
-      document.getElementById('photoZone').onclick = (e) => {
-        if (e.target.id !== 'removePhotoBtn') photoInput.click();
-      };
-
-      photoInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        compressImage(file, (base64) => {
-          compressedPhotoBase64 = base64;
-          document.getElementById('photoThumb').src = base64;
-          document.getElementById('photoPrompt').classList.add('hidden');
-          document.getElementById('photoPreviewWrap').classList.remove('hidden');
-        });
-      };
-
-      document.getElementById('removePhotoBtn').onclick = (e) => {
-        e.stopPropagation();
-        compressedPhotoBase64 = null;
-        photoInput.value = '';
-        document.getElementById('photoPreviewWrap').classList.add('hidden');
-        document.getElementById('photoPrompt').classList.remove('hidden');
-      };
-
-      // Send Alert
-      document.getElementById('sendAlertBtn').onclick = handleSendAlert;
-
-      // WhatsApp Share
-      document.getElementById('whatsappShareBtn').onclick = () => {
-        const text = encodeURIComponent('Found this smart QR tag system for vehicles and items — check out PingMe!');
-        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-      };
-
-      // Done
-      document.getElementById('doneBtn').onclick = () => {
-        window.location.href = 'about:blank';
-      };
     });
-  </script>
-</body>
-</html>
