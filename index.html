@@ -1077,35 +1077,50 @@
       }
     }
 
-    // DISPATCH (MATCHES LINE 70 IN CODE.GS WITH GPS PARAMS)
+    // OPTIMIZED INSTANT DISPATCH
     async function handleSendAlert() {
       const sendBtn = document.getElementById('sendAlertBtn');
       sendBtn.disabled = true;
-      sendBtn.innerHTML = `<span>⏳</span> ${I18N[currentLang].sending_btn}`;
 
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       } catch (e) {}
 
-      const noteText = document.getElementById('customNoteInput').value.trim();
-      const coords = await getCoordinates();
-      const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
-
-      // Passes locationUrl AND location alias
-      const submitUrl = `${SCRIPT_URL}?action=submitAlert&customerId=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&urgency=Normal&locationUrl=${encodeURIComponent(mapsUrl)}&location=${encodeURIComponent(mapsUrl)}&notes=${encodeURIComponent(noteText)}`;
-
-      try {
-        const response = await fetch(submitUrl);
-        const resData = await response.json();
-        
-        if (resData && (resData.sessionId || resData.session_id || resData.id)) {
-          currentSessionId = resData.sessionId || resData.session_id || resData.id;
-          localStorage.setItem(`pingme_session_${tagId}`, currentSessionId);
-        }
-      } catch (err) {
-        const img = new Image();
-        img.src = submitUrl;
+      // 1. Instantly generate a fallback session ID and save cooldown
+      if (!currentSessionId) {
+        currentSessionId = 'SESS_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+        localStorage.setItem(`pingme_session_${tagId}`, currentSessionId);
       }
+
+      const cooldownEnd = Date.now() + 180 * 1000;
+      localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
+
+      // 2. Switch screen and start the timer immediately (< 50ms)
+      startScreen3Timer(180);
+      showScreen('screen3');
+
+      // 3. Dispatch data in background without blocking the UI
+      (async () => {
+        const noteText = document.getElementById('customNoteInput').value.trim();
+        const coords = await getCoordinates();
+        const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
+
+        const submitUrl = `${SCRIPT_URL}?action=submitAlert&customerId=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&urgency=Normal&locationUrl=${encodeURIComponent(mapsUrl)}&location=${encodeURIComponent(mapsUrl)}&notes=${encodeURIComponent(noteText)}&clientSessionId=${encodeURIComponent(currentSessionId)}`;
+
+        try {
+          const response = await fetch(submitUrl);
+          const resData = await response.json();
+          if (resData && (resData.sessionId || resData.session_id || resData.id)) {
+            currentSessionId = resData.sessionId || resData.session_id || resData.id;
+            localStorage.setItem(`pingme_session_${tagId}`, currentSessionId);
+          }
+        } catch (err) {
+          // Fallback image ping to guarantee delivery across network interruptions
+          const img = new Image();
+          img.src = submitUrl;
+        }
+      })();
+    }
 
       const cooldownEnd = Date.now() + 180 * 1000;
       localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
