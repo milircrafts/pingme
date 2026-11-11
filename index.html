@@ -1114,37 +1114,59 @@
     }
 
     // TIMER IN PURE SECONDS (180s -> 0s)
+    // ================= TIMER & BULLETPROOF REPLY POLLING =================
     function startScreen3Timer(secondsRemaining) {
       let sec = secondsRemaining;
       const countdownEl = document.getElementById('countdownText');
-      countdownEl.textContent = `${sec}s`;
+      if (countdownEl) countdownEl.textContent = `${sec}s`;
 
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         sec--;
-        if (sec >= 0) {
+        if (sec >= 0 && countdownEl) {
           countdownEl.textContent = `${sec}s`;
         }
 
         if (sec <= 0) {
           clearInterval(countdownInterval);
-          document.getElementById('socialActionBlock').classList.remove('hidden');
+          clearInterval(pollInterval);
+          const shareBlock = document.getElementById('socialActionBlock');
+          if (shareBlock) shareBlock.classList.remove('hidden');
         }
       }, 1000);
 
-      // Check owner reply
+      // JSONP callback handler on window
+      window.onPingMeReplyReceived = function(data) {
+        if (data && (data.replyReceived || data.status === 'replied' || data.reply)) {
+          clearInterval(pollInterval);
+          clearInterval(countdownInterval);
+          const replyMsg = data.replyText || data.reply || data.message || 'Coming in 2 mins!';
+          triggerOwnerResponse(replyMsg);
+        }
+      };
+
+      // Poll every 3.5 seconds
       clearInterval(pollInterval);
-      pollInterval = setInterval(async () => {
-        try {
-          const res = await fetch(`${SCRIPT_URL}?action=checkReply&tagId=${encodeURIComponent(tagId)}`);
-          const data = await res.json();
-          if (data && data.replyReceived) {
-            clearInterval(pollInterval);
-            clearInterval(countdownInterval);
-            triggerOwnerResponse(data.replyText || 'Coming in 2 mins!');
-          }
-        } catch (e) {}
-      }, 4000);
+      pollInterval = setInterval(() => {
+        // Method 1: JSONP Script Tag (Never blocked by CORS or Google 302 redirects)
+        const oldScript = document.getElementById('pingme_jsonp_script');
+        if (oldScript) oldScript.remove();
+
+        const jsonpScript = document.createElement('script');
+        jsonpScript.id = 'pingme_jsonp_script';
+        jsonpScript.src = `${SCRIPT_URL}?action=checkReply&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&tagId=${encodeURIComponent(tagId)}&callback=onPingMeReplyReceived&_ts=${Date.now()}`;
+        document.body.appendChild(jsonpScript);
+
+        // Method 2: Standard fetch fallback
+        fetch(`${SCRIPT_URL}?action=checkReply&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&tagId=${encodeURIComponent(tagId)}&_ts=${Date.now()}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && (data.replyReceived || data.status === 'replied' || data.reply)) {
+              window.onPingMeReplyReceived(data);
+            }
+          })
+          .catch(() => {});
+      }, 3500);
     }
 
     function triggerOwnerResponse(replyText) {
