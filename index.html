@@ -916,20 +916,27 @@
       const noteText = document.getElementById('customNoteInput').value.trim();
       const coords = await getCoordinates();
 
+      // Send all parameter variations to guarantee GAS matches your sheet lookup
       const payload = {
+        action: 'sendAlert',
+        tag: tagId,
+        id: tagId,
         tagId: tagId,
+        customerId: tagId,
         category: currentCategory,
         message: selectedMessage,
         customNote: noteText,
+        notes: noteText,
         location: coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '',
         photo: compressedPhotoBase64 || ''
       };
 
       try {
+        // Post as URL-encoded / plain text to avoid CORS preflight issues with GAS
         await fetch(SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
 
@@ -944,7 +951,6 @@
         sendBtn.innerHTML = '<span class="btn-icon">✈️</span><span class="btn-label">Send Instant Alert</span>';
       }
     }
-
     function startScreen3Timer(secondsRemaining) {
       let sec = secondsRemaining;
       const countdownEl = document.getElementById('countdownText');
