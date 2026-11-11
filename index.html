@@ -68,6 +68,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+      display: none !important;
     }
     .splash-content {
       text-align: center;
@@ -1202,14 +1203,25 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Dismiss splash after 1.5s
-      setTimeout(() => {
+      // Bulletproof Splash Dismissal
+    (function dismissSplash() {
+      function hide() {
         const splash = document.getElementById('splashScreen');
         if (splash) {
           splash.classList.add('fade-out');
-          setTimeout(() => splash.remove(), 400);
+          setTimeout(() => {
+            if (splash.parentNode) splash.parentNode.removeChild(splash);
+          }, 400);
         }
-      }, 1500);
+      }
+      // Guarantee dismissal after 1.2s even if page assets are still loading
+      if (document.readyState === 'complete') {
+        setTimeout(hide, 1200);
+      } else {
+        window.addEventListener('load', () => setTimeout(hide, 1000));
+        setTimeout(hide, 1500); // Hard fallback safety timer
+      }
+    })();
 
       // Cooldown check
       const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
