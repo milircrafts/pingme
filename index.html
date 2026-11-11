@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg: #090d16;
-      --card-bg: rgba(22, 30, 49, 0.85);
+      --card-bg: rgba(22, 30, 49, 0.88);
       --border: #2e3c59;
       --accent: #00d2ff;
       --accent-glow: rgba(0, 210, 255, 0.35);
@@ -137,7 +137,7 @@
       display: block;
     }
 
-    /* Input Styles */
+    /* Input Fields */
     .form-group {
       margin-bottom: 14px;
     }
@@ -168,7 +168,7 @@
       resize: none;
     }
 
-    /* Dual Media Buttons (GPS & Photo) */
+    /* Dual Media Buttons (Location & Photo) */
     .media-buttons-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -392,34 +392,29 @@
           <img src="assets/car-bike-3d.png" class="cat-img" onerror="this.src='assets/hero-vehicle.png'">
           <span class="cat-label">Vehicle</span>
         </div>
-        <div class="cat-btn" onclick="selectCategory('Luggage / Keys', this)">
+        <div class="cat-btn" onclick="selectCategory('Keys / Bag', this)">
           <img src="assets/luggage-keys-3d.png" class="cat-img" onerror="this.src='assets/icon-keys-luggage.png'">
           <span class="cat-label">Keys / Bag</span>
         </div>
-        <div class="cat-btn" onclick="selectCategory('Other Belonging', this)">
+        <div class="cat-btn" onclick="selectCategory('Other', this)">
           <img src="assets/mascot-airplane-3d.png" class="cat-img" onerror="this.src='assets/icon-other.png'">
           <span class="cat-label">Other</span>
         </div>
       </div>
       <input type="hidden" id="itemTypeSelect" value="Vehicle">
 
-      <!-- Reason Selector -->
+      <!-- Dynamic Reason Selector -->
       <div class="form-group">
         <label for="reasonSelect">2. Reason for notification</label>
         <select id="reasonSelect">
-          <option value="Wrong Parking / Blocking Way">🚗 Wrong Parking / Blocking Way</option>
-          <option value="Headlights / Hazard Left ON">💡 Headlights / Hazard Lights Left ON</option>
-          <option value="Window / Door Left Open">🚪 Window or Door Left Open</option>
-          <option value="Found Lost Item / Luggage">🧳 Found Lost Belonging</option>
-          <option value="Emergency Attention Required">⚠️ Emergency / Attention Required</option>
-          <option value="General Notification">🔔 General Notification</option>
+          <!-- Populated dynamically via JavaScript -->
         </select>
       </div>
 
       <!-- Short Note -->
       <div class="form-group">
         <label for="userNotes">3. Short message (Optional)</label>
-        <textarea id="userNotes" placeholder="e.g., Please pull forward 2 feet, truck needs to exit..."></textarea>
+        <textarea id="userNotes" placeholder="e.g., Please move ahead slightly, truck needs to exit..."></textarea>
       </div>
 
       <!-- Dual Media Buttons (Location & Photo) -->
@@ -433,7 +428,7 @@
         </button>
       </div>
 
-      <!-- Hidden File Input for Native Smartphone Camera -->
+      <!-- Hidden Native Camera Input -->
       <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoUpload(this)">
 
       <!-- Photo Thumbnail Confirmation Box -->
@@ -441,7 +436,7 @@
         <img id="photoPreviewImg" class="photo-thumb" src="" alt="Thumbnail">
         <div class="photo-info">
           <strong style="color:var(--success);">✅ Photo Attached</strong>
-          <div id="photoSizeLabel" style="font-size:11px;">Optimized JPEG</div>
+          <div id="photoSizeLabel" style="font-size:11px;">Optimized thumbnail</div>
         </div>
         <button type="button" class="btn-remove-photo" onclick="removeAttachedPhoto()" title="Remove photo">✕</button>
       </div>
@@ -474,7 +469,7 @@
 
       <!-- Rotating Cartoon Waiting Quotes -->
       <div class="fun-quote-box" id="funQuote">
-        🤖 Beep boop! WhatsApp alert is buzzing the owner's phone right now...
+        🤖 WhatsApp alert delivered! Waiting for the owner's response...
       </div>
 
       <!-- Live Owner Reply Banner -->
@@ -506,17 +501,52 @@
     let timerInterval = null;
     let secondsLeft = 180;
 
+    // Category-specific reason options
+    const categoryReasons = {
+      "Vehicle": [
+        "🚗 Wrong Parking / Blocking Way",
+        "💡 Headlights / Hazard Lights Left ON",
+        "🚪 Window or Door Left Open",
+        "⚠️ Vehicle Towed / Police Action Alert",
+        "🚸 Child / Pet Locked Inside (Urgent)",
+        "🔔 General Vehicle Notification"
+      ],
+      "Keys / Bag": [
+        "🧳 Found Luggage / Bag (Safe with me)",
+        "🔑 Found Keys / Keychain Set",
+        "📍 Item Left Behind at Counter / Cafe",
+        "🏷️ Misplaced at Transit / Station",
+        "🔔 General Item Inquiry"
+      ],
+      "Other": [
+        "📦 Parcel / Courier Left at Door",
+        "📱 Found Misplaced Device / Gadget",
+        "🏷️ Tagged Personal Belonging Found",
+        "⚠️ Property / Asset Attention Required",
+        "🔔 General Message to Owner"
+      ]
+    };
+
+    const categoryPlaceholders = {
+      "Vehicle": "e.g., Please move ahead 2 feet, truck needs to exit...",
+      "Keys / Bag": "e.g., Found near billing counter. Kept safely with security...",
+      "Other": "e.g., Handed over to reception / concierge desk..."
+    };
+
     const waitingQuotes = [
-      "🚗 Ping delivered! The owner's phone is currently ringing with your alert...",
+      "🚗 Ping delivered! The owner's phone received your alert...",
       "👀 Fun fact: 89% of PingMe owners respond in under 90 seconds!",
-      "🏃‍♂️ Owner has likely seen the WhatsApp notification and is heading your way...",
-      "☕ Still waiting? Don't worry, your alert was delivered with priority!",
+      "🏃‍♂️ Owner has likely seen the WhatsApp notification and is on the way...",
+      "☕ Still waiting? Don't worry, your alert was dispatched with priority!",
       "🚦 Checking for replies directly from the owner's WhatsApp...",
       "⚡ Almost there! Keeping this channel wide open for an instant response..."
     ];
     let quoteIndex = 0;
 
     window.addEventListener("DOMContentLoaded", () => {
+      // Initialize dynamic dropdown with Vehicle reasons
+      updateReasonOptions("Vehicle");
+
       if (!tagId) {
         document.body.innerHTML = `
           <div style='text-align:center;padding:40px;color:#94a3b8;'>
@@ -561,10 +591,28 @@
         .catch(() => {});
     });
 
+    // Dynamic Category & Dropdown Switcher
     function selectCategory(catName, el) {
       document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("selected"));
       el.classList.add("selected");
       document.getElementById("itemTypeSelect").value = catName;
+      updateReasonOptions(catName);
+    }
+
+    function updateReasonOptions(catName) {
+      const select = document.getElementById("reasonSelect");
+      select.innerHTML = "";
+      const reasons = categoryReasons[catName] || categoryReasons["Vehicle"];
+
+      reasons.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r;
+        opt.innerText = r;
+        select.appendChild(opt);
+      });
+
+      const noteArea = document.getElementById("userNotes");
+      noteArea.placeholder = categoryPlaceholders[catName] || "e.g., Please move ahead slightly...";
     }
 
     // High-Accuracy GPS Snapshot
@@ -590,7 +638,7 @@
       );
     }
 
-    // In-Browser Client-Side Image Resizer & Compressor
+    // Image Compressor: Max 600px dimension, ~40-60KB output
     function handlePhotoUpload(input) {
       if (!input.files || !input.files[0]) return;
       const file = input.files[0];
@@ -601,7 +649,6 @@
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          // Max bound: 600px width/height (keeps payload under 50KB)
           const MAX_WIDTH = 600;
           const MAX_HEIGHT = 600;
           let width = img.width;
@@ -625,10 +672,8 @@
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Compress to JPEG with 0.65 quality
           photoDataUrl = canvas.toDataURL("image/jpeg", 0.65);
 
-          // Show thumbnail preview to user
           document.getElementById("photoPreviewImg").src = photoDataUrl;
           document.getElementById("photoPreviewContainer").style.display = "flex";
           photoBtn.innerText = "✅ Photo Attached";
@@ -689,7 +734,7 @@
       });
     }
 
-    // Switch to 180s Active Waiting Room
+    // 180s Active Waiting Room
     function enterWaitingRoom() {
       document.getElementById("mainFormContainer").style.display = "none";
       document.getElementById("waitingContainer").style.display = "block";
@@ -716,7 +761,7 @@
           progressBar.style.width = "0%";
           document.getElementById("mascotImg").src = "assets/timeout-hourglass.png";
           document.getElementById("waitingTitle").innerText = "Notification Completed";
-          document.getElementById("funQuote").innerText = "⏰ 180s window elapsed. The owner has the WhatsApp alert and will attend to it shortly!";
+          document.getElementById("funQuote").innerText = "⏰ 180s window elapsed. The owner has received your WhatsApp alert!";
           return;
         }
 
