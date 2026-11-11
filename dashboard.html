@@ -253,8 +253,8 @@ One Scan Instant Connection</textarea>
     function fetchCustomers() {
       fetch(`${BACKEND_URL}?action=getCustomers`)
         .then(res => res.json())
-        .then(data => {
-          customers = data;
+         .then(data => {
+          customers = data.customers || data.data || (Array.isArray(data) ? data : []);
           if (customers.length > 0) {
             renderList(customers);
             selectCustomer(customers[0]);
