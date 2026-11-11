@@ -909,6 +909,7 @@
       sendBtn.disabled = true;
       sendBtn.innerHTML = '<span>⏳</span> Sending Alert...';
 
+      // Unlock AudioContext for response chime
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       } catch (e) {}
@@ -917,33 +918,61 @@
       const coords = await getCoordinates();
       const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
 
-      // Prepare URL encoded form data (Works 100% with e.parameter in GAS)
-      const params = new URLSearchParams();
-      params.append('action', 'sendAlert');
-      params.append('tag', tagId);
-      params.append('id', tagId);
-      params.append('tagId', tagId);
-      params.append('customerId', tagId);
-      params.append('category', currentCategory);
-      params.append('message', selectedMessage);
-      params.append('customNote', noteText);
-      params.append('notes', noteText);
-      params.append('location', mapsUrl);
-      params.append('photo', compressedPhotoBase64 || '');
+      // Prepare hidden submission iframe if not already present
+      let hiddenFrame = document.getElementById('gas_hidden_iframe');
+      if (!hiddenFrame) {
+        hiddenFrame = document.createElement('iframe');
+        hiddenFrame.name = 'gas_hidden_iframe';
+        hiddenFrame.id = 'gas_hidden_iframe';
+        hiddenFrame.style.display = 'none';
+        document.body.appendChild(hiddenFrame);
+      }
 
+      // Build hidden HTML form to guarantee delivery past CORS/Redirects
+      let form = document.getElementById('gas_alert_form');
+      if (form) form.remove();
+
+      form = document.createElement('form');
+      form.id = 'gas_alert_form';
+      form.method = 'POST';
+      form.action = SCRIPT_URL;
+      form.target = 'gas_hidden_iframe';
+      form.style.display = 'none';
+
+      // Attach all matching key variations for your Google Apps Script
+      const fields = {
+        action: 'sendAlert',
+        tag: tagId,
+        id: tagId,
+        tagId: tagId,
+        customerId: tagId,
+        category: currentCategory,
+        message: selectedMessage,
+        customNote: noteText,
+        notes: noteText,
+        location: mapsUrl,
+        photo: compressedPhotoBase64 || ''
+      };
+
+      for (const [key, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+
+      // Submit the form
       try {
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: params.toString()
-        });
+        form.submit();
 
+        // Lock tag cooldown (3 mins)
         const cooldownEnd = Date.now() + 180 * 1000;
         localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
 
+        // Move to Screen 3
         startScreen3Timer(180);
         showScreen('screen3');
       } catch (err) {
