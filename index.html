@@ -618,7 +618,7 @@
   <main class="app-container">
     <div class="glass-card">
       
-      <!-- Persistent Clean Header -->
+      <!-- Persistent Header -->
       <header class="app-header">
         <button id="backBtn" class="back-btn hidden" aria-label="Go back">←</button>
         <div class="brand-block">
@@ -899,7 +899,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = urlParams.get('id') || urlParams.get('tag') || 'PM-CUST-1004';
     
-    // LIVE WORKING GOOGLE APPS SCRIPT WEB APP URL
+    // LIVE WORKING APPS SCRIPT WEB APP URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec';
 
     let currentCategory = 'vehicle';
@@ -910,6 +910,7 @@
     let tipInterval = null;
     let audioCtx = null;
     let currentSessionId = null;
+    let cachedCoords = null;
 
     function applyLanguage(lang) {
       currentLang = lang;
@@ -1006,16 +1007,27 @@
       reader.readAsDataURL(file);
     }
 
+    // Fast-resolving GPS with cached coordinate fallback
     function getCoordinates() {
       return new Promise((resolve) => {
+        if (cachedCoords) {
+          resolve(cachedCoords);
+          return;
+        }
         if (!navigator.geolocation) {
           resolve(null);
           return;
         }
         navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-          () => resolve(null),
-          { timeout: 4000, enableHighAccuracy: true }
+          (pos) => {
+            cachedCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            resolve(cachedCoords);
+          },
+          (err) => {
+            console.warn("GPS timeout or denied:", err.message);
+            resolve(null);
+          },
+          { timeout: 6000, enableHighAccuracy: true, maximumAge: 60000 }
         );
       });
     }
@@ -1043,6 +1055,7 @@
       selectedMessage = chipsArray[0];
     }
 
+    // Pre-warm GPS immediately when user picks a category on Screen 1
     function selectCategory(catKey) {
       currentCategory = catKey;
       const heroMap = {
@@ -1053,9 +1066,18 @@
       document.getElementById('screen2HeroImg').src = heroMap[catKey] || heroMap.vehicle;
       renderChips(catKey);
       showScreen('screen2');
+
+      // Silently pre-fetch GPS in the background while user reads/selects chips
+      if (navigator.geolocation && !cachedCoords) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => { cachedCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+          () => {},
+          { timeout: 5000, enableHighAccuracy: true }
+        );
+      }
     }
 
-    // DISPATCH (MATCHES LINE 70 IN CODE.GS)
+    // DISPATCH (MATCHES LINE 70 IN CODE.GS WITH GPS PARAMS)
     async function handleSendAlert() {
       const sendBtn = document.getElementById('sendAlertBtn');
       sendBtn.disabled = true;
@@ -1069,7 +1091,8 @@
       const coords = await getCoordinates();
       const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
 
-      const submitUrl = `${SCRIPT_URL}?action=submitAlert&customerId=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&urgency=Normal&locationUrl=${encodeURIComponent(mapsUrl)}&notes=${encodeURIComponent(noteText)}`;
+      // Passes locationUrl AND location alias
+      const submitUrl = `${SCRIPT_URL}?action=submitAlert&customerId=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&urgency=Normal&locationUrl=${encodeURIComponent(mapsUrl)}&location=${encodeURIComponent(mapsUrl)}&notes=${encodeURIComponent(noteText)}`;
 
       try {
         const response = await fetch(submitUrl);
