@@ -29,7 +29,6 @@
       padding: 16px;
     }
 
-    /* Ambient glow */
     .ambient-orb {
       position: fixed;
       border-radius: 50%;
@@ -107,7 +106,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Container */
     .app-container {
       width: 100%;
       max-width: 420px;
@@ -125,7 +123,6 @@
         0 0 0 1.5px rgba(255, 255, 255, 0.65) inset;
     }
 
-    /* Header */
     .app-header {
       display: flex;
       align-items: center;
@@ -163,17 +160,16 @@
       margin-top: 2px;
     }
     .lang-pill {
-      background: rgba(241, 245, 249, 0.9);
-      border: 1px solid #cbd5e1;
+      background: rgba(241, 245, 249, 0.95);
+      border: 1.5px solid #0284c7;
       padding: 6px 12px;
       border-radius: 20px;
       font-size: 11.5px;
-      font-weight: 600;
-      color: #334155;
+      font-weight: 700;
+      color: #0284c7;
       cursor: pointer;
     }
 
-    /* Screens */
     .screen-view {
       display: none;
       animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -186,7 +182,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Screen 1 */
     .welcome-badge {
       display: inline-block;
       background: rgba(224, 242, 254, 0.85);
@@ -479,6 +474,7 @@
       font-size: 12.5px;
       color: #64748b;
       margin-bottom: 16px;
+      text-align: center;
     }
     .waiting-box {
       background: #ffffff;
@@ -597,7 +593,7 @@
 </head>
 <body>
 
-  <!-- ================= SPLASH SCREEN ================= -->
+  <!-- SPLASH SCREEN -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <img src="assets/pingme-logo.png" alt="PINGME GO" class="splash-logo">
@@ -618,14 +614,14 @@
           <img src="assets/pingme-logo.png" alt="PINGME GO" class="header-brand-logo">
           <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
         </div>
-        <button id="langToggle" class="lang-pill" type="button">🌐 தமிழ் | ENG</button>
+        <button id="langToggle" class="lang-pill" type="button">🌐 தமிழ்</button>
       </header>
 
       <!-- ================= SCREEN 1: CATEGORY SELECTION ================= -->
       <section id="screen1" class="screen-view active">
-        <div class="welcome-badge">Hello there! 👋</div>
-        <h1 class="screen-title">How can we help?</h1>
-        <p class="screen-subtitle">Choose an option below to notify the owner privately</p>
+        <div class="welcome-badge" id="txt_hello">Hello there! 👋</div>
+        <h1 class="screen-title" id="txt_s1_title">How can we help?</h1>
+        <p class="screen-subtitle" id="txt_s1_sub">Choose an option below to notify the owner privately</p>
 
         <div class="category-list">
           <button class="category-card" data-category="vehicle">
@@ -633,8 +629,8 @@
               <img src="assets/car-bike-3d.png" alt="Car &amp; Bike Parking" class="cat-img">
             </div>
             <div class="cat-info">
-              <span class="cat-title">Car &amp; Bike Parking</span>
-              <span class="cat-desc">Notify owner of blocked way, flat tire, etc.</span>
+              <span class="cat-title" id="txt_cat_veh_title">Car &amp; Bike Parking</span>
+              <span class="cat-desc" id="txt_cat_veh_desc">Notify owner of blocked way, flat tire, etc.</span>
             </div>
             <span class="cat-arrow">›</span>
           </button>
@@ -644,8 +640,8 @@
               <img src="assets/luggage-keys-3d.png" alt="Lost &amp; Found Keys &amp; Bags" class="cat-img">
             </div>
             <div class="cat-info">
-              <span class="cat-title">Lost &amp; Found Keys &amp; Bags</span>
-              <span class="cat-desc">Report found luggage, lost keyrings, or bags</span>
+              <span class="cat-title" id="txt_cat_lug_title">Lost &amp; Found Keys &amp; Bags</span>
+              <span class="cat-desc" id="txt_cat_lug_desc">Report found luggage, lost keyrings, or bags</span>
             </div>
             <span class="cat-arrow">›</span>
           </button>
@@ -655,14 +651,14 @@
               <img src="assets/support-bell-3d.png" alt="Other General Assistance" class="cat-img">
             </div>
             <div class="cat-info">
-              <span class="cat-title">Other General Assistance</span>
-              <span class="cat-desc">Contact about general help, home gate, or emergency</span>
+              <span class="cat-title" id="txt_cat_ast_title">Other General Assistance</span>
+              <span class="cat-desc" id="txt_cat_ast_desc">Contact about general help, home gate, or emergency</span>
             </div>
             <span class="cat-arrow">›</span>
           </button>
         </div>
 
-        <div class="trust-badge">
+        <div class="trust-badge" id="txt_trust">
           <span>🔒</span> Private Alerts • Your Contact Details Stay Hidden
         </div>
       </section>
@@ -670,15 +666,15 @@
       <!-- ================= SCREEN 2: SELECT MESSAGE ================= -->
       <section id="screen2" class="screen-view">
         <div class="hero-category-art">
-          <img id="screen2HeroImg" src="assets/car-bike-3d.png" alt="Selected Category" class="hero-3d-img">
+          <img id="screen2HeroImg" src="assets/car-bike-3d.png" alt="Category Art" class="hero-3d-img">
         </div>
 
-        <div class="privacy-micro-pill">
+        <div class="privacy-micro-pill" id="txt_micro_trust">
           <span>🛡️</span> Private Alerts • Zero Contact Info Exposed
         </div>
 
-        <h2 class="screen-title">Select Message</h2>
-        <p class="screen-subtitle">Tap a quick message or type your own</p>
+        <h2 class="screen-title" id="txt_s2_title">Select Message</h2>
+        <p class="screen-subtitle" id="txt_s2_sub">Tap a quick message or type your own</p>
 
         <div id="messageChips" class="chip-stack"></div>
 
@@ -695,8 +691,8 @@
           <div class="photo-zone-inner" id="photoPrompt">
             <span class="camera-icon">📷</span>
             <div class="photo-zone-text">
-              <strong>Attach Photo (Optional)</strong>
-              <p>Photo shared privately with the owner.</p>
+              <strong id="txt_photo_title">Attach Photo (Optional)</strong>
+              <p id="txt_photo_sub">Photo shared privately with the owner.</p>
             </div>
           </div>
           <div class="photo-preview-wrap hidden" id="photoPreviewWrap">
@@ -707,96 +703,175 @@
 
         <button id="sendAlertBtn" class="primary-btn" type="button">
           <span class="btn-icon">✈️</span>
-          <span class="btn-label">Send Instant Alert</span>
+          <span class="btn-label" id="txt_send_btn">Send Instant Alert</span>
         </button>
       </section>
 
-      <!-- ================= SCREEN 3: ALERT DISPATCHED ================= -->
+      <!-- ================= SCREEN 3: LIVE ACKNOWLEDGMENT ================= -->
       <section id="screen3" class="screen-view">
         <div class="mascot-stage">
           <img src="assets/mascot-airplane-3d.png" alt="PingMe Mascot" class="mascot-img">
         </div>
 
         <div class="status-badge-wrap">
-          <span class="status-badge-green">Owner Notified Successfully! ✓</span>
+          <span class="status-badge-green" id="txt_notif_ok">Owner Notified Successfully! ✓</span>
         </div>
 
         <h2 class="screen-title" id="dispatchHeading">Alert Dispatched!</h2>
-        <p class="dispatch-sub">Owner notified via private alert channels.</p>
+        <p class="dispatch-sub" id="txt_dispatch_sub">Owner notified via private alert channels.</p>
 
         <div id="waitingBlock" class="waiting-box">
-          <div class="timer-label">Response Timer</div>
+          <div class="timer-label" id="txt_timer_label">Response Timer</div>
           <div class="live-timer">
             <span class="timer-clock-icon">⏱️</span>
-            <span class="timer-text">Waiting for Response... <strong id="countdownText">03:00</strong></span>
+            <span class="timer-text"><span id="txt_wait_prefix">Waiting for Response...</span> <strong id="countdownText">03:00</strong></span>
           </div>
-          <div class="waiting-pill-placeholder">
+          <div class="waiting-pill-placeholder" id="txt_wait_ack">
             Waiting for Owner to acknowledge...
           </div>
         </div>
 
         <div id="acknowledgedBlock" class="ack-box hidden">
-          <div class="ack-status-tag">Owner Response Received ⚡</div>
+          <div class="ack-status-tag" id="txt_ack_tag">Owner Response Received ⚡</div>
           <div class="ack-message-card">
             <span class="ack-bubble-icon">🏃</span>
             <span id="ackMessageText" class="ack-text">Coming in 2 mins!</span>
           </div>
           <div class="ack-success-banner">
             <div class="success-check-circle">✓</div>
-            <h3>Connection Successful! 💚</h3>
-            <p>Thank you for using PingMe.</p>
+            <h3 id="txt_conn_succ">Connection Successful! 💚</h3>
+            <p id="txt_thank_you">Thank you for using PingMe.</p>
           </div>
         </div>
 
         <div id="socialActionBlock" class="social-block hidden">
-          <p class="share-label">Share this if you like!</p>
+          <p class="share-label" id="txt_share_label">Share this if you like!</p>
           <button id="whatsappShareBtn" class="whatsapp-btn" type="button">
-            <span>💬</span> Share PingMe via WhatsApp
+            <span>💬</span> <span id="txt_share_btn">Share PingMe via WhatsApp</span>
           </button>
         </div>
 
-        <button id="doneBtn" class="primary-btn mt-12" type="button">Done</button>
+        <button id="doneBtn" class="primary-btn mt-12" type="button"><span id="txt_done_btn">Done</span></button>
       </section>
 
     </div>
   </main>
 
   <script>
-    const CATEGORIES = {
-      vehicle: {
-        heroImg: 'assets/car-bike-3d.png',
-        chips: [
+    // ================= DUAL LANGUAGE DICTIONARY =================
+    const I18N = {
+      en: {
+        langBtn: "🌐 தமிழ்",
+        hello: "Hello there! 👋",
+        s1_title: "How can we help?",
+        s1_sub: "Choose an option below to notify the owner privately",
+        cat_veh_title: "Car & Bike Parking",
+        cat_veh_desc: "Notify owner of blocked way, flat tire, etc.",
+        cat_lug_title: "Lost & Found Keys & Bags",
+        cat_lug_desc: "Report found luggage, lost keyrings, or bags",
+        cat_ast_title: "Other General Assistance",
+        cat_ast_desc: "Contact about general help, home gate, or emergency",
+        trust: "🔒 Private Alerts • Your Contact Details Stay Hidden",
+        micro_trust: "🛡️ Private Alerts • Zero Contact Info Exposed",
+        s2_title: "Select Message",
+        s2_sub: "Tap a quick message or type your own",
+        note_placeholder: "Add specific notes (optional)...",
+        photo_title: "Attach Photo (Optional)",
+        photo_sub: "Photo shared privately with the owner.",
+        send_btn: "Send Instant Alert",
+        sending_btn: "Sending Alert...",
+        notif_ok: "Owner Notified Successfully! ✓",
+        dispatch_title: "Alert Dispatched!",
+        dispatch_sub: "Owner notified via private alert channels.",
+        timer_label: "Response Timer",
+        wait_prefix: "Waiting for Response...",
+        wait_ack: "Waiting for Owner to acknowledge...",
+        ack_tag: "Owner Response Received ⚡",
+        conn_succ: "Connection Successful! 💚",
+        thank_you: "Thank you for using PingMe.",
+        share_label: "Share this if you like!",
+        share_btn: "Share PingMe via WhatsApp",
+        done_btn: "Done",
+        vehicle_chips: [
           'Your vehicle is blocking my way.',
           'Please move your car/bike.',
           'Headlights are left ON.',
           'Window is open / Tyre flat.'
-        ]
-      },
-      luggage: {
-        heroImg: 'assets/luggage-keys-3d.png',
-        chips: [
+        ],
+        luggage_chips: [
           'I found your item / keys.',
           'Left your bag / wallet behind.',
           'Item safely kept with security.',
           'Please contact me to collect it.'
-        ]
-      },
-      assistance: {
-        heroImg: 'assets/support-bell-3d.png',
-        chips: [
+        ],
+        assistance_chips: [
           'Need immediate assistance.',
           'Regarding your parked spot/space.',
           'Please contact me regarding this.',
           'Emergency notification.'
         ]
+      },
+      ta: {
+        langBtn: "🌐 English",
+        hello: "வணக்கம்! 👋",
+        s1_title: "நாங்கள் எப்படி உதவலாம்?",
+        s1_sub: "உரிமையாளருக்கு பாதுகாப்பாக தகவல் அனுப்ப ஒரு தேர்வை தேர்வு செய்க",
+        cat_veh_title: "கார் & பைக் பார்க்கிங்",
+        cat_veh_desc: "வழி அடைப்பு, டயர் காற்று குறைவு போன்றவற்றை தெரிவிக்க",
+        cat_lug_title: "தவறிய சாவி & பைகள்",
+        cat_lug_desc: "கண்டெடுக்கப்பட்ட பொருட்கள், பேக்குகள் பற்றி தெரிவிக்க",
+        cat_ast_title: "பொதுவான உதவி",
+        cat_ast_desc: "அவசர உதவி அல்லது இதர தகவல் தெரிவிக்க",
+        trust: "🔒 தனிப்பட்ட தகவல் முழுமையாக மறைக்கப்பட்டு பாதுகாக்கப்படுகிறது",
+        micro_trust: "🛡️ உங்கள் தொடர்பு எண்கள் பகிரப்படாது",
+        s2_title: "செய்தியை தேர்வு செய்க",
+        s2_sub: "கீழே உள்ள செய்தியை தேர்வு செய்க அல்லது தட்டச்சு செய்க",
+        note_placeholder: "கூடுதல் தகவல் (விருப்பத்தேர்வு)...",
+        photo_title: "புகைப்படம் இணைக்க (விருப்பத்தேர்வு)",
+        photo_sub: "புகைப்படம் உரிமையாளருக்கு மட்டுமே அனுப்பப்படும்.",
+        send_btn: "உடனே தகவல் அனுப்புக ✈️",
+        sending_btn: "தகவல் அனுப்பப்படுகிறது...",
+        notif_ok: "உரிமையாளருக்கு தகவல் அனுப்பப்பட்டது! ✓",
+        dispatch_title: "அலர்ட் அனுப்பப்பட்டது!",
+        dispatch_sub: "தனிப்பட்ட பாதுகாப்பான முறையில் தகவல் அனுப்பப்பட்டது.",
+        timer_label: "பதில் நேரம்",
+        wait_prefix: "உரிமையாளரின் பதிலுக்காக...",
+        wait_ack: "உரிமையாளர் பதிலளிக்க காத்திருக்கிறது...",
+        ack_tag: "உரிமையாளரிடமிருந்து பதில் வந்துள்ளது ⚡",
+        conn_succ: "தொடர்பு வெற்றிகரமாக முடிந்தது! 💚",
+        thank_you: "PingMe பயன்படுத்தியதற்கு நன்றி.",
+        share_label: "இந்த சேவையை நண்பர்களுடன் பகிருங்கள்!",
+        share_btn: "WhatsApp வழியாக பகிரவும்",
+        done_btn: "முடிந்தது",
+        vehicle_chips: [
+          'உங்கள் வாகனம் எனது வழியை மறைத்துள்ளது.',
+          'தயவுசெய்து உங்கள் வாகனத்தை எடுக்கவும்.',
+          'ஹெட்லைட் எரிகிறது (Headlights ON).',
+          'கண்ணாடி திறந்துள்ளது / டயர் காற்று குறைவு.'
+        ],
+        luggage_chips: [
+          'உங்கள் பொருள் / சாவி கிடைத்துள்ளது.',
+          'உங்கள் பேக் / பர்ஸ் இங்கு தவறவிடப்பட்டுள்ளது.',
+          'செக்யூரிட்டியிடம் பாதுகாப்பாக ஒப்படைக்கப்பட்டுள்ளது.',
+          'பொருளை பெற்றுக்கொள்ள தொடர்பு கொள்ளவும்.'
+        ],
+        assistance_chips: [
+          'உடனடி உதவி தேவைப்படுகிறது.',
+          'வாகனம் நிறுத்துமிடம் குறித்து.',
+          'தயவுசெய்து என்னை தொடர்பு கொள்ளவும்.',
+          'அவசர தகவல் அனுப்பப்பட்டுள்ளது.'
+        ]
       }
     };
 
+    let currentLang = 'en';
+
+    // ================= STATE & CONFIG =================
     const urlParams = new URLSearchParams(window.location.search);
-    const tagId = urlParams.get('id') || urlParams.get('tag') || 'DEMO_TAG';
+    const tagId = urlParams.get('id') || urlParams.get('tag') || 'PM-CUST-1004';
     
-    // REPLACE THIS WITH YOUR EXISTING GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec';
+    // YOUR LIVE WORKING GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec'; 
 
     let currentCategory = 'vehicle';
     let selectedMessage = '';
@@ -804,6 +879,44 @@
     let countdownInterval = null;
     let pollInterval = null;
     let audioCtx = null;
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      const t = I18N[lang];
+      document.getElementById('langToggle').textContent = t.langBtn;
+      document.getElementById('txt_hello').textContent = t.hello;
+      document.getElementById('txt_s1_title').textContent = t.s1_title;
+      document.getElementById('txt_s1_sub').textContent = t.s1_sub;
+      document.getElementById('txt_cat_veh_title').textContent = t.cat_veh_title;
+      document.getElementById('txt_cat_veh_desc').textContent = t.cat_veh_desc;
+      document.getElementById('txt_cat_lug_title').textContent = t.cat_lug_title;
+      document.getElementById('txt_cat_lug_desc').textContent = t.cat_lug_desc;
+      document.getElementById('txt_cat_ast_title').textContent = t.cat_ast_title;
+      document.getElementById('txt_cat_ast_desc').textContent = t.cat_ast_desc;
+      document.getElementById('txt_trust').innerHTML = `<span>🔒</span> ${t.trust}`;
+      document.getElementById('txt_micro_trust').innerHTML = `<span>🛡️</span> ${t.micro_trust}`;
+      document.getElementById('txt_s2_title').textContent = t.s2_title;
+      document.getElementById('txt_s2_sub').textContent = t.s2_sub;
+      document.getElementById('customNoteInput').placeholder = t.note_placeholder;
+      document.getElementById('txt_photo_title').textContent = t.photo_title;
+      document.getElementById('txt_photo_sub').textContent = t.photo_sub;
+      document.getElementById('txt_send_btn').textContent = t.send_btn;
+      document.getElementById('txt_notif_ok').textContent = t.notif_ok;
+      document.getElementById('dispatchHeading').textContent = t.dispatch_title;
+      document.getElementById('txt_dispatch_sub').textContent = t.dispatch_sub;
+      document.getElementById('txt_timer_label').textContent = t.timer_label;
+      document.getElementById('txt_wait_prefix').textContent = t.wait_prefix;
+      document.getElementById('txt_wait_ack').textContent = t.wait_ack;
+      document.getElementById('txt_ack_tag').textContent = t.ack_tag;
+      document.getElementById('txt_conn_succ').textContent = t.conn_succ;
+      document.getElementById('txt_thank_you').textContent = t.thank_you;
+      document.getElementById('txt_share_label').textContent = t.share_label;
+      document.getElementById('txt_share_btn').textContent = t.share_btn;
+      document.getElementById('txt_done_btn').textContent = t.done_btn;
+
+      // Re-render message chips for current category in selected language
+      renderChips(currentCategory);
+    }
 
     function playChime() {
       try {
@@ -878,15 +991,13 @@
       });
     }
 
-    function selectCategory(catKey) {
-      currentCategory = catKey;
-      const config = CATEGORIES[catKey] || CATEGORIES.vehicle;
-      document.getElementById('screen2HeroImg').src = config.heroImg;
-
+    function renderChips(catKey) {
+      const t = I18N[currentLang];
+      const chipsArray = catKey === 'vehicle' ? t.vehicle_chips : (catKey === 'luggage' ? t.luggage_chips : t.assistance_chips);
       const chipContainer = document.getElementById('messageChips');
       chipContainer.innerHTML = '';
 
-      config.chips.forEach((msg, idx) => {
+      chipsArray.forEach((msg, idx) => {
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = `message-chip ${idx === 0 ? 'active' : ''}`;
@@ -900,16 +1011,27 @@
         chipContainer.appendChild(chip);
       });
 
-      selectedMessage = config.chips[0];
+      selectedMessage = chipsArray[0];
+    }
+
+    function selectCategory(catKey) {
+      currentCategory = catKey;
+      const heroMap = {
+        vehicle: 'assets/car-bike-3d.png',
+        luggage: 'assets/luggage-keys-3d.png',
+        assistance: 'assets/support-bell-3d.png'
+      };
+      document.getElementById('screen2HeroImg').src = heroMap[catKey] || heroMap.vehicle;
+      renderChips(catKey);
       showScreen('screen2');
     }
 
+    // ================= DUAL DISPATCH ALERT =================
     async function handleSendAlert() {
       const sendBtn = document.getElementById('sendAlertBtn');
       sendBtn.disabled = true;
-      sendBtn.innerHTML = '<span>⏳</span> Sending Alert...';
+      sendBtn.innerHTML = `<span>⏳</span> ${I18N[currentLang].sending_btn}`;
 
-      // Unlock AudioContext for response chime
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       } catch (e) {}
@@ -918,7 +1040,21 @@
       const coords = await getCoordinates();
       const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
 
-      // Prepare hidden submission iframe if not already present
+      // Prepare URL encoded parameters to guarantee match in Google Apps Script e.parameter
+      const params = new URLSearchParams();
+      params.append('action', 'sendAlert');
+      params.append('tag', tagId);
+      params.append('id', tagId);
+      params.append('tagId', tagId);
+      params.append('customerId', tagId);
+      params.append('category', currentCategory);
+      params.append('message', selectedMessage);
+      params.append('customNote', noteText);
+      params.append('notes', noteText);
+      params.append('location', mapsUrl);
+      params.append('photo', compressedPhotoBase64 || '');
+
+      // Execute dispatch: Hidden Form submission (works through 302 redirects)
       let hiddenFrame = document.getElementById('gas_hidden_iframe');
       if (!hiddenFrame) {
         hiddenFrame = document.createElement('iframe');
@@ -928,7 +1064,6 @@
         document.body.appendChild(hiddenFrame);
       }
 
-      // Build hidden HTML form to guarantee delivery past CORS/Redirects
       let form = document.getElementById('gas_alert_form');
       if (form) form.remove();
 
@@ -939,22 +1074,7 @@
       form.target = 'gas_hidden_iframe';
       form.style.display = 'none';
 
-      // Attach all matching key variations for your Google Apps Script
-      const fields = {
-        action: 'sendAlert',
-        tag: tagId,
-        id: tagId,
-        tagId: tagId,
-        customerId: tagId,
-        category: currentCategory,
-        message: selectedMessage,
-        customNote: noteText,
-        notes: noteText,
-        location: mapsUrl,
-        photo: compressedPhotoBase64 || ''
-      };
-
-      for (const [key, value] of Object.entries(fields)) {
+      for (const [key, value] of params.entries()) {
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = key;
@@ -963,24 +1083,16 @@
       }
 
       document.body.appendChild(form);
+      form.submit();
 
-      // Submit the form
-      try {
-        form.submit();
+      // Lock cooldown (180s)
+      const cooldownEnd = Date.now() + 180 * 1000;
+      localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
 
-        // Lock tag cooldown (3 mins)
-        const cooldownEnd = Date.now() + 180 * 1000;
-        localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
-
-        // Move to Screen 3
-        startScreen3Timer(180);
-        showScreen('screen3');
-      } catch (err) {
-        alert('Network error. Please try sending again.');
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = '<span class="btn-icon">✈️</span><span class="btn-label">Send Instant Alert</span>';
-      }
+      startScreen3Timer(180);
+      showScreen('screen3');
     }
+
     function startScreen3Timer(secondsRemaining) {
       let sec = secondsRemaining;
       const countdownEl = document.getElementById('countdownText');
@@ -994,11 +1106,11 @@
 
         if (sec <= 0) {
           clearInterval(countdownInterval);
-          document.querySelector('.waiting-pill-placeholder').textContent = "Owner hasn't responded yet. Alert is still active.";
           document.getElementById('socialActionBlock').classList.remove('hidden');
         }
       }, 1000);
 
+      // Check owner reply
       clearInterval(pollInterval);
       pollInterval = setInterval(async () => {
         try {
@@ -1025,6 +1137,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      // 1.5s Splash Dismissal
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         if (splash) {
@@ -1033,6 +1146,7 @@
         }
       }, 1500);
 
+      // Cooldown check
       const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
       if (activeCooldown) {
         const remSeconds = Math.floor((parseInt(activeCooldown, 10) - Date.now()) / 1000);
@@ -1045,18 +1159,28 @@
         }
       }
 
+      // Language Switcher Toggle
+      document.getElementById('langToggle').onclick = () => {
+        const nextLang = currentLang === 'en' ? 'ta' : 'en';
+        applyLanguage(nextLang);
+      };
+
+      // Categories
       document.querySelectorAll('.category-card').forEach(btn => {
         btn.onclick = () => selectCategory(btn.dataset.category);
       });
 
+      // Back Button
       document.getElementById('backBtn').onclick = () => showScreen('screen1');
 
+      // Notes Character Counter
       const noteInput = document.getElementById('customNoteInput');
       const countEl = document.getElementById('charCount');
       noteInput.oninput = () => {
         countEl.textContent = noteInput.value.length;
       };
 
+      // Photo Zone
       const photoInput = document.getElementById('photoInput');
       document.getElementById('photoZone').onclick = (e) => {
         if (e.target.id !== 'removePhotoBtn') photoInput.click();
@@ -1081,13 +1205,16 @@
         document.getElementById('photoPrompt').classList.remove('hidden');
       };
 
+      // Send Alert
       document.getElementById('sendAlertBtn').onclick = handleSendAlert;
 
+      // WhatsApp Share
       document.getElementById('whatsappShareBtn').onclick = () => {
         const text = encodeURIComponent('Found this smart QR tag system for vehicles and items — check out PingMe!');
         window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
       };
 
+      // Done
       document.getElementById('doneBtn').onclick = () => {
         window.location.href = 'about:blank';
       };
