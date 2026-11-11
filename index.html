@@ -694,8 +694,8 @@
     </div>
 
   </div>
-<script>
-    // 1. AUTO REMOVE SPLASH OVERLAY AFTER 700ms (Never traps touches)
+
+  <script>
     setTimeout(function() {
       var s = document.getElementById('splashScreen');
       if (s) {
@@ -707,8 +707,7 @@
     // =========================================================================
     // ⚙️ BACKEND WEB APP CONFIGURATION
     // =========================================================================
-    var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec"; 
-    // ^ Ensure your actual Apps Script URL ending in /exec is placed here
+    var SCRIPT_URL = "YOUR_REAL_APPS_SCRIPT_EXEC_URL"; 
 
     var urlParams = new URLSearchParams(window.location.search);
     var tagId = urlParams.get('id') || urlParams.get('tag') || 'VP-1001';
@@ -720,6 +719,7 @@
     var currentSessionId = '';
     var countdownTimer = null;
     var pollTimer = null;
+    var detectedLocationUrl = '';
 
     var TEXTS = {
       en: {
@@ -823,7 +823,6 @@
       document.getElementById('screen1').classList.remove('active');
       document.getElementById('screen2').classList.remove('active');
       document.getElementById('screen3').classList.remove('active');
-      
       var s = document.getElementById(screenId);
       if (s) s.classList.add('active');
       window.scrollTo(0, 0);
@@ -832,11 +831,9 @@
     function toggleLanguage() {
       currentLang = (currentLang === 'en') ? 'ta' : 'en';
       var t = TEXTS[currentLang];
-
       document.getElementById('langDisplay').textContent = t.langBtn;
       document.getElementById('langDisplay2').textContent = t.langBtn;
       document.getElementById('langDisplay3').textContent = t.langBtn;
-
       document.getElementById('helloPill').textContent = t.hello;
       document.getElementById('screen1Title').textContent = t.s1Title;
       document.getElementById('screen1Sub').textContent = t.s1Sub;
@@ -844,7 +841,6 @@
       document.getElementById('catLostText').innerHTML = t.catLost;
       document.getElementById('catHelpText').innerHTML = t.catHelp;
       document.getElementById('privacyFooterText').textContent = t.privacy;
-
       document.getElementById('backBtnText').textContent = t.back;
       document.getElementById('screen2Title').textContent = t.s2Title;
       document.getElementById('screen2Sub').textContent = t.s2Sub;
@@ -852,7 +848,6 @@
       document.getElementById('photoTitle').textContent = t.photoTitle;
       document.getElementById('photoSub').textContent = t.photoSub;
       document.getElementById('sendBtnLabel').textContent = t.sendBtn;
-
       document.getElementById('screen3Title').textContent = t.s3Title;
       document.getElementById('screen3Sub').textContent = t.s3Sub;
       document.getElementById('timerLabel').textContent = t.waiting;
@@ -861,7 +856,6 @@
       document.getElementById('connSuccessSub').textContent = t.successSub;
       document.getElementById('shareWaText').textContent = t.shareWa;
       document.getElementById('doneBtnText').textContent = t.done;
-
       renderMessageOptions();
     }
 
@@ -872,8 +866,23 @@
       else if (cat === 'lost_found') hero.src = 'assets/luggage-keys-3d.png';
       else hero.src = 'assets/support-bell-3d.png';
 
+      // Request GPS silently while user is browsing messages
+      requestPreGPS();
+
       renderMessageOptions();
       showScreen('screen2');
+    }
+
+    function requestPreGPS() {
+      if (navigator.geolocation && !detectedLocationUrl) {
+        navigator.geolocation.getCurrentPosition(
+          function(p) {
+            detectedLocationUrl = "https://maps.google.com/?q=" + p.coords.latitude.toFixed(6) + "," + p.coords.longitude.toFixed(6);
+          },
+          function() {},
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+        );
+      }
     }
 
     function renderMessageOptions() {
@@ -907,15 +916,10 @@
       document.getElementById('charCount').textContent = val.length + ' / 120';
     }
 
-    // Photo Upload Handling
-    function triggerFileInput() {
-      document.getElementById('cameraInput').click();
-    }
-
+    function triggerFileInput() { document.getElementById('cameraInput').click(); }
     function handleFileSelected(event) {
       var file = event.target.files[0];
       if (!file) return;
-
       var reader = new FileReader();
       reader.onload = function(e) {
         attachedPhotoBase64 = e.target.result;
@@ -924,7 +928,6 @@
       };
       reader.readAsDataURL(file);
     }
-
     function removePhoto(e) {
       e.stopPropagation();
       attachedPhotoBase64 = '';
@@ -934,30 +937,35 @@
 
     function getOrGenSessionId() {
       if (!currentSessionId) {
-        currentSessionId = 'SESS_' + Date.now();
+        currentSessionId = 'INC-' + Date.now();
         try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
       }
       return currentSessionId;
     }
 
-    // 1. AWAIT ACCURATE GPS FIRST, THEN DISPATCH
+    // DISPATCH WITH LOCATION CONFIRMATION
     function handleSendAlert() {
       var btn = document.getElementById('sendAlertBtn');
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span>📍 Detecting Location...</span>';
+        btn.innerHTML = '<span>📍 Acquiring GPS Location...</span>';
       }
 
       var noteVal = document.getElementById('customNoteInput').value.trim();
       var sessId = getOrGenSessionId();
 
+      // If already captured in background, dispatch instantly
+      if (detectedLocationUrl) {
+        proceedToDispatch(detectedLocationUrl, noteVal, sessId);
+        return;
+      }
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function(pos) {
-            var lat = pos.coords.latitude.toFixed(6);
-            var lng = pos.coords.longitude.toFixed(6);
-            var mapLink = "https://maps.google.com/?q=" + lat + "," + lng;
-            proceedToDispatch(mapLink, noteVal, sessId);
+            var mapUrl = "https://maps.google.com/?q=" + pos.coords.latitude.toFixed(6) + "," + pos.coords.longitude.toFixed(6);
+            detectedLocationUrl = mapUrl;
+            proceedToDispatch(mapUrl, noteVal, sessId);
           },
           function(err) {
             proceedToDispatch("", noteVal, sessId);
@@ -976,14 +984,10 @@
       startCountdown(165);
       showScreen('screen3');
 
-      // Send alert payload
       dispatchBackend(mapLink, noteVal, sessId);
-
-      // Start polling matching Code.gs line 66 (action === "checkResponse")
       startAckPolling(sessId);
     }
 
-    // 2. DISPATCH PAYLOAD MATCHING CODE.GS LINES 55-61
     function dispatchBackend(mapLink, noteVal, sessId) {
       var targetUrl = SCRIPT_URL + 
         '?action=submitAlert' +
@@ -993,6 +997,7 @@
         '&message=' + encodeURIComponent(selectedMessage) +
         '&urgency=Normal' +
         '&locationUrl=' + encodeURIComponent(mapLink) +
+        '&location=' + encodeURIComponent(mapLink) +
         '&notes=' + encodeURIComponent(noteVal) +
         '&sessionId=' + encodeURIComponent(sessId) +
         '&t=' + Date.now();
@@ -1004,25 +1009,26 @@
       });
     }
 
-    // 3. POLL EXACT BACKEND ACTION 'checkResponse' (CODE.GS LINE 66)
+    // POLLING USING BOTH SESSION ID & TAG ID
     function startAckPolling(sessId) {
       clearInterval(pollTimer);
 
       pollTimer = setInterval(function() {
-        if (!sessId) return;
+        if (!sessId && !tagId) return;
 
-        // Matches Code.gs line 66: action === "checkResponse" && sessionId
         var pollUrl = SCRIPT_URL + 
           '?action=checkResponse' +
           '&sessionId=' + encodeURIComponent(sessId) +
+          '&tagId=' + encodeURIComponent(tagId) +
           '&customerId=' + encodeURIComponent(tagId) +
           '&t=' + Date.now();
 
         fetch(pollUrl)
           .then(function(res) { return res.json(); })
           .then(function(data) {
-            var reply = data.replyText || data.response || data.reply || (data.data && data.data.replyText);
-            var isAck = data.acknowledged || data.success || (reply && reply.trim() !== "");
+            if (!data) return;
+            var reply = data.replyText || data.response || data.reply || data.ownerReply || (data.data && data.data.replyText);
+            var isAck = data.acknowledged || data.success || (reply && typeof reply === 'string' && reply.trim() !== "");
 
             if (isAck && reply) {
               clearInterval(pollTimer);
@@ -1034,7 +1040,7 @@
               }
             }
           })
-          .catch(function(err) {});
+          .catch(function() {});
       }, 3000);
     }
 
@@ -1042,7 +1048,6 @@
       clearInterval(countdownTimer);
       var remain = seconds;
       renderTime(remain);
-
       countdownTimer = setInterval(function() {
         remain--;
         if (remain <= 0) {
@@ -1058,8 +1063,7 @@
     function renderTime(sec) {
       var m = Math.floor(sec / 60);
       var s = sec % 60;
-      var str = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-      document.getElementById('timerCounter').textContent = str;
+      document.getElementById('timerCounter').textContent = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
     }
 
     function shareViaWhatsApp() {
@@ -1075,7 +1079,6 @@
       showScreen('screen1');
     }
 
-    // Check active cooldown on load
     window.addEventListener('load', function() {
       try {
         var active = localStorage.getItem('pingme_cooldown_' + tagId);
@@ -1091,4 +1094,3 @@
       } catch(e){}
     });
   </script>
-  
