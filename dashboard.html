@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe Master Control Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f8fafc;
+      --muted: #94a3b8; --accent: #38bdf8; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    h1 { font-size: 20px; font-weight: 700; }
+    .btn-maintenance { background: #6366f1; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+    
+    .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; height: 86vh; }
+    .panel-header { padding: 12px; border-bottom: 1px solid var(--border); background: #1a2333; }
+    .search-box { width: 100%; padding: 10px 12px; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; outline: none; }
+    
+    .customer-list { overflow-y: auto; flex: 1; }
+    .customer-item { padding: 12px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+    .customer-item:hover { background: #26334d; }
+    .customer-item.active-item { background: #2a3b5c; border-left: 4px solid var(--accent); }
+    
+    .item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .item-id { font-weight: 700; font-size: 14px; }
+    .item-name { font-size: 12px; color: var(--muted); }
+    
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
+    .badge-active { background: #14532d; color: #4ade80; }
+    .badge-exhausted { background: #7c2d12; color: #fb923c; }
+    .badge-expired { background: #7f1d1d; color: #f87171; }
+    .badge-warning { background: #78350f; color: #fcd34d; }
+
+    .detail-view { padding: 24px; overflow-y: auto; }
+    .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .status-select { padding: 8px 12px; background: #0b1120; border: 1px solid var(--accent); border-radius: 6px; color: var(--text); font-weight: 600; cursor: pointer; }
+
+    .alert-banner { padding: 12px 14px; border-radius: 6px; margin-bottom: 18px; display: none; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+    .alert-banner.show { display: flex; }
+    .alert-banner.alert-credit { background: #7c2d12; color: #fdba74; border: 1px solid #ea580c; }
+    .alert-banner.alert-expiry { background: #78350f; color: #fde68a; border: 1px solid #d97706; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background: #131c2e; padding: 14px; border-radius: 8px; border: 1px solid var(--border); }
+    .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .stat-value { font-size: 20px; font-weight: 700; }
+
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+    .info-table td { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .info-table td:first-child { color: var(--muted); width: 35%; }
+
+    .actions-box { background: #131c2e; padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
+    .actions-box h3 { font-size: 14px; margin-bottom: 12px; color: var(--accent); }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn-action { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; color: white; border: none; }
+    .btn-activate { background: #059669; }
+    .btn-credit-rem { background: #d97706; }
+    .btn-expiry-rem { background: #dc2626; }
+    .btn-custom { background: #475569; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
+    .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; width: 480px; padding: 20px; }
+    .modal-card textarea { width: 100%; height: 120px; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; color: white; padding: 10px; margin: 12px 0; font-size: 13px; }
+    .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>PingMe Master Control</h1>
+      <small style="color: var(--muted);">One Scan Instant Connection • System Management</small>
+    </div>
+    <button class="btn-maintenance" onclick="openMaintenanceModal()">📢 Broadcast System Advisory</button>
+  </header>
+
+  <div class="dashboard-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search ID, Name, or Phone..." oninput="filterCustomers()">
+      </div>
+      <div class="customer-list" id="customerList">
+        <div style="text-align: center; padding: 20px; color: var(--muted);">Loading database records...</div>
+      </div>
+    </div>
+
+    <div class="panel detail-view" id="detailPanel">
+      <div class="detail-header">
+        <div>
+          <h2 id="viewId" style="font-size: 22px; font-weight: 800;">Select a Customer</h2>
+          <span id="viewCustomerInfo" style="color: var(--muted); font-size: 13px;"></span>
+        </div>
+        <div>
+          <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px;">Account Status:</label>
+          <select id="statusSelect" class="status-select" onchange="updateCustomerStatus()">
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="CREDIT_EXHAUSTED">CREDIT_EXHAUSTED</option>
+            <option value="EXPIRED">EXPIRED</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="creditAlertBanner" class="alert-banner alert-credit">
+        ⚠️ <span>CRITICAL: Balance is 10 or fewer alerts. Prompt recharge immediately.</span>
+      </div>
+      <div id="expiryAlertBanner" class="alert-banner alert-expiry">
+        ⏳ <span>URGENT: Annual plan expires in less than 7 days.</span>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Available Balance</div>
+          <div class="stat-value" id="viewCredits">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Used Alerts</div>
+          <div class="stat-value" id="viewUsedCredits">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Subscription Expiry</div>
+          <div class="stat-value" id="viewExpiryDate" style="font-size: 16px; padding-top: 4px;">-</div>
+        </div>
+      </div>
+
+      <table class="info-table">
+        <tr>
+          <td>Owner Name</td>
+          <td id="viewName">-</td>
+        </tr>
+        <tr>
+          <td>Registered Mobile</td>
+          <td id="viewPhone">-</td>
+        </tr>
+        <tr>
+          <td>Email Address</td>
+          <td id="viewEmail">-</td>
+        </tr>
+        <tr>
+          <td>Delivery Address</td>
+          <td id="viewAddress">-</td>
+        </tr>
+      </table>
+
+      <div class="actions-box">
+        <h3>Dispatch Direct WhatsApp Message</h3>
+        <div class="btn-group">
+          <a id="btnMsgActivated" class="btn-action btn-activate" target="_blank">✅ Send Welcome / Activation</a>
+          <a id="btnMsgLowCredit" class="btn-action btn-credit-rem" target="_blank">⚠️ Send Low Credit Alert</a>
+          <a id="btnMsgExpiry" class="btn-action btn-expiry-rem" target="_blank">📅 Send Expiry Reminder</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="maintenanceModal">
+    <div class="modal-card">
+      <h3>Edit System Advisory</h3>
+      <p style="color: var(--muted); font-size: 12px; margin-top: 4px;">Adjust notice before dispatching to owner:</p>
+      <textarea id="maintenanceText">PingMe Service Advisory 🛠️
+
+Hello Customer,
+
+Our cloud notification infrastructure will undergo routine maintenance to enhance delivery speed and reliability.
+
+Maintenance Window:
+• Date: Sunday, 15 Nov 2026
+• Time: 02:00 AM - 04:00 AM IST
+
+During this brief window, automated QR scan alerts may experience a slight delivery delay. Normal operations will resume immediately afterward.
+
+We appreciate your cooperation!
+One Scan Instant Connection</textarea>
+      <div class="modal-buttons">
+        <button class="btn-action btn-custom" onclick="closeMaintenanceModal()">Cancel</button>
+        <a id="btnSendMaintenance" class="btn-action btn-activate" target="_blank">Open WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PASTE YOUR DEPLOYED WEB APP URL HERE:
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLe8t9VfN8Ml7VLDzu-wfq-162OqrllTmSdZSmYbhaU2GunfX3kl/exec"; 
+    
+    let customers = [];
+    let selectedCustomer = null;
+
+    window.addEventListener("DOMContentLoaded", fetchCustomers);
+
+    function fetchCustomers() {
+      fetch(`${BACKEND_URL}?action=getCustomers`)
+        .then(res => res.json())
+        .then(data => {
+          customers = data;
+          if (customers.length > 0) {
+            renderList(customers);
+            selectCustomer(customers[0]);
+          } else {
+            document.getElementById("customerList").innerHTML = "<div style='text-align:center;padding:20px;'>No customer records found.</div>";
+          }
+        })
+        .catch(err => {
+          document.getElementById("customerList").innerHTML = "<div style='text-align:center;padding:20px;color:#f87171;'>Failed to load from Google Sheets. Check BACKEND_URL.</div>";
+        });
+    }
+
+    function calculateDaysRemaining(dateString) {
+      const today = new Date();
+      const exp = new Date(dateString);
+      const diffTime = exp - today;
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function renderList(list) {
+      const container = document.getElementById("customerList");
+      container.innerHTML = "";
+
+      list.forEach(c => {
+        const daysLeft = calculateDaysRemaining(c.expiryDate);
+        const isLowCredit = Number(c.availableCredits) <= 10 && c.status === "ACTIVE";
+        const isExpiringSoon = daysLeft <= 7 && daysLeft >= 0 && c.status === "ACTIVE";
+
+        let badgeClass = "badge-active";
+        if (c.status === "CREDIT_EXHAUSTED") badgeClass = "badge-exhausted";
+        if (c.status === "EXPIRED") badgeClass = "badge-expired";
+
+        const div = document.createElement("div");
+        div.className = `customer-item ${selectedCustomer && selectedCustomer.id === c.id ? 'active-item' : ''}`;
+        div.onclick = () => selectCustomer(c);
+
+        div.innerHTML = `
+          <div class="item-row">
+            <span class="item-id">${c.id}</span>
+            <span class="badge ${badgeClass}">${c.status}</span>
+          </div>
+          <div class="item-row">
+            <span class="item-name">${c.name} (${c.phone.slice(-4)})</span>
+            <span style="font-size: 11px; font-weight: 600;">Bal: ${c.availableCredits}</span>
+          </div>
+          <div style="margin-top: 4px; display: flex; gap: 4px;">
+            ${isLowCredit ? '<span class="badge badge-warning">⚡ Low ('+c.availableCredits+')</span>' : ''}
+            ${isExpiringSoon ? '<span class="badge badge-warning">⏳ Exp in '+daysLeft+'d</span>' : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function selectCustomer(c) {
+      selectedCustomer = c;
+      renderList(customers);
+
+      const daysLeft = calculateDaysRemaining(c.expiryDate);
+      document.getElementById("viewId").innerText = `${c.id} — ${c.name}`;
+      document.getElementById("viewCustomerInfo").innerText = `Expires: ${c.expiryDate}`;
+      document.getElementById("viewName").innerText = c.name;
+      document.getElementById("viewPhone").innerText = "+" + c.phone;
+      document.getElementById("viewEmail").innerText = c.email || "-";
+      document.getElementById("viewAddress").innerText = c.address || "-";
+      document.getElementById("viewCredits").innerText = c.availableCredits;
+      document.getElementById("viewUsedCredits").innerText = c.usedCredits;
+      document.getElementById("viewExpiryDate").innerText = `${c.expiryDate} (${daysLeft > 0 ? daysLeft + ' days left' : 'Expired'})`;
+      
+      document.getElementById("statusSelect").value = c.status;
+
+      const creditBanner = document.getElementById("creditAlertBanner");
+      if (Number(c.availableCredits) <= 10 && c.status === "ACTIVE") {
+        creditBanner.classList.add("show");
+      } else {
+        creditBanner.classList.remove("show");
+      }
+
+      const expiryBanner = document.getElementById("expiryAlertBanner");
+      if (daysLeft <= 7 && daysLeft >= 0 && c.status === "ACTIVE") {
+        expiryBanner.classList.add("show");
+      } else {
+        expiryBanner.classList.remove("show");
+      }
+
+      setupWhatsAppLinks(c);
+    }
+
+    function setupWhatsAppLinks(c) {
+      const baseUrl = `https://wa.me/${c.phone}?text=`;
+
+      const textActivated = encodeURIComponent(
+`PingMe Smart QR | Welcome Aboard 🚀
+
+Hello ${c.name},
+
+Your PingMe Smart QR Kit (ID: ${c.id}) is now active and protected.
+
+Account Overview:
+• Status: Active
+• Included Credits: ${c.availableCredits} WhatsApp Alerts
+• Plan Validity: ${c.expiryDate}
+
+Next Steps:
+Place your acrylic holders and waterproof tags on your vehicle windshield, keychains, and personal belongings.
+
+When someone scans your tag, you will receive an instant, secure WhatsApp notification—without exposing your personal phone number.
+
+PingMe Support: support@pingme.in
+One Scan Instant Connection`
+      );
+      document.getElementById("btnMsgActivated").href = baseUrl + textActivated;
+
+      const textLowCredit = encodeURIComponent(
+`PingMe Security Alert ⚠️
+
+Hello ${c.name},
+
+Your PingMe tag (ID: ${c.id}) currently has ${c.availableCredits} alert credits remaining.
+
+To ensure you continue receiving instant notifications if your vehicle or personal item requires attention, please recharge your balance:
+
+• 250 Priority Alerts — ₹99
+• 500 Priority Alerts — ₹149
+
+Recharge securely via UPI/Card:
+👉 https://pingme.in/recharge?id=${c.id}
+
+*Unused credits do not expire while your annual subscription is active.*
+One Scan Instant Connection`
+      );
+      document.getElementById("btnMsgLowCredit").href = baseUrl + textLowCredit;
+
+      const textExpiry = encodeURIComponent(
+`PingMe Renewal Notice ⏳
+
+Hello ${c.name},
+
+Your annual PingMe Smart Protection plan for ID ${c.id} is scheduled to expire on ${c.expiryDate}.
+
+To prevent service interruption and keep your QR tags connected, renew your annual plan:
+
+• 1-Year Cloud Protection — ₹149
+• Includes 200 complimentary alert credits
+
+Renew your tag:
+👉 https://pingme.in/renew?id=${c.id}
+
+Thank you for choosing PingMe for your personal safety and asset protection.
+One Scan Instant Connection`
+      );
+      document.getElementById("btnMsgExpiry").href = baseUrl + textExpiry;
+    }
+
+    function updateCustomerStatus() {
+      const newStatus = document.getElementById("statusSelect").value;
+      selectedCustomer.status = newStatus;
+      
+      fetch(BACKEND_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "updateStatus",
+          id: selectedCustomer.id,
+          status: newStatus
+        })
+      });
+
+      renderList(customers);
+      selectCustomer(selectedCustomer);
+    }
+
+    function filterCustomers() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = customers.filter(c => 
+        c.id.toLowerCase().includes(q) || 
+        c.name.toLowerCase().includes(q) || 
+        c.phone.includes(q)
+      );
+      renderList(filtered);
+    }
+
+    function openMaintenanceModal() {
+      document.getElementById("maintenanceModal").style.display = "flex";
+      updateMaintenanceLink();
+    }
+    function closeMaintenanceModal() {
+      document.getElementById("maintenanceModal").style.display = "none";
+    }
+    function updateMaintenanceLink() {
+      if (!selectedCustomer) return;
+      const msg = encodeURIComponent(document.getElementById("maintenanceText").value);
+      document.getElementById("btnSendMaintenance").href = `https://wa.me/${selectedCustomer.phone}?text=${msg}`;
+    }
+    document.getElementById("maintenanceText").addEventListener("input", updateMaintenanceLink);
+  </script>
+</body>
+</html>
