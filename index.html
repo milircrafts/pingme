@@ -989,23 +989,37 @@
     }
 
     function dispatchBackend(mapLink, noteVal, sessId) {
-      var targetUrl = SCRIPT_URL + 
-        '?action=submitAlert' +
-        '&customerId=' + encodeURIComponent(tagId) +
-        '&tagId=' + encodeURIComponent(tagId) +
-        '&category=' + encodeURIComponent(currentCategory) +
-        '&message=' + encodeURIComponent(selectedMessage) +
-        '&urgency=Normal' +
-        '&locationUrl=' + encodeURIComponent(mapLink) +
-        '&location=' + encodeURIComponent(mapLink) +
-        '&notes=' + encodeURIComponent(noteVal) +
-        '&sessionId=' + encodeURIComponent(sessId) +
-        '&t=' + Date.now();
+      var payload = {
+        action: 'submitAlert',
+        customerId: tagId,
+        tagId: tagId,
+        category: currentCategory,
+        message: selectedMessage,
+        urgency: 'Normal',
+        locationUrl: mapLink,
+        location: mapLink,
+        notes: noteVal,
+        sessionId: sessId,
+        photoBase64: attachedPhotoBase64 || ""
+      };
 
-      fetch(targetUrl, { mode: 'no-cors' }).catch(function() {
-        var s = document.createElement('script');
-        s.src = targetUrl;
-        document.body.appendChild(s);
+      // Use POST so the base64 photo is sent without URL length limits
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(function(err) {
+        console.warn("POST dispatch failed, attempting fallback:", err);
+        // Fallback GET without image if network restricts POST
+        var targetUrl = SCRIPT_URL + 
+          '?action=submitAlert' +
+          '&customerId=' + encodeURIComponent(tagId) +
+          '&category=' + encodeURIComponent(currentCategory) +
+          '&message=' + encodeURIComponent(selectedMessage) +
+          '&locationUrl=' + encodeURIComponent(mapLink) +
+          '&sessionId=' + encodeURIComponent(sessId) +
+          '&t=' + Date.now();
+        fetch(targetUrl, { mode: 'no-cors' });
       });
     }
 
