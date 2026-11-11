@@ -660,9 +660,9 @@
         <p class="title-sub" id="screen3Sub">Owner notified via private alert channels.</p>
       </div>
 
-      <!-- Timer Capsule -->
+  <!-- Timer Capsule -->
       <div class="status-capsule-timer">
-        🕒 <span id="timerLabel">Waiting for Response...</span> <strong id="timerCounter">02:45</strong>
+        🕒 <span id="timerLabel">Waiting for Response...</span> <strong id="timerCounter">165s</strong>
       </div>
 
       <!-- Owner Response Received Box -->
@@ -880,7 +880,7 @@
             detectedLocationUrl = "https://maps.google.com/?q=" + p.coords.latitude.toFixed(6) + "," + p.coords.longitude.toFixed(6);
           },
           function() {},
-          { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
         );
       }
     }
@@ -936,25 +936,24 @@
     }
 
     function getOrGenSessionId() {
-  if (!currentSessionId) {
-    currentSessionId = 'SESS-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-    try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
-  }
-  return currentSessionId;
-}
+      if (!currentSessionId) {
+        currentSessionId = 'SESS-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+        try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
+      }
+      return currentSessionId;
+    }
 
     // DISPATCH WITH LOCATION CONFIRMATION
     function handleSendAlert() {
       var btn = document.getElementById('sendAlertBtn');
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span>📍 Acquiring GPS Location...</span>';
+        btn.innerHTML = '<span>📍 Acquiring GPS & Sending...</span>';
       }
 
       var noteVal = document.getElementById('customNoteInput').value.trim();
       var sessId = getOrGenSessionId();
 
-      // If already captured in background, dispatch instantly
       if (detectedLocationUrl) {
         proceedToDispatch(detectedLocationUrl, noteVal, sessId);
         return;
@@ -968,9 +967,10 @@
             proceedToDispatch(mapUrl, noteVal, sessId);
           },
           function(err) {
+            console.warn("GPS timeout/denied, sending alert without location:", err);
             proceedToDispatch("", noteVal, sessId);
           },
-          { enableHighAccuracy: true, timeout: 3500, maximumAge: 0 }
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
         );
       } else {
         proceedToDispatch("", noteVal, sessId);
@@ -1009,9 +1009,9 @@
       });
     }
 
-    // POLLING USING BOTH SESSION ID & TAG ID
-      function startAckPolling(sessId) {
-      clearInterval(pollTimer);
+    // POLLING FUNCTION
+    function startAckPolling(sessId) {
+      if (pollTimer) clearInterval(pollTimer);
 
       pollTimer = setInterval(function() {
         if (!sessId) return;
@@ -1025,7 +1025,6 @@
           .then(function(res) { return res.json(); })
           .then(function(data) {
             if (!data) return;
-            console.log("PingMe Poll Data:", data);
 
             var reply = data.reply || data.replyText || "";
             var isResponded = data.hasResponse || data.status === "RESPONDED";
@@ -1036,7 +1035,6 @@
               if (ackBox) {
                 document.getElementById('ackMessageText').textContent = '"' + reply + '"';
                 
-                // Show clean response time if sent from server, otherwise current time
                 var displayTime = (data.responseTime && !data.responseTime.includes("1899")) 
                   ? data.responseTime 
                   : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1056,11 +1054,12 @@
       clearInterval(countdownTimer);
       var remain = seconds;
       renderTime(remain);
+      
       countdownTimer = setInterval(function() {
         remain--;
         if (remain <= 0) {
           clearInterval(countdownTimer);
-          document.getElementById('timerCounter').textContent = '00:00';
+          document.getElementById('timerCounter').textContent = '0s';
           try { localStorage.removeItem('pingme_cooldown_' + tagId); } catch(e){}
         } else {
           renderTime(remain);
@@ -1069,9 +1068,7 @@
     }
 
     function renderTime(sec) {
-      var m = Math.floor(sec / 60);
-      var s = sec % 60;
-      document.getElementById('timerCounter').textContent = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      document.getElementById('timerCounter').textContent = sec + 's';
     }
 
     function shareViaWhatsApp() {
