@@ -339,7 +339,7 @@ const expDate = c.expiryDate || c.expiry || "-";
       document.getElementById("statusSelect").value = c.status;
 
       // Update QR Box & Scan URL
-      const fullScanUrl = BASE_SCAN_URL + c.id;
+      const BASE_SCAN_URL = "https://milircrafts.github.io/pingme/?id=";
       document.getElementById("qrLinkInput").value = fullScanUrl;
       document.getElementById("btnTestScanLink").href = fullScanUrl;
 
@@ -376,7 +376,7 @@ const expDate = c.expiryDate || c.expiry || "-";
     // High-Resolution 1000px QR Code PNG Exporter
     function downloadQRCodePNG() {
       if (!selectedCustomer) return;
-      const fullScanUrl = BASE_SCAN_URL + selectedCustomer.id;
+      const fullScanUrl = BASE_SCAN_URL + encodeURIComponent(c.id.trim().replace(/\s+/g, '-'));
 
       // Create an offscreen canvas to generate crisp 1000x1000px print file
       const offscreenDiv = document.createElement("div");
