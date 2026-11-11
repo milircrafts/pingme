@@ -724,7 +724,7 @@
           <div class="timer-label" id="txt_timer_label">Response Timer</div>
           <div class="live-timer">
             <span class="timer-clock-icon">⏱️</span>
-            <span class="timer-text"><span id="txt_wait_prefix">Waiting for Response...</span> <strong id="countdownText">03:00</strong></span>
+            <span class="timer-text"><span id="txt_wait_prefix">Waiting for Response...</span> <strong id="countdownText">180s</strong></span>
           </div>
           <div class="waiting-pill-placeholder" id="txt_wait_ack">
             Waiting for Owner to acknowledge...
@@ -1027,6 +1027,7 @@
     }
 
     // ================= DUAL DISPATCH ALERT =================
+    // ================= DISPATCH WITH TRIPLE FALLBACK =================
     async function handleSendAlert() {
       const sendBtn = document.getElementById('sendAlertBtn');
       sendBtn.disabled = true;
@@ -1040,69 +1041,92 @@
       const coords = await getCoordinates();
       const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
 
-      // Prepare URL encoded parameters to guarantee match in Google Apps Script e.parameter
-      const params = new URLSearchParams();
-      params.append('action', 'sendAlert');
-      params.append('tag', tagId);
-      params.append('id', tagId);
-      params.append('tagId', tagId);
-      params.append('customerId', tagId);
-      params.append('category', currentCategory);
-      params.append('message', selectedMessage);
-      params.append('customNote', noteText);
-      params.append('notes', noteText);
-      params.append('location', mapsUrl);
-      params.append('photo', compressedPhotoBase64 || '');
+      // Clean, universally mapped parameters
+      const payload = {
+        action: 'sendAlert',
+        tag: tagId,
+        id: tagId,
+        tagId: tagId,
+        customerId: tagId,
+        category: currentCategory,
+        message: selectedMessage,
+        customNote: noteText,
+        notes: noteText,
+        location: mapsUrl,
+        photo: compressedPhotoBase64 || ''
+      };
 
-      // Execute dispatch: Hidden Form submission (works through 302 redirects)
-      let hiddenFrame = document.getElementById('gas_hidden_iframe');
-      if (!hiddenFrame) {
-        hiddenFrame = document.createElement('iframe');
-        hiddenFrame.name = 'gas_hidden_iframe';
-        hiddenFrame.id = 'gas_hidden_iframe';
-        hiddenFrame.style.display = 'none';
-        document.body.appendChild(hiddenFrame);
-      }
+      // 1. Fire GET ping (Works if your script listens in doGet)
+      try {
+        const getUrl = `${SCRIPT_URL}?action=sendAlert&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&notes=${encodeURIComponent(noteText)}&location=${encodeURIComponent(mapsUrl)}`;
+        const imgBeacon = new Image();
+        imgBeacon.src = getUrl;
+      } catch (err) {}
 
-      let form = document.getElementById('gas_alert_form');
-      if (form) form.remove();
+      // 2. Fire POST ping (Works if your script listens in doPost)
+      try {
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {}
 
-      form = document.createElement('form');
-      form.id = 'gas_alert_form';
-      form.method = 'POST';
-      form.action = SCRIPT_URL;
-      form.target = 'gas_hidden_iframe';
-      form.style.display = 'none';
+      // 3. Fallback Form POST (Overcomes 302 redirects)
+      try {
+        let hiddenFrame = document.getElementById('gas_hidden_iframe');
+        if (!hiddenFrame) {
+          hiddenFrame = document.createElement('iframe');
+          hiddenFrame.name = 'gas_hidden_iframe';
+          hiddenFrame.id = 'gas_hidden_iframe';
+          hiddenFrame.style.display = 'none';
+          document.body.appendChild(hiddenFrame);
+        }
 
-      for (const [key, value] of params.entries()) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      }
+        let form = document.getElementById('gas_alert_form');
+        if (form) form.remove();
 
-      document.body.appendChild(form);
-      form.submit();
+        form = document.createElement('form');
+        form.id = 'gas_alert_form';
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'gas_hidden_iframe';
+        form.style.display = 'none';
+
+        for (const [key, value] of Object.entries(payload)) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+      } catch (e) {}
 
       // Lock cooldown (180s)
       const cooldownEnd = Date.now() + 180 * 1000;
       localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
 
+      // Start Countdown at 180 seconds
       startScreen3Timer(180);
       showScreen('screen3');
     }
 
+    // ================= TIMER IN PURE SECONDS (180s -> 0s) =================
     function startScreen3Timer(secondsRemaining) {
       let sec = secondsRemaining;
       const countdownEl = document.getElementById('countdownText');
+      countdownEl.textContent = `${sec}s`;
 
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         sec--;
-        const mins = Math.floor(sec / 60);
-        const remSec = sec % 60;
-        countdownEl.textContent = `${String(mins).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
+        if (sec >= 0) {
+          countdownEl.textContent = `${sec}s`;
+        }
 
         if (sec <= 0) {
           clearInterval(countdownInterval);
@@ -1124,7 +1148,6 @@
         } catch (e) {}
       }, 4000);
     }
-
     function triggerOwnerResponse(replyText) {
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       playChime();
