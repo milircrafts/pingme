@@ -941,12 +941,12 @@
       return currentSessionId;
     }
 
-    // ACCURATE LIVE LOCATION FETCH + INSTANT DISPATCH
+    // 1. ROBUST GEOLOCATION + IMMEDIATE FALLBACK
     function handleSendAlert() {
       var btn = document.getElementById('sendAlertBtn');
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span>📍 Acquiring Location...</span>';
+        btn.innerHTML = '<span>📍 Connecting...</span>';
       }
 
       var sessId = getOrGenSessionId();
@@ -955,35 +955,35 @@
 
       var noteVal = document.getElementById('customNoteInput').value.trim();
 
-      // Ensure GPS resolves before dispatching alert payload
       if (navigator.geolocation) {
+        // High-accuracy mobile GPS fetch with 3.5s hard timeout
         navigator.geolocation.getCurrentPosition(
           function(pos) {
-            var lat = pos.coords.latitude;
-            var lng = pos.coords.longitude;
-            var mapUrl = 'https://maps.google.com/?q=' + lat + ',' + lng;
+            var lat = pos.coords.latitude.toFixed(6);
+            var lng = pos.coords.longitude.toFixed(6);
+            var mapUrl = "https://maps.google.com/?q=" + lat + "," + lng;
             proceedWithDispatch(mapUrl, noteVal, sessId);
           },
           function(err) {
-            // If GPS denied/timed out, proceed cleanly without hanging
-            proceedWithDispatch('', noteVal, sessId);
+            // If denied or GPS unavailable, proceed immediately without hanging
+            proceedWithDispatch("Location permission not granted", noteVal, sessId);
           },
-          { enableHighAccuracy: true, timeout: 2500, maximumAge: 0 }
+          { enableHighAccuracy: true, timeout: 3500, maximumAge: 10000 }
         );
       } else {
-        proceedWithDispatch('', noteVal, sessId);
+        proceedWithDispatch("Geolocation not supported", noteVal, sessId);
       }
     }
 
     function proceedWithDispatch(locationUrl, noteVal, sessId) {
       startCountdown(165);
       showScreen('screen3');
-      startAckPolling();
       dispatchBackend(locationUrl, noteVal, sessId);
+      startAckPolling();
     }
 
+    // 2. DISPATCH VIA JSONP / SCRIPT INJECTION (BYPASSES ALL CORS & BEACON DROPS)
     function dispatchBackend(locationUrl, noteVal, sessId) {
-      // Direct GET query containing both parameter names (locationUrl & location)
       var targetUrl = SCRIPT_URL + 
         '?action=submitAlert' +
         '&customerId=' + encodeURIComponent(tagId) +
@@ -995,42 +995,30 @@
         '&location=' + encodeURIComponent(locationUrl) +
         '&notes=' + encodeURIComponent(noteVal) +
         '&sessionId=' + encodeURIComponent(sessId) +
-        '&clientSessionId=' + encodeURIComponent(sessId);
+        '&clientSessionId=' + encodeURIComponent(sessId) +
+        '&t=' + Date.now();
 
-      // Reliable multi-channel transmission
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(targetUrl);
-      } else {
-        var p = new Image();
-        p.src = targetUrl;
-      }
+      // Reliable cross-domain script trigger (never gets blocked or truncated)
+      var s = document.createElement('script');
+      s.src = targetUrl;
+      s.onload = function() { if (s.parentNode) s.parentNode.removeChild(s); };
+      document.body.appendChild(s);
     }
 
-    function startCountdown(seconds) {
-      clearInterval(countdownTimer);
-      var remain = seconds;
-      renderTime(remain);
-
-      countdownTimer = setInterval(function() {
-        remain--;
-        if (remain <= 0) {
-          clearInterval(countdownTimer);
-          document.getElementById('timerCounter').textContent = '00:00';
-          try { localStorage.removeItem('pingme_cooldown_' + tagId); } catch(e){}
-        } else {
-          renderTime(remain);
+    // 3. REAL-TIME WHATSAPP REPLY POLLING (JSONP - NO CORS BLOCKS)
+    window.handleAckResponse = function(data) {
+      if (data && (data.acknowledged || data.reply || data.replyText || data.ownerReply || data.status === 'RESOLVED')) {
+        clearInterval(pollTimer);
+        var replyMsg = data.replyText || data.reply || data.ownerReply || 'Coming in 2 mins!';
+        var ackBox = document.getElementById('ackBlock');
+        if (ackBox) {
+          document.getElementById('ackMessageText').textContent = '"' + replyMsg + '"';
+          document.getElementById('ackTimestamp').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          ackBox.style.display = 'block';
         }
-      }, 1000);
-    }
+      }
+    };
 
-    function renderTime(sec) {
-      var m = Math.floor(sec / 60);
-      var s = sec % 60;
-      var str = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-      document.getElementById('timerCounter').textContent = str;
-    }
-
-    // Live Owner Reply Polling (Checks every 4s)
     function startAckPolling() {
       clearInterval(pollTimer);
       var sessId = getOrGenSessionId();
@@ -1038,24 +1026,19 @@
       pollTimer = setInterval(function() {
         if (!sessId) return;
 
-        var pollUrl = SCRIPT_URL + '?action=checkStatus&sessionId=' + encodeURIComponent(sessId) + '&tagId=' + encodeURIComponent(tagId) + '&t=' + Date.now();
+        // Clean JSONP query directly to Apps Script doGet
+        var pollUrl = SCRIPT_URL + 
+          '?action=checkStatus' +
+          '&sessionId=' + encodeURIComponent(sessId) +
+          '&tagId=' + encodeURIComponent(tagId) +
+          '&callback=handleAckResponse' +
+          '&t=' + Date.now();
 
-        fetch(pollUrl)
-          .then(function(res) { return res.json(); })
-          .then(function(data) {
-            if (data && (data.acknowledged || data.reply || data.replyText || data.ownerReply || data.status === 'RESOLVED')) {
-              clearInterval(pollTimer);
-              var replyMsg = data.replyText || data.reply || data.ownerReply || 'Coming in 2 mins!';
-              var ackBox = document.getElementById('ackBlock');
-              if (ackBox) {
-                document.getElementById('ackMessageText').textContent = '"' + replyMsg + '"';
-                document.getElementById('ackTimestamp').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                ackBox.style.display = 'block';
-              }
-            }
-          })
-          .catch(function(err) {});
-      }, 4000);
+        var script = document.createElement('script');
+        script.src = pollUrl;
+        script.onload = function() { if (script.parentNode) script.parentNode.removeChild(script); };
+        document.body.appendChild(script);
+      }, 3500);
     }
 
     function shareViaWhatsApp() {
