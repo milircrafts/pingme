@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PINGME GO — ONE SCAN. INSTANT CONNECTION.</title>
+  <title>PingMe — ONE SCAN. INSTANT CONNECTION.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -53,7 +53,7 @@
       opacity: 0.55;
     }
 
-    /* Splash Screen (1.5s) */
+    /* Splash Screen (1.5s on initial scan) */
     .splash-screen {
       position: fixed;
       inset: 0;
@@ -77,22 +77,16 @@
       animation: splashPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .splash-logo {
-      height: 48px;
-      width: auto;
+      height: 110px;
+      width: 110px;
       object-fit: contain;
-      margin-bottom: 8px;
-      filter: drop-shadow(0 4px 16px rgba(56, 189, 248, 0.4));
-    }
-    .splash-tagline {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      color: #94a3b8;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      filter: drop-shadow(0 8px 24px rgba(56, 189, 248, 0.45));
     }
     .splash-loader {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border: 2.5px solid rgba(56, 189, 248, 0.2);
       border-top-color: #38bdf8;
       border-radius: 50%;
@@ -102,7 +96,7 @@
       to { transform: rotate(360deg); }
     }
     @keyframes splashPop {
-      0% { transform: scale(0.9); opacity: 0; }
+      0% { transform: scale(0.85); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
 
@@ -144,20 +138,31 @@
       color: #0f172a;
     }
     .brand-block {
-      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .header-brand-logo {
-      height: 28px;
-      width: auto;
+      height: 44px;
+      width: 44px;
       object-fit: contain;
+      border-radius: 50%;
       display: block;
+      filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.12));
+    }
+    .header-brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1;
     }
     .brand-tagline {
-      font-size: 8.5px;
+      font-size: 8px;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #475569;
-      margin-top: 2px;
+      color: #64748b;
+      margin-top: 3px;
     }
     .lang-pill {
       background: rgba(241, 245, 249, 0.95);
@@ -501,11 +506,17 @@
     .waiting-pill-placeholder {
       background: #f8fafc;
       border: 1.5px dashed #cbd5e1;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
       font-size: 13px;
-      color: #64748b;
-      font-style: italic;
+      color: #0369a1;
+      font-weight: 600;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: all 0.3s ease;
     }
     .ack-box {
       background: #ffffff;
@@ -593,11 +604,10 @@
 </head>
 <body>
 
-  <!-- SPLASH SCREEN -->
+  <!-- ================= SPLASH SCREEN (1.5s on scan) ================= -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
-      <img src="assets/pingme-logo.png" alt="PINGME GO" class="splash-logo">
-      <div class="splash-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+      <img src="assets/pingme-logo.png" alt="PingMe" class="splash-logo">
       <div class="splash-loader"></div>
     </div>
   </div>
@@ -608,16 +618,20 @@
   <main class="app-container">
     <div class="glass-card">
       
+      <!-- Persistent Clean Header -->
       <header class="app-header">
         <button id="backBtn" class="back-btn hidden" aria-label="Go back">←</button>
         <div class="brand-block">
-          <img src="assets/pingme-logo.png" alt="PINGME GO" class="header-brand-logo">
-          <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+          <img src="assets/pingme-logo.png" alt="PingMe" class="header-brand-logo">
+          <div>
+            <div class="header-brand-name">PingMe</div>
+            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+          </div>
         </div>
         <button id="langToggle" class="lang-pill" type="button">🌐 தமிழ்</button>
       </header>
 
-      <!-- SCREEN 1 -->
+      <!-- SCREEN 1: CATEGORY SELECTION -->
       <section id="screen1" class="screen-view active">
         <div class="welcome-badge" id="txt_hello">Hello there! 👋</div>
         <h1 class="screen-title" id="txt_s1_title">How can we help?</h1>
@@ -663,7 +677,7 @@
         </div>
       </section>
 
-      <!-- SCREEN 2 -->
+      <!-- SCREEN 2: SELECT MESSAGE -->
       <section id="screen2" class="screen-view">
         <div class="hero-category-art">
           <img id="screen2HeroImg" src="assets/car-bike-3d.png" alt="Category Art" class="hero-3d-img">
@@ -707,7 +721,7 @@
         </button>
       </section>
 
-      <!-- SCREEN 3 -->
+      <!-- SCREEN 3: LIVE ACKNOWLEDGMENT -->
       <section id="screen3" class="screen-view">
         <div class="mascot-stage">
           <img src="assets/mascot-airplane-3d.png" alt="PingMe Mascot" class="mascot-img">
@@ -727,8 +741,9 @@
             <span class="timer-clock-icon">⏱️</span>
             <span class="timer-text"><span id="txt_wait_prefix">Waiting for Response...</span> <strong id="countdownText">180s</strong></span>
           </div>
-          <div class="waiting-pill-placeholder" id="txt_wait_ack">
-            Waiting for Owner to acknowledge...
+          <!-- Rotating entertaining status micro-tips -->
+          <div class="waiting-pill-placeholder" id="liveTipBox">
+            🚀 Ping dispatched! Rocketing to owner's WhatsApp...
           </div>
         </div>
 
@@ -787,7 +802,6 @@
         dispatch_sub: "Owner notified via private alert channels.",
         timer_label: "Response Timer",
         wait_prefix: "Waiting for Response...",
-        wait_ack: "Waiting for Owner to acknowledge...",
         ack_tag: "Owner Response Received ⚡",
         conn_succ: "Connection Successful! 💚",
         thank_you: "Thank you for using PingMe.",
@@ -811,6 +825,13 @@
           'Regarding your parked spot/space.',
           'Please contact me regarding this.',
           'Emergency notification.'
+        ],
+        fun_tips: [
+          "🚀 Ping dispatched! Rocketing to owner's WhatsApp...",
+          "📱 Owner's phone is buzzing right now...",
+          "🔑 They might be checking their phone or grabbing keys...",
+          "🛡️ Relax! Your phone number is 100% private & hidden.",
+          "☕ Hang tight, connection is in progress!"
         ]
       },
       ta: {
@@ -838,7 +859,6 @@
         dispatch_sub: "தனிப்பட்ட பாதுகாப்பான முறையில் தகவல் அனுப்பப்பட்டது.",
         timer_label: "பதில் நேரம்",
         wait_prefix: "உரிமையாளரின் பதிலுக்காக...",
-        wait_ack: "உரிமையாளர் பதிலளிக்க காத்திருக்கிறது...",
         ack_tag: "உரிமையாளரிடமிருந்து பதில் வந்துள்ளது ⚡",
         conn_succ: "தொடர்பு வெற்றிகரமாக முடிந்தது! 💚",
         thank_you: "PingMe பயன்படுத்தியதற்கு நன்றி.",
@@ -862,6 +882,13 @@
           'வாகனம் நிறுத்துமிடம் குறித்து.',
           'தயவுசெய்து என்னை தொடர்பு கொள்ளவும்.',
           'அவசர தகவல் அனுப்பப்பட்டுள்ளது.'
+        ],
+        fun_tips: [
+          "🚀 உரிமையாளரின் வாட்ஸ்அப்-க்கு அலர்ட் பறந்துவிட்டது...",
+          "📱 உரிமையாளரின் போன் இப்போது ஒலிக்கிறது...",
+          "🔑 சாவி எடுத்துக்கொண்டு கிளம்புகிறார்கள்...",
+          "🛡️ உங்கள் போன் எண் யாருக்கும் தெரியாது, பாதுகாப்பானது!",
+          "☕ சில வினாடிகளில் உரிமையாளர் பதிலளிப்பார்..."
         ]
       }
     };
@@ -872,7 +899,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = urlParams.get('id') || urlParams.get('tag') || 'PM-CUST-1004';
     
-    // YOUR LIVE GOOGLE APPS SCRIPT WEB APP URL
+    // LIVE WORKING GOOGLE APPS SCRIPT WEB APP URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec';
 
     let currentCategory = 'vehicle';
@@ -880,7 +907,9 @@
     let compressedPhotoBase64 = null;
     let countdownInterval = null;
     let pollInterval = null;
+    let tipInterval = null;
     let audioCtx = null;
+    let currentSessionId = null;
 
     function applyLanguage(lang) {
       currentLang = lang;
@@ -908,7 +937,6 @@
       document.getElementById('txt_dispatch_sub').textContent = t.dispatch_sub;
       document.getElementById('txt_timer_label').textContent = t.timer_label;
       document.getElementById('txt_wait_prefix').textContent = t.wait_prefix;
-      document.getElementById('txt_wait_ack').textContent = t.wait_ack;
       document.getElementById('txt_ack_tag').textContent = t.ack_tag;
       document.getElementById('txt_conn_succ').textContent = t.conn_succ;
       document.getElementById('txt_thank_you').textContent = t.thank_you;
@@ -929,10 +957,10 @@
         osc.type = 'sine';
         osc.frequency.setValueAtTime(587.33, ctx.currentTime);
         osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
         osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.4);
+        osc.stop(ctx.currentTime + 0.45);
       } catch (e) {}
     }
 
@@ -1027,7 +1055,7 @@
       showScreen('screen2');
     }
 
-    // DISPATCH ALERT
+    // DISPATCH (MATCHES LINE 70 IN CODE.GS)
     async function handleSendAlert() {
       const sendBtn = document.getElementById('sendAlertBtn');
       sendBtn.disabled = true;
@@ -1041,71 +1069,21 @@
       const coords = await getCoordinates();
       const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
 
-      const payload = {
-        action: 'sendAlert',
-        tag: tagId,
-        id: tagId,
-        tagId: tagId,
-        customerId: tagId,
-        category: currentCategory,
-        message: selectedMessage,
-        customNote: noteText,
-        notes: noteText,
-        location: mapsUrl,
-        photo: compressedPhotoBase64 || ''
-      };
+      const submitUrl = `${SCRIPT_URL}?action=submitAlert&customerId=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&urgency=Normal&locationUrl=${encodeURIComponent(mapsUrl)}&notes=${encodeURIComponent(noteText)}`;
 
-      // 1. GET Beacon (doGet trigger)
       try {
-        const getUrl = `${SCRIPT_URL}?action=sendAlert&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&notes=${encodeURIComponent(noteText)}&location=${encodeURIComponent(mapsUrl)}`;
-        const imgBeacon = new Image();
-        imgBeacon.src = getUrl;
-      } catch (err) {}
-
-      // 2. Direct POST fetch (doPost trigger)
-      try {
-        fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {}
-
-      // 3. Hidden Form POST (Bypasses Google 302 redirects)
-      try {
-        let hiddenFrame = document.getElementById('gas_hidden_iframe');
-        if (!hiddenFrame) {
-          hiddenFrame = document.createElement('iframe');
-          hiddenFrame.name = 'gas_hidden_iframe';
-          hiddenFrame.id = 'gas_hidden_iframe';
-          hiddenFrame.style.display = 'none';
-          document.body.appendChild(hiddenFrame);
+        const response = await fetch(submitUrl);
+        const resData = await response.json();
+        
+        if (resData && (resData.sessionId || resData.session_id || resData.id)) {
+          currentSessionId = resData.sessionId || resData.session_id || resData.id;
+          localStorage.setItem(`pingme_session_${tagId}`, currentSessionId);
         }
+      } catch (err) {
+        const img = new Image();
+        img.src = submitUrl;
+      }
 
-        let form = document.getElementById('gas_alert_form');
-        if (form) form.remove();
-
-        form = document.createElement('form');
-        form.id = 'gas_alert_form';
-        form.method = 'POST';
-        form.action = SCRIPT_URL;
-        form.target = 'gas_hidden_iframe';
-        form.style.display = 'none';
-
-        for (const [key, value] of Object.entries(payload)) {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = value;
-          form.appendChild(input);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-      } catch (e) {}
-
-      // Lock cooldown (180s)
       const cooldownEnd = Date.now() + 180 * 1000;
       localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
 
@@ -1113,13 +1091,27 @@
       showScreen('screen3');
     }
 
-    // TIMER IN PURE SECONDS (180s -> 0s)
-    // ================= TIMER & BULLETPROOF REPLY POLLING =================
+    // TIMER, ROTATING TIPS & RESPONSE POLLING (LINE 80 IN CODE.GS)
     function startScreen3Timer(secondsRemaining) {
       let sec = secondsRemaining;
       const countdownEl = document.getElementById('countdownText');
       if (countdownEl) countdownEl.textContent = `${sec}s`;
 
+      if (!currentSessionId) {
+        currentSessionId = localStorage.getItem(`pingme_session_${tagId}`);
+      }
+
+      // Rotating status micro-tips
+      let tipIdx = 0;
+      const tipBox = document.getElementById('liveTipBox');
+      clearInterval(tipInterval);
+      tipInterval = setInterval(() => {
+        const tips = I18N[currentLang].fun_tips;
+        tipIdx = (tipIdx + 1) % tips.length;
+        if (tipBox) tipBox.textContent = tips[tipIdx];
+      }, 5000);
+
+      // Countdown (180s down to 0s)
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         sec--;
@@ -1130,47 +1122,38 @@
         if (sec <= 0) {
           clearInterval(countdownInterval);
           clearInterval(pollInterval);
+          clearInterval(tipInterval);
           const shareBlock = document.getElementById('socialActionBlock');
           if (shareBlock) shareBlock.classList.remove('hidden');
         }
       }, 1000);
 
-      // JSONP callback handler on window
-      window.onPingMeReplyReceived = function(data) {
-        if (data && (data.replyReceived || data.status === 'replied' || data.reply)) {
-          clearInterval(pollInterval);
-          clearInterval(countdownInterval);
-          const replyMsg = data.replyText || data.reply || data.message || 'Coming in 2 mins!';
-          triggerOwnerResponse(replyMsg);
-        }
-      };
-
-      // Poll every 3.5 seconds
+      // Check owner response via sessionId
       clearInterval(pollInterval);
-      pollInterval = setInterval(() => {
-        // Method 1: JSONP Script Tag (Never blocked by CORS or Google 302 redirects)
-        const oldScript = document.getElementById('pingme_jsonp_script');
-        if (oldScript) oldScript.remove();
+      pollInterval = setInterval(async () => {
+        const activeSess = currentSessionId || localStorage.getItem(`pingme_session_${tagId}`);
+        if (!activeSess) return;
 
-        const jsonpScript = document.createElement('script');
-        jsonpScript.id = 'pingme_jsonp_script';
-        jsonpScript.src = `${SCRIPT_URL}?action=checkReply&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&tagId=${encodeURIComponent(tagId)}&callback=onPingMeReplyReceived&_ts=${Date.now()}`;
-        document.body.appendChild(jsonpScript);
+        try {
+          const pollUrl = `${SCRIPT_URL}?action=checkResponse&sessionId=${encodeURIComponent(activeSess)}&customerId=${encodeURIComponent(tagId)}&_ts=${Date.now()}`;
+          const res = await fetch(pollUrl);
+          const data = await res.json();
 
-        // Method 2: Standard fetch fallback
-        fetch(`${SCRIPT_URL}?action=checkReply&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&tagId=${encodeURIComponent(tagId)}&_ts=${Date.now()}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data && (data.replyReceived || data.status === 'replied' || data.reply)) {
-              window.onPingMeReplyReceived(data);
-            }
-          })
-          .catch(() => {});
-      }, 3500);
+          if (data && (data.status === 'RESPONDED' || data.responded || data.reply || data.response)) {
+            clearInterval(pollInterval);
+            clearInterval(countdownInterval);
+            clearInterval(tipInterval);
+            const replyMsg = data.reply || data.response || data.message || 'Ok coming';
+            triggerOwnerResponse(replyMsg);
+          }
+        } catch (e) {}
+      }, 3000);
     }
 
     function triggerOwnerResponse(replyText) {
-      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      if (navigator.vibrate) {
+        try { navigator.vibrate([100, 50, 100]); } catch (e) {}
+      }
       playChime();
 
       document.getElementById('waitingBlock').classList.add('hidden');
@@ -1181,7 +1164,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // 1.5s Splash Dismissal
+      // Dismiss splash after 1.5s
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         if (splash) {
@@ -1190,7 +1173,7 @@
         }
       }, 1500);
 
-      // Check active cooldown
+      // Cooldown check
       const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
       if (activeCooldown) {
         const remSeconds = Math.floor((parseInt(activeCooldown, 10) - Date.now()) / 1000);
@@ -1203,7 +1186,7 @@
         }
       }
 
-      // Language Switcher
+      // Language Switcher Toggle
       document.getElementById('langToggle').onclick = () => {
         const nextLang = currentLang === 'en' ? 'ta' : 'en';
         applyLanguage(nextLang);
