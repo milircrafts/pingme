@@ -1,147 +1,347 @@
-<!-- Add this modal/box inside your scan.html body where completed screen appears -->
-<div id="doneContainer" style="display:none; text-align:center; padding: 30px 20px;">
-  <h3 style="color:#22c55e; font-size:20px;">Alert Delivered Successfully!</h3>
-  <p style="color:#94a3b8; font-size:14px; margin-top:8px;">The owner has received your notification via WhatsApp.</p>
-  
-  <!-- Real-Time Owner Reply Box -->
-  <div id="ownerReplyBox" style="margin-top:20px; background:#1e293b; border:1px solid #334155; border-radius:10px; padding:16px; text-align:left;">
-    <div style="font-size:12px; color:#38bdf8; font-weight:700; margin-bottom:6px;">💬 OWNER RESPONSE:</div>
-    <div id="ownerReplyText" style="color:#f8fafc; font-size:15px; font-weight:500;">
-      <span style="color:#64748b; font-style:italic;">Waiting for owner to reply on WhatsApp...</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe • One Scan Instant Connection</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #22c55e;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .owner-badge {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    select, textarea {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+    textarea {
+      resize: vertical;
+      height: 75px;
+    }
+    .btn-secondary {
+      width: 100%;
+      background: #334155;
+      color: var(--text);
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 16px;
+      transition: background 0.2s;
+    }
+    .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: #0b1120;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    .btn-primary:disabled {
+      background: #475569;
+      cursor: not-allowed;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div id="mainFormContainer">
+      <div class="header">
+        <h1>PingMe</h1>
+        <p>One Scan Instant Connection</p>
+      </div>
+
+      <div class="owner-badge">
+        <span>Connected Tag: <strong id="displayTagId">Verifying...</strong></span>
+        <span id="tagStatusDot" style="color: var(--success); font-weight: bold;">● Active</span>
+      </div>
+
+      <div class="form-group">
+        <label for="itemTypeSelect">Alert Category</label>
+        <select id="itemTypeSelect">
+          <option value="Vehicle">Vehicle</option>
+          <option value="Luggage / Bag">Luggage / Bag</option>
+          <option value="Keys">Keys</option>
+          <option value="Personal Belonging">Personal Belonging</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reasonSelect">Reason for Alert</label>
+        <select id="reasonSelect">
+          <option value="Wrong Parking / Blocking Way">Wrong Parking / Blocking Way</option>
+          <option value="Lights are ON">Lights are ON</option>
+          <option value="Window / Door Left Open">Window / Door Left Open</option>
+          <option value="Found Lost Item / Luggage">Found Lost Item / Luggage</option>
+          <option value="Emergency Attention Required">Emergency Attention Required</option>
+          <option value="General Notification">General Notification</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="userNotes">Quick Note (Optional)</label>
+        <textarea id="userNotes" placeholder="e.g., Please move ahead slightly, truck needs to exit..."></textarea>
+      </div>
+
+      <button type="button" id="locationBtn" class="btn-secondary" onclick="captureLocation()">
+        📍 Add Location (Optional)
+      </button>
+
+      <button type="button" id="submitBtn" class="btn-primary" onclick="submitAlertForm()">
+        Send Instant Alert
+      </button>
+
+      <div class="footer">
+        🔒 Encrypted & Private • Your phone number is never shared.
+      </div>
+    </div>
+
+    <!-- Completed Screen with Live Real-Time Polling for WhatsApp Reply -->
+    <div id="doneContainer" style="display:none; text-align:center; padding: 15px 0;">
+      <h3 style="color:var(--success); font-size:20px;">Alert Delivered Successfully!</h3>
+      <p style="color:var(--muted); font-size:13px; margin-top:8px;">
+        The owner received your notification on WhatsApp.
+      </p>
+      
+      <div style="margin-top:20px; background:#0f172a; border:1px solid var(--border); border-radius:10px; padding:16px; text-align:left;">
+        <div style="font-size:11px; color:var(--accent); font-weight:700; margin-bottom:6px;">
+          💬 OWNER RESPONSE:
+        </div>
+        <div id="ownerReplyText" style="color:#f8fafc; font-size:14px; font-weight:500;">
+          <span style="color:#64748b; font-style:italic;">Waiting for owner to reply on WhatsApp...</span>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; font-size:11px; color:var(--muted);">
+        PingMe • One Scan Instant Connection
+      </div>
     </div>
   </div>
 
-  <div style="margin-top:25px; font-size:12px; color:#64748b;">
-    PingMe • One Scan Instant Connection
-  </div>
-</div>
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLE8t9VfN8M17VLDzu-wfq-1620qrllTmSdZSmYbhaU2GunfX3kl/exec";
+    const urlParams = new URLSearchParams(window.location.search);
+    const tagId = urlParams.get("id");
 
-<script>
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLe8t9VfN8Ml7VLDzu-wfq-162OqrllTmSdZSmYbhaU2GunfX3kl/exec";
-  const urlParams = new URLSearchParams(window.location.search);
-  const tagId = urlParams.get("id");
+    let userCoords = "";
+    let photoDataUrl = "";
+    let scannerIP = "UNKNOWN";
+    let pollInterval = null;
 
-  let userCoords = "";
-  let photoDataUrl = "";
-  let scannerIP = "UNKNOWN";
-  let pollInterval = null;
-
-  window.addEventListener("DOMContentLoaded", () => {
-    if (!tagId) {
-      document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Invalid QR Code</h3></div>";
-      return;
-    }
-
-    // 1. Fetch Client Public IP Silently for Audit Trail
-    fetch("https://api.ipify.org?format=json")
-      .then(res => res.json())
-      .then(d => { scannerIP = d.ip; })
-      .catch(() => { scannerIP = "UNAVAILABLE"; });
-
-    // 2. Prevent Double Scan via Session Storage
-    if (sessionStorage.getItem("pingme_submitted_" + tagId) === "true") {
-      showCompletedScreen("Notice: You have already notified the owner during this scan. To send another alert, please scan the physical QR tag again.");
-      startReplyPolling();
-      return;
-    }
-
-    // 3. Verify Tag Status
-    fetch(`${BACKEND_URL}?id=${tagId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data.valid || data.status === "EXPIRED") {
-          document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Tag Inactive or Expired</h3><p>This PingMe tag is not active.</p></div>";
-        } else if (data.status === "CREDIT_EXHAUSTED") {
-          document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Notifications Paused</h3><p>The owner cannot receive automated alerts right now.</p></div>";
-        }
-      });
-  });
-
-  // GPS Snapshot
-  function captureLocation() {
-    const btn = document.getElementById("locationBtn");
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
-      return;
-    }
-    btn.innerText = "📍 Fetching location...";
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        userCoords = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        btn.innerText = "✅ Location Attached";
-        btn.style.background = "#16a34a";
-      },
-      (err) => {
-        btn.innerText = "📍 Add Location (Optional)";
-        alert("Location skipped. You can still send the alert.");
-      },
-      { timeout: 7000 }
-    );
-  }
-
-  // Form Submit Routine
-  function submitAlertForm() {
-    const submitBtn = document.getElementById("submitBtn");
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Sending Alert...";
-
-    const payload = {
-      id: tagId,
-      itemType: document.getElementById("itemTypeSelect") ? document.getElementById("itemTypeSelect").value : "Vehicle",
-      reason: document.getElementById("reasonSelect").value,
-      notes: document.getElementById("userNotes") ? document.getElementById("userNotes").value : "",
-      location: userCoords,
-      photo: photoDataUrl,
-      ipAddress: scannerIP,
-      userAgent: navigator.userAgent
-    };
-
-    fetch(BACKEND_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(res => {
-      if (res.status === "SUCCESS") {
-        sessionStorage.setItem("pingme_submitted_" + tagId, "true");
-        showCompletedScreen("Message sent to owner successfully!");
-        startReplyPolling(); // Start listening for WhatsApp replies
-      } else {
-        alert("Alert could not be sent: " + res.message);
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Send Alert";
+    window.addEventListener("DOMContentLoaded", () => {
+      if (!tagId) {
+        document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Invalid QR Code</h3><p>Tag identifier is missing from URL.</p></div>";
+        return;
       }
-    })
-    .catch(err => {
-      alert("Network error. Please try again.");
-      submitBtn.disabled = false;
-      submitBtn.innerText = "Send Alert";
-    });
-  }
 
-  function showCompletedScreen(msg) {
-    const formBox = document.getElementById("mainFormContainer");
-    if (formBox) formBox.style.display = "none";
-    const doneBox = document.getElementById("doneContainer");
-    doneBox.style.display = "block";
-  }
+      document.getElementById("displayTagId").innerText = tagId;
 
-  // Real-Time Polling for WhatsApp Owner Reply
-  function startReplyPolling() {
-    if (pollInterval) clearInterval(pollInterval);
-    pollInterval = setInterval(() => {
-      fetch(`${BACKEND_URL}?action=checkReply&id=${tagId}`)
+      // 1. Fetch Client Public IP Silently for Audit Trail
+      fetch("https://api.ipify.org?format=json")
+        .then(res => res.json())
+        .then(d => { scannerIP = d.ip; })
+        .catch(() => { scannerIP = "UNAVAILABLE"; });
+
+      // 2. Prevent Double Submissions on Refresh via Session Storage
+      if (sessionStorage.getItem("pingme_submitted_" + tagId) === "true") {
+        showCompletedScreen("Notice: You have already notified the owner during this scan.");
+        startReplyPolling();
+        return;
+      }
+
+      // 3. Verify Tag Status with Backend
+      fetch(`${BACKEND_URL}?id=${tagId}`)
         .then(res => res.json())
         .then(data => {
-          if (data.hasReply) {
-            document.getElementById("ownerReplyText").innerHTML = `
-              <div style="color:#22c55e; font-weight:700; margin-bottom:4px;">Received:</div>
-              "${data.message}"
-            `;
-            clearInterval(pollInterval); // Stop polling once reply is caught
+          if (!data.valid || data.status === "EXPIRED") {
+            document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Tag Inactive or Expired</h3><p>This PingMe tag is currently inactive.</p></div>";
+          } else if (data.status === "CREDIT_EXHAUSTED") {
+            document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Notifications Paused</h3><p>The owner cannot receive automated alerts right now.</p></div>";
           }
         })
         .catch(() => {});
-    }, 3000); // Polls every 3 seconds
-  }
-</script>
+    });
+
+    // Optional GPS Snapshot
+    function captureLocation() {
+      const btn = document.getElementById("locationBtn");
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+      btn.innerText = "📍 Fetching location...";
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userCoords = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+          btn.innerText = "✅ Location Attached";
+          btn.style.background = "#16a34a";
+        },
+        (err) => {
+          btn.innerText = "📍 Add Location (Optional)";
+          alert("Location permission skipped. You can still send the alert.");
+        },
+        { timeout: 7000 }
+      );
+    }
+
+    // Form Submit Routine
+    function submitAlertForm() {
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Sending Alert...";
+
+      const payload = {
+        id: tagId,
+        itemType: document.getElementById("itemTypeSelect").value,
+        reason: document.getElementById("reasonSelect").value,
+        notes: document.getElementById("userNotes").value,
+        location: userCoords,
+        photo: photoDataUrl,
+        ipAddress: scannerIP,
+        userAgent: navigator.userAgent
+      };
+
+      fetch(BACKEND_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "SUCCESS") {
+          sessionStorage.setItem("pingme_submitted_" + tagId, "true");
+          showCompletedScreen("Message sent to owner successfully!");
+          startReplyPolling();
+        } else {
+          alert("Alert could not be sent: " + res.message);
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Send Instant Alert";
+        }
+      })
+      .catch(err => {
+        alert("Network error. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Send Instant Alert";
+      });
+    }
+
+    function showCompletedScreen(msg) {
+      document.getElementById("mainFormContainer").style.display = "none";
+      document.getElementById("doneContainer").style.display = "block";
+    }
+
+    // Real-Time Polling for WhatsApp Owner Reply
+    function startReplyPolling() {
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(() => {
+        fetch(`${BACKEND_URL}?action=checkReply&id=${tagId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.hasReply) {
+              document.getElementById("ownerReplyText").innerHTML = `
+                <div style="color:#22c55e; font-weight:700; margin-bottom:4px;">Received:</div>
+                "${data.message}"
+              `;
+              clearInterval(pollInterval);
+            }
+          })
+          .catch(() => {});
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
