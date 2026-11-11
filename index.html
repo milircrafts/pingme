@@ -3,823 +3,1059 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PingMe - Smart QR Notification</title>
+  <title>PINGME GO — ONE SCAN. INSTANT CONNECTION.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Tamil:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    :root {
-      --primary: #0052CC;
-      --primary-dark: #0747A6;
-      --accent: #FF5E00;
-      --purple: #7C3AED;
-      --teal: #0D9488;
-      --bg: #F0F4F8;
-      --card-bg: #FFFFFF;
-      --text: #0F172A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --success: #10B981;
-      --radius: 20px;
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 10px 25px -5px rgba(0, 82, 204, 0.1);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Plus Jakarta Sans', 'Noto Sans Tamil', -apple-system, sans-serif;
-      background: linear-gradient(135deg, #EBF4FF 0%, #F1F5F9 50%, #E6FFFA 100%);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
       min-height: 100vh;
-      padding: 12px 10px;
+      background-color: #0b1120;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+      padding: 16px;
     }
 
+    /* Ambient glow */
+    .ambient-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(95px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .orb-blue {
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, #38bdf8 0%, #2563eb 70%);
+      top: -60px;
+      left: -40px;
+      opacity: 0.65;
+    }
+    .orb-pink {
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, #ec4899 0%, #8b5cf6 70%);
+      bottom: -60px;
+      right: -40px;
+      opacity: 0.55;
+    }
+
+    /* Splash Screen */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #0b1120;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .splash-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: splashPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .splash-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 4px 16px rgba(56, 189, 248, 0.4));
+    }
+    .splash-tagline {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+      margin-bottom: 22px;
+    }
+    .splash-loader {
+      width: 26px;
+      height: 26px;
+      border: 2.5px solid rgba(56, 189, 248, 0.2);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes splashPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Container */
     .app-container {
       width: 100%;
-      max-width: 440px;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      max-width: 420px;
       position: relative;
-      min-height: 600px;
+      z-index: 1;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border-radius: 32px;
+      padding: 22px 20px 24px;
+      box-shadow: 
+        0 24px 60px -12px rgba(15, 23, 42, 0.35),
+        0 0 0 1.5px rgba(255, 255, 255, 0.65) inset;
     }
 
-    /* Top Banner & Header */
-    .banner-container {
-      width: 100%;
-      height: 110px;
-      overflow: hidden;
+    /* Header */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
       position: relative;
-      background: linear-gradient(135deg, #0052CC, #7C3AED);
     }
-    .banner-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .back-btn {
+      background: rgba(241, 245, 249, 0.85);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      color: #0f172a;
+    }
+    .brand-block {
+      text-align: left;
+    }
+    .header-brand-logo {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
       display: block;
     }
-
-    .header-bar {
-      padding: 12px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #FFFFFF;
-      border-bottom: 1px solid #F1F5F9;
-    }
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      font-size: 19px;
-      color: var(--primary);
-    }
-    .header-logo { height: 30px; object-fit: contain; }
-    .lang-toggle {
-      font-size: 11.5px;
+    .brand-tagline {
+      font-size: 8.5px;
       font-weight: 700;
-      background: #EFF6FF;
-      color: var(--primary);
-      border: 1px solid #DBEAFE;
-      padding: 5px 13px;
+      letter-spacing: 0.08em;
+      color: #475569;
+      margin-top: 2px;
+    }
+    .lang-pill {
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
       border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #334155;
       cursor: pointer;
-      transition: all 0.2s;
     }
-    .lang-toggle:hover { background: #DBEAFE; }
 
-    /* Screen Wrapper */
-    .screen {
-      padding: 20px 18px;
+    /* Screens */
+    .screen-view {
       display: none;
-      flex-direction: column;
-      flex: 1;
-      animation: fadeIn 0.25s ease-out;
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    .screen.active { display: flex; }
-
+    .screen-view.active {
+      display: block;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Hero Visuals */
-    .hero-img-box {
-      text-align: center;
-      margin-bottom: 14px;
+    /* Screen 1 */
+    .welcome-badge {
+      display: inline-block;
+      background: rgba(224, 242, 254, 0.85);
+      color: #0369a1;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 8px;
     }
-    .hero-img {
-      height: 105px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.06));
-    }
-
-    .title {
-      font-size: 21px;
+    .screen-title {
+      font-size: 24px;
       font-weight: 800;
-      color: var(--text);
-      text-align: center;
+      color: #0f172a;
+      letter-spacing: -0.025em;
       margin-bottom: 4px;
-      line-height: 1.25;
     }
-    .subtitle {
+    .screen-subtitle {
       font-size: 13px;
-      color: var(--text-muted);
-      text-align: center;
+      color: #64748b;
       margin-bottom: 18px;
-      line-height: 1.4;
     }
-
-    /* Category Cards */
-    .grid-options {
+    .category-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
-    .option-card {
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 13px 15px;
+    .category-card {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid rgba(226, 232, 240, 0.9);
+      border-radius: 20px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 14px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      background: #FFFFFF;
-      box-shadow: var(--shadow-sm);
+      text-align: left;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
     }
-    .option-card:hover { transform: translateY(-2px); }
-    .card-vehicle { border-left: 5px solid #0052CC; }
-    .card-vehicle:hover { background: #EFF6FF; border-color: #0052CC; }
-    .card-keys { border-left: 5px solid #7C3AED; }
-    .card-keys:hover { background: #F5F3FF; border-color: #7C3AED; }
-    .card-other { border-left: 5px solid #0D9488; }
-    .card-other:hover { background: #F0FDFA; border-color: #0D9488; }
-
-    .option-icon-box {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+    .category-card:hover {
+      border-color: #93c5fd;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+    }
+    .category-card:active {
+      transform: scale(0.97);
+    }
+    .cat-icon-wrap {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: #f8fafc;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background: #F8FAFC;
     }
-    .option-icon-box img { width: 34px; height: 34px; object-fit: contain; }
-    .option-info { text-align: left; }
-    .option-title { font-size: 14.5px; font-weight: 800; color: var(--text); }
-    .option-desc { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
-
-    /* Templates / Quick Pills */
-    .pill-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
+    .cat-img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
     }
-    .pill {
-      background: #F8FAFC;
-      border: 1.5px solid var(--border);
-      padding: 8px 13px;
-      border-radius: 20px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #334155;
-      cursor: pointer;
-      transition: all 0.15s ease;
+    .cat-info {
+      flex: 1;
     }
-    .pill.selected {
-      background: linear-gradient(135deg, #0052CC, #0747A6);
-      color: #FFFFFF;
-      border-color: #0052CC;
-      box-shadow: 0 4px 10px rgba(0, 82, 204, 0.2);
-    }
-
-    /* Custom Textarea */
-    .custom-input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      font-size: 13.5px;
-      outline: none;
-      margin-bottom: 16px;
-      font-family: inherit;
-      resize: none;
-      background: #FFFFFF;
-    }
-    .custom-input:focus { border-color: var(--primary); }
-
-    /* Buttons */
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 14.5px;
+    .cat-title {
+      display: block;
+      font-size: 15px;
       font-weight: 700;
-      border: none;
-      cursor: pointer;
-      display: flex;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+    .cat-desc {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.35;
+    }
+    .cat-arrow {
+      font-size: 22px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .trust-badge {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      background: rgba(241, 245, 249, 0.7);
+      padding: 8px 12px;
+      border-radius: 12px;
+    }
+
+    /* Screen 2 */
+    .hero-category-art {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .hero-3d-img {
+      width: 90px;
+      height: 70px;
+      object-fit: contain;
+    }
+    .privacy-micro-pill {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, #0052CC 0%, #0747A6 100%);
-      color: #FFF;
-      box-shadow: 0 4px 14px rgba(0, 82, 204, 0.25);
-    }
-    .btn-primary:hover { transform: translateY(-1px); }
-    .btn-secondary { background: #F1F5F9; color: #334155; margin-top: 8px; }
-    .btn-wa {
-      background: linear-gradient(135deg, #25D366 0%, #1EBE5B 100%);
-      color: #FFF;
-      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
-    }
-
-    /* Circular SVG Timer */
-    .timer-container {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      margin: 10px auto 16px;
-    }
-    .timer-svg { transform: rotate(-90deg); width: 130px; height: 130px; }
-    .timer-circle-bg { fill: none; stroke: #E2E8F0; stroke-width: 8; }
-    .timer-circle {
-      fill: none;
-      stroke: var(--primary);
-      stroke-width: 8;
-      stroke-linecap: round;
-      stroke-dasharray: 345;
-      stroke-dashoffset: 0;
-      transition: stroke-dashoffset 1s linear;
-    }
-    .timer-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    /* Instant Logo Splash Screen */
-    #splashScreen {
-      position: absolute;
-      inset: 0;
-      background: #FFFFFF;
-      z-index: 100;
+    .chip-stack {
       display: flex;
       flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .message-chip {
+      width: 100%;
+      padding: 13px 16px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .message-chip:active {
+      transform: scale(0.97);
+    }
+    .message-chip.active {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+    }
+    .notes-container {
+      margin-bottom: 12px;
+    }
+    .notes-input-wrapper {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .notes-input-wrapper:focus-within {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .notes-icon {
+      font-size: 15px;
+    }
+    .notes-input-wrapper input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #0f172a;
+    }
+    .char-counter {
+      text-align: right;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 4px;
+      padding-right: 4px;
+    }
+    .photo-zone {
+      border: 1.5px dashed #93c5fd;
+      background: rgba(239, 246, 255, 0.6);
+      border-radius: 16px;
+      padding: 10px 14px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .photo-zone-inner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .camera-icon {
+      font-size: 20px;
+    }
+    .photo-zone-text strong {
+      display: block;
+      font-size: 12.5px;
+      color: #0f172a;
+    }
+    .photo-zone-text p {
+      font-size: 10.5px;
+      color: #2563eb;
+      font-weight: 500;
+    }
+    .photo-preview-wrap {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid #2563eb;
+    }
+    .photo-preview-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .remove-photo-pill {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      background: rgba(15, 23, 42, 0.8);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 9px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
-      transition: opacity 0.35s ease, visibility 0.35s ease;
+      cursor: pointer;
     }
-    .splash-logo {
-      width: 170px;
-      height: auto;
-      margin-bottom: 12px;
-      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.08));
+    .primary-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 18px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .primary-btn:active {
+      transform: scale(0.97);
+    }
+    .primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    /* Response Bubble */
-    .reply-card {
-      background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
-      border: 1.5px solid #A7F3D0;
-      border-radius: 16px;
-      padding: 16px;
-      margin: 16px 0;
+    /* Screen 3 */
+    .mascot-stage {
       text-align: center;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+      margin-bottom: 8px;
     }
-    .reply-text { font-size: 16.5px; font-weight: 800; color: #065F46; }
-    .reply-time { font-size: 11.5px; color: #047857; margin-top: 5px; font-weight: 600; }
+    .mascot-img {
+      width: 110px;
+      height: 90px;
+      object-fit: contain;
+    }
+    .status-badge-wrap {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .status-badge-green {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: inline-block;
+    }
+    .dispatch-sub {
+      font-size: 12.5px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+    .waiting-box {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .timer-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+    .live-timer {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0284c7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .waiting-pill-placeholder {
+      background: #f8fafc;
+      border: 1.5px dashed #cbd5e1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #64748b;
+      font-style: italic;
+    }
+    .ack-box {
+      background: #ffffff;
+      border: 1.5px solid #86efac;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+      animation: fadeIn 0.4s ease;
+    }
+    .ack-status-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: #059669;
+      margin-bottom: 8px;
+    }
+    .ack-message-card {
+      background: #f0fdf4;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #14532d;
+      margin-bottom: 12px;
+    }
+    .ack-success-banner {
+      text-align: center;
+    }
+    .success-check-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #22c55e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 auto 6px;
+    }
+    .ack-success-banner h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .ack-success-banner p {
+      font-size: 12px;
+      color: #64748b;
+    }
+    .social-block {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .share-label {
+      font-size: 11.5px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .whatsapp-btn {
+      width: 100%;
+      padding: 12px;
+      background: #25d366;
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+    }
+    .mt-12 {
+      margin-top: 12px;
+    }
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    
-    <!-- Instant Big Logo Splash Screen -->
-    <div id="splashScreen">
-      <img src="assets/pingme-logo.png" class="splash-logo" alt="PingMe Logo">
-      <div style="font-size:13px; color:#64748B; font-weight:700; letter-spacing:0.3px;">ONE SCAN • INSTANT PRIVACY ALERT</div>
+  <!-- ================= SPLASH SCREEN ================= -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+      <img src="assets/pingme-logo.png" alt="PINGME GO" class="splash-logo">
+      <div class="splash-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+      <div class="splash-loader"></div>
     </div>
-
-    <!-- Top Banner Image -->
-    <div class="banner-container">
-      <img src="assets/top-banner.png" class="banner-img" onerror="this.style.display='none'" alt="PingMe Banner">
-    </div>
-
-    <!-- Header Bar -->
-    <div class="header-bar">
-      <div class="header-brand">
-        <img src="assets/pingme-logo.png" onerror="this.style.display='none'" class="header-logo" alt="PingMe">
-        <span>Ping<span style="color:#FF5E00;">Me</span></span>
-      </div>
-      <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">தமிழ்</button>
-    </div>
-
-    <!-- SCREEN 1: CATEGORY SELECTION -->
-    <div class="screen active" id="screen1">
-      <h2 class="title" data-en="Contact Owner" data-ta="உரிமையாளரை அழைக்க">Contact Owner</h2>
-      <p class="subtitle" id="ownerAssetTag" data-en="Choose an alert category below" data-ta="கீழே உள்ள வகையை தேர்ந்தெடுக்கவும்">Choose an alert category below</p>
-
-      <div class="grid-options">
-        <div class="option-card card-vehicle" onclick="selectCategory('Vehicle Blocking')">
-          <div class="option-icon-box">
-            <img src="assets/icon-vehicle.png" onerror="this.src='https://api.iconify.design/twemoji:automobile.svg'" alt="Vehicle">
-          </div>
-          <div class="option-info">
-            <div class="option-title" data-en="Vehicle Alert" data-ta="வாகன எச்சரிக்கை">Vehicle Alert</div>
-            <div class="option-desc" data-en="Vehicle blocking, wrong parking, lights ON" data-ta="வழி மறைப்பு அல்லது தவறான பார்க்கிங்">Vehicle blocking, wrong parking, lights ON</div>
-          </div>
-        </div>
-
-        <div class="option-card card-keys" onclick="selectCategory('Lost Item')">
-          <div class="option-icon-box">
-            <img src="assets/icon-keys-luggage.png" onerror="this.src='https://api.iconify.design/twemoji:key.svg'" alt="Keys & Luggage">
-          </div>
-          <div class="option-info">
-            <div class="option-title" data-en="Keys & Luggage" data-ta="சாவி மற்றும் உடமைகள்">Keys & Luggage</div>
-            <div class="option-desc" data-en="Found keys, wallet, luggage, or bag" data-ta="சாவி, பை அல்லது உடமைகள் கண்டெடுக்கப்பட்டது">Found keys, wallet, luggage, or bag</div>
-          </div>
-        </div>
-
-        <div class="option-card card-other" onclick="selectCategory('General')">
-          <div class="option-icon-box">
-            <img src="assets/icon-other.png" onerror="this.src='https://api.iconify.design/twemoji:bell.svg'" alt="Other Assistance">
-          </div>
-          <div class="option-info">
-            <div class="option-title" data-en="Other Assistance" data-ta="இதர அவசர உதவி">Other Assistance</div>
-            <div class="option-desc" data-en="Urgent assistance or general notification" data-ta="அவசர உதவி அல்லது இதர தகவல்">Urgent assistance or general notification</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 2: TEMPLATE MESSAGE SELECTION -->
-    <div class="screen" id="screen2">
-      <div class="hero-img-box">
-        <img id="heroScreen2" src="assets/hero-vehicle.png" class="hero-img" alt="Message Selection">
-      </div>
-      <h2 class="title" data-en="Select Message" data-ta="செய்தியை தேர்ந்தெடுக்கவும்">Select Message</h2>
-      <p class="subtitle" data-en="Tap a quick message or type your own" data-ta="விரைவு செய்தியை தொடவும் அல்லது தட்டச்சு செய்யவும்">Tap a quick message or type your own</p>
-
-      <div class="pill-container" id="pillsContainer"></div>
-
-      <textarea class="custom-input" id="customMessage" rows="3" placeholder="Add specific notes (e.g. Near Gate 2)..."></textarea>
-
-      <button class="btn btn-primary" onclick="proceedToConfirmation()" data-en="Continue" data-ta="தொடரவும்">Continue</button>
-      <button class="btn btn-secondary" onclick="showScreen(1)" data-en="Back" data-ta="பின்னால்">Back</button>
-    </div>
-
-    <!-- SCREEN 3: CONFIRMATION & GPS ATTACH -->
-    <div class="screen" id="screen3">
-      <div class="hero-img-box">
-        <img src="assets/response-shield.png" class="hero-img" alt="Shield">
-      </div>
-      <h2 class="title" data-en="Ready to Notify" data-ta="அனுப்ப தயார்">Ready to Notify</h2>
-      <p class="subtitle" data-en="Confirm and attach your current location" data-ta="இருப்பிடத்தை இணைத்து அனுப்பவும்">Confirm and attach your current location</p>
-
-      <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:16px; padding:15px; margin-bottom:16px; text-align:left;">
-        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;" data-en="Category" data-ta="வகை">Category</div>
-        <div style="font-size:14.5px; font-weight:800; color:var(--text); margin-top:2px;" id="confCategory">Vehicle Blocking</div>
-
-        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-top:10px;" data-en="Message" data-ta="செய்தி">Message</div>
-        <div style="font-size:13px; font-weight:600; color:var(--text); margin-top:2px;" id="confMessage">"Your vehicle is blocking my way."</div>
-
-        <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-top:10px;" data-en="GPS Location" data-ta="இருப்பிடம்">GPS Location</div>
-        <div style="font-size:12.5px; font-weight:700; color:var(--primary); margin-top:2px;" id="confLocation">📍 GPS Location Attached ✓</div>
-      </div>
-
-      <button class="btn btn-primary" id="btnSendAlert" onclick="submitAlertPayload()" data-en="🚀 Send Instant Alert" data-ta="🚀 உடனடி எச்சரிக்கை அனுப்பு">🚀 Send Instant Alert</button>
-      <button class="btn btn-secondary" onclick="showScreen(2)" data-en="Back" data-ta="பின்னால்">Back</button>
-    </div>
-
-    <!-- SCREEN 4: COUNTDOWN & WAITING SCREEN -->
-    <div class="screen" id="screen4">
-      <h2 class="title" data-en="Alert Dispatched!" data-ta="எச்சரிக்கை அனுப்பப்பட்டது!">Alert Dispatched!</h2>
-      <p class="subtitle" data-en="Waiting for owner response..." data-ta="உரிமையாளரின் பதிலுக்காக காத்திருக்கிறது...">Waiting for owner response...</p>
-
-      <div class="timer-container">
-        <svg class="timer-svg">
-          <circle class="timer-circle-bg" cx="65" cy="65" r="55"></circle>
-          <circle class="timer-circle" id="timerCircle" cx="65" cy="65" r="55"></circle>
-        </svg>
-        <div class="timer-text" id="timerDisplay">180</div>
-      </div>
-
-      <div class="hero-img-box">
-        <img src="assets/boy-waiting.png" class="hero-img" alt="Waiting">
-      </div>
-
-      <p style="font-size:12.5px; color:var(--text-muted); text-align:center; padding:0 12px; line-height:1.5;" data-en="The owner received your WhatsApp & Email alert with your location. Please hold on for a moment." data-ta="உரிமையாளருக்கு வாட்ஸ்அப் மற்றும் மின்னஞ்சல் சென்றுள்ளது. சிறிது நேரம் காத்திருக்கவும்.">
-        The owner received your WhatsApp & Email alert with your location. Please hold on for a moment.
-      </p>
-    </div>
-
-    <!-- SCREEN 5: TIMEOUT SCREEN -->
-    <div class="screen" id="screen5">
-      <div class="hero-img-box">
-        <img src="assets/timeout-hourglass.png" class="hero-img" alt="Timeout">
-      </div>
-      <h2 class="title" data-en="No Live Reply Yet" data-ta="பதில் இன்னும் வரவில்லை">No Live Reply Yet</h2>
-      <p class="subtitle" data-en="The alert and location remain delivered to the owner's WhatsApp." data-ta="எச்சரிக்கை உரிமையாளரின் வாட்ஸ்அப்பில் பதிவு செய்யப்பட்டுள்ளது.">
-        The alert and location remain delivered to the owner's WhatsApp.
-      </p>
-
-      <div class="hero-img-box" style="margin-bottom:12px;">
-        <img src="assets/boy-sad.png" style="height:85px; object-fit:contain;" alt="Sad mascot">
-      </div>
-
-      <button class="btn btn-primary" onclick="handleSessionCompletion()" data-en="Done" data-ta="சரி">Done</button>
-    </div>
-
-    <!-- SCREEN 6: OWNER RESPONDED LIVE -->
-    <div class="screen" id="screen6">
-      <div class="hero-img-box">
-        <img src="assets/boy-happy.png" class="hero-img" alt="Happy mascot">
-      </div>
-      <h2 class="title" data-en="Owner Responded!" data-ta="உரிமையாளர் பதிலளித்தார்!">Owner Responded!</h2>
-
-      <div class="reply-card">
-        <div class="reply-text" id="liveReplyBody">"Coming in 2 minutes!"</div>
-        <div class="reply-time" id="liveReplyTime">Just now</div>
-      </div>
-
-      <button class="btn btn-primary" onclick="showScreen(7)" data-en="Thank You / Next" data-ta="நன்றி / அடுத்து">Thank You / Next</button>
-    </div>
-
-    <!-- SCREEN 7: REFERRAL / PROMO SCREEN -->
-    <div class="screen" id="screen7">
-      <div class="hero-img-box">
-        <img src="assets/boy-share.png" class="hero-img" alt="Share">
-      </div>
-      <h2 class="title" data-en="Get Your Own PingMe Tag" data-ta="உங்கள் பிங்மீ டேக் பெறுக">Get Your Own PingMe Tag</h2>
-      <p class="subtitle" data-en="Protect your car, bike, keys, and luggage with smart privacy QR tags." data-ta="உங்கள் வாகனம் மற்றும் உடைமைகளுக்கு ஸ்மார்ட் QR டேக் பெற்றிடுங்கள்.">
-        Protect your car, bike, keys, and luggage with smart privacy QR tags.
-      </p>
-
-      <a id="promoWaLink" href="https://wa.me/917092920106?text=Hi!%20I'm%20interested%20in%20getting%20my%20own%20PingMe%20Smart%20QR%20Tag." target="_blank" class="btn btn-wa" style="text-decoration:none; margin-bottom:8px;">
-        📲 Order via WhatsApp
-      </a>
-
-      <button class="btn btn-secondary" onclick="handleSessionCompletion()" data-en="Close Window" data-ta="விண்டோவை மூடு">Close Window</button>
-    </div>
-
-    <!-- INACTIVE / BLOCKED TAG SCREEN -->
-    <div class="screen" id="screenInactive">
-      <div class="hero-img-box">
-        <img src="assets/boy-sad.png" class="hero-img" alt="Inactive">
-      </div>
-      <h2 class="title" style="color:var(--danger);" data-en="Tag Currently Inactive" data-ta="டேக் முடக்கப்பட்டுள்ளது">Tag Currently Inactive</h2>
-      <p class="subtitle" id="inactiveReason" data-en="This PingMe QR tag is temporarily inactive or has reached its notification limits. Please contact the owner directly." data-ta="இந்த பிங்மீ டேக் தற்காலிகமாக முடக்கப்பட்டுள்ளது. உரிமையாளரை நேரடியாக தொடர்பு கொள்ளவும்.">
-        This PingMe QR tag is temporarily inactive or has reached its notification limits. Please contact the owner directly.
-      </p>
-    </div>
-
   </div>
 
+  <div class="ambient-orb orb-blue"></div>
+  <div class="ambient-orb orb-pink"></div>
+
+  <main class="app-container">
+    <div class="glass-card">
+      
+      <header class="app-header">
+        <button id="backBtn" class="back-btn hidden" aria-label="Go back">←</button>
+        <div class="brand-block">
+          <img src="assets/pingme-logo.png" alt="PINGME GO" class="header-brand-logo">
+          <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
+        </div>
+        <button id="langToggle" class="lang-pill" type="button">🌐 தமிழ் | ENG</button>
+      </header>
+
+      <!-- ================= SCREEN 1: CATEGORY SELECTION ================= -->
+      <section id="screen1" class="screen-view active">
+        <div class="welcome-badge">Hello there! 👋</div>
+        <h1 class="screen-title">How can we help?</h1>
+        <p class="screen-subtitle">Choose an option below to notify the owner privately</p>
+
+        <div class="category-list">
+          <button class="category-card" data-category="vehicle">
+            <div class="cat-icon-wrap">
+              <img src="assets/car-bike-3d.png" alt="Car &amp; Bike Parking" class="cat-img">
+            </div>
+            <div class="cat-info">
+              <span class="cat-title">Car &amp; Bike Parking</span>
+              <span class="cat-desc">Notify owner of blocked way, flat tire, etc.</span>
+            </div>
+            <span class="cat-arrow">›</span>
+          </button>
+
+          <button class="category-card" data-category="luggage">
+            <div class="cat-icon-wrap">
+              <img src="assets/luggage-keys-3d.png" alt="Lost &amp; Found Keys &amp; Bags" class="cat-img">
+            </div>
+            <div class="cat-info">
+              <span class="cat-title">Lost &amp; Found Keys &amp; Bags</span>
+              <span class="cat-desc">Report found luggage, lost keyrings, or bags</span>
+            </div>
+            <span class="cat-arrow">›</span>
+          </button>
+
+          <button class="category-card" data-category="assistance">
+            <div class="cat-icon-wrap">
+              <img src="assets/support-bell-3d.png" alt="Other General Assistance" class="cat-img">
+            </div>
+            <div class="cat-info">
+              <span class="cat-title">Other General Assistance</span>
+              <span class="cat-desc">Contact about general help, home gate, or emergency</span>
+            </div>
+            <span class="cat-arrow">›</span>
+          </button>
+        </div>
+
+        <div class="trust-badge">
+          <span>🔒</span> Private Alerts • Your Contact Details Stay Hidden
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 2: SELECT MESSAGE ================= -->
+      <section id="screen2" class="screen-view">
+        <div class="hero-category-art">
+          <img id="screen2HeroImg" src="assets/car-bike-3d.png" alt="Selected Category" class="hero-3d-img">
+        </div>
+
+        <div class="privacy-micro-pill">
+          <span>🛡️</span> Private Alerts • Zero Contact Info Exposed
+        </div>
+
+        <h2 class="screen-title">Select Message</h2>
+        <p class="screen-subtitle">Tap a quick message or type your own</p>
+
+        <div id="messageChips" class="chip-stack"></div>
+
+        <div class="notes-container">
+          <div class="notes-input-wrapper">
+            <span class="notes-icon">✏️</span>
+            <input type="text" id="customNoteInput" maxlength="120" placeholder="Add specific notes (optional)..." autocomplete="off">
+          </div>
+          <div class="char-counter"><span id="charCount">0</span> / 120</div>
+        </div>
+
+        <div class="photo-zone" id="photoZone">
+          <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none;">
+          <div class="photo-zone-inner" id="photoPrompt">
+            <span class="camera-icon">📷</span>
+            <div class="photo-zone-text">
+              <strong>Attach Photo (Optional)</strong>
+              <p>Photo shared privately with the owner.</p>
+            </div>
+          </div>
+          <div class="photo-preview-wrap hidden" id="photoPreviewWrap">
+            <img id="photoThumb" src="" alt="Thumbnail">
+            <button type="button" id="removePhotoBtn" class="remove-photo-pill" aria-label="Remove photo">✕</button>
+          </div>
+        </div>
+
+        <button id="sendAlertBtn" class="primary-btn" type="button">
+          <span class="btn-icon">✈️</span>
+          <span class="btn-label">Send Instant Alert</span>
+        </button>
+      </section>
+
+      <!-- ================= SCREEN 3: ALERT DISPATCHED ================= -->
+      <section id="screen3" class="screen-view">
+        <div class="mascot-stage">
+          <img src="assets/mascot-airplane-3d.png" alt="PingMe Mascot" class="mascot-img">
+        </div>
+
+        <div class="status-badge-wrap">
+          <span class="status-badge-green">Owner Notified Successfully! ✓</span>
+        </div>
+
+        <h2 class="screen-title" id="dispatchHeading">Alert Dispatched!</h2>
+        <p class="dispatch-sub">Owner notified via private alert channels.</p>
+
+        <div id="waitingBlock" class="waiting-box">
+          <div class="timer-label">Response Timer</div>
+          <div class="live-timer">
+            <span class="timer-clock-icon">⏱️</span>
+            <span class="timer-text">Waiting for Response... <strong id="countdownText">03:00</strong></span>
+          </div>
+          <div class="waiting-pill-placeholder">
+            Waiting for Owner to acknowledge...
+          </div>
+        </div>
+
+        <div id="acknowledgedBlock" class="ack-box hidden">
+          <div class="ack-status-tag">Owner Response Received ⚡</div>
+          <div class="ack-message-card">
+            <span class="ack-bubble-icon">🏃</span>
+            <span id="ackMessageText" class="ack-text">Coming in 2 mins!</span>
+          </div>
+          <div class="ack-success-banner">
+            <div class="success-check-circle">✓</div>
+            <h3>Connection Successful! 💚</h3>
+            <p>Thank you for using PingMe.</p>
+          </div>
+        </div>
+
+        <div id="socialActionBlock" class="social-block hidden">
+          <p class="share-label">Share this if you like!</p>
+          <button id="whatsappShareBtn" class="whatsapp-btn" type="button">
+            <span>💬</span> Share PingMe via WhatsApp
+          </button>
+        </div>
+
+        <button id="doneBtn" class="primary-btn mt-12" type="button">Done</button>
+      </section>
+
+    </div>
+  </main>
+
   <script>
-    // =========================================================================
-    // CONFIGURATION & GLOBAL STATE
-    // =========================================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec";
-    const urlParams = new URLSearchParams(window.location.search);
-    const customerId = urlParams.get("id") || "PM-CUST-1002";
-
-    let currentLang = "en";
-    let selectedCat = "Vehicle Blocking";
-    let selectedText = "";
-    let locationUrl = "";
-    let activeSessionId = null;
-    let countdownRemaining = 180;
-    let timerInterval = null;
-    let pollInterval = null;
-
-    const templates = {
-      "Vehicle Blocking": [
-        { en: "Your vehicle is blocking my way.", ta: "உங்கள் வாகனம் என் வழியை மறைத்துள்ளது." },
-        { en: "Please move your car/bike.", ta: "தயவுசெய்து உங்கள் வாகனத்தை எடுக்கவும்." },
-        { en: "Headlights are left ON.", ta: "வாகன ஹெட்லைட் எரிகிறது." },
-        { en: "Window is open / Tire flat.", ta: "கண்ணாடி திறந்துள்ளது / டயர் காற்று இறங்கியுள்ளது." }
-      ],
-      "Lost Item": [
-        { en: "I found your item / keys.", ta: "உங்கள் சாவி / பொருள் என்னிடம் உள்ளது." },
-        { en: "Left your bag / wallet behind.", ta: "உங்கள் பையை தவறவிட்டுவிட்டீர்கள்." },
-        { en: "Item safely kept with security.", ta: "பொருள் செக்யூரிட்டியிடம் பத்திரமாக உள்ளது." }
-      ],
-      "General": [
-        { en: "Please contact me urgently.", ta: "என்னை அவசரமாக தொடர்பு கொள்ளவும்." },
-        { en: "Need quick assistance with your item.", ta: "உங்கள் பொருள் குறித்து உதவி தேவைப்படுகிறது." }
-      ]
+    const CATEGORIES = {
+      vehicle: {
+        heroImg: 'assets/car-bike-3d.png',
+        chips: [
+          'Your vehicle is blocking my way.',
+          'Please move your car/bike.',
+          'Headlights are left ON.',
+          'Window is open / Tyre flat.'
+        ]
+      },
+      luggage: {
+        heroImg: 'assets/luggage-keys-3d.png',
+        chips: [
+          'I found your item / keys.',
+          'Left your bag / wallet behind.',
+          'Item safely kept with security.',
+          'Please contact me to collect it.'
+        ]
+      },
+      assistance: {
+        heroImg: 'assets/support-bell-3d.png',
+        chips: [
+          'Need immediate assistance.',
+          'Regarding your parked spot/space.',
+          'Please contact me regarding this.',
+          'Emergency notification.'
+        ]
+      }
     };
 
-    // 1. INSTANT SPLASH & ACTIVE SESSION CHECK
-    (function init() {
-      // Background GPS acquisition immediately on load
-      triggerGeolocationCapture();
+    const urlParams = new URLSearchParams(window.location.search);
+    const tagId = urlParams.get('id') || urlParams.get('tag') || 'DEMO_TAG';
+    
+    // REPLACE THIS WITH YOUR EXISTING GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec';
 
-      if (sessionStorage.getItem("pingme_locked_" + customerId) === "true") {
-        document.addEventListener("DOMContentLoaded", function() {
-          hideSplashInstant();
-          showSessionLockedScreen();
-        });
-        return;
-      }
+    let currentCategory = 'vehicle';
+    let selectedMessage = '';
+    let compressedPhotoBase64 = null;
+    let countdownInterval = null;
+    let pollInterval = null;
+    let audioCtx = null;
 
-      window.addEventListener("load", function() {
-        fetchCustomerTagDetails();
-        setTimeout(hideSplashInstant, 1000);
-      });
-    })();
-
-    function hideSplashInstant() {
-      const splash = document.getElementById("splashScreen");
-      if (splash) {
-        splash.style.opacity = "0";
-        setTimeout(() => splash.style.display = "none", 300);
-      }
+    function playChime() {
+      try {
+        const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.4);
+      } catch (e) {}
     }
 
-    // 2. ACCURATE GPS GEOLOCATION CAPTURE
-    function triggerGeolocationCapture() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            locationUrl = `https://maps.google.com/?q=${lat},${lng}`;
-            const confLoc = document.getElementById("confLocation");
-            if (confLoc) confLoc.innerText = `📍 GPS Acquired (${lat.toFixed(4)}, ${lng.toFixed(4)}) ✓`;
-          },
-          err => {
-            console.warn("GPS Permission or timeout:", err.message);
-            // Default placeholder if GPS is disabled on visitor phone
-            if (!locationUrl) locationUrl = "Location permission was skipped by visitor";
-            const confLoc = document.getElementById("confLocation");
-            if (confLoc) confLoc.innerText = "📍 Location access skipped";
-          },
-          { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
-        );
-      }
-    }
-
-    // 3. FETCH CUSTOMER DETAILS
-    function fetchCustomerTagDetails() {
-      fetch(APPS_SCRIPT_URL + "?customerId=" + encodeURIComponent(customerId))
-        .then(res => res.json())
-        .then(cust => {
-          if (!cust || !cust.name) return;
-
-          if (cust.status === "Inactive" || cust.status === "Suspended") {
-            showInactiveScreen(cust.status === "Inactive" ? "Tag Deactivated" : "Account Suspended");
-            return;
-          }
-          if (cust.remainingCredits <= 0) {
-            showInactiveScreen("Alert limit reached for this tag.");
-            return;
-          }
-
-          if (cust.vehicle) {
-            document.getElementById("ownerAssetTag").innerText = "Item / Vehicle: " + cust.vehicle;
-          }
-        })
-        .catch(() => {});
-
-      fetch(APPS_SCRIPT_URL + "?action=getPromoConfig")
-        .then(res => res.json())
-        .then(cfg => {
-          if (cfg && cfg.orderPhone) {
-            document.getElementById("promoWaLink").href = 
-              "https://wa.me/" + cfg.orderPhone + "?text=" + encodeURIComponent(cfg.orderMessage);
-          }
-        })
-        .catch(() => {});
-    }
-
-    function showInactiveScreen(reason) {
-      for (let i = 1; i <= 7; i++) document.getElementById("screen" + i).style.display = "none";
-      const scr = document.getElementById("screenInactive");
-      scr.style.display = "flex";
-      if (reason) document.getElementById("inactiveReason").innerText = reason;
-    }
-
-    // 4. UI SCREEN ROUTING & LANGUAGE
-    function showScreen(idx) {
-      for (let i = 1; i <= 7; i++) {
-        const s = document.getElementById("screen" + i);
-        if (s) s.classList.remove("active");
-      }
-      const target = document.getElementById("screen" + idx);
-      if (target) target.classList.add("active");
-    }
-
-    function toggleLanguage() {
-      currentLang = currentLang === "en" ? "ta" : "en";
-      document.getElementById("langBtn").innerText = currentLang === "en" ? "தமிழ்" : "English";
-
-      document.querySelectorAll("[data-en]").forEach(el => {
-        el.innerText = el.getAttribute("data-" + currentLang);
-      });
-      renderPills();
-    }
-
-    function selectCategory(cat) {
-      selectedCat = cat;
-      const heroImg = document.getElementById("heroScreen2");
-      if (cat === "Vehicle Blocking") {
-        heroImg.src = "assets/hero-vehicle.png";
-      } else if (cat === "Lost Item") {
-        heroImg.src = "assets/hero-checklist.png";
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      const backBtn = document.getElementById('backBtn');
+      if (screenId === 'screen2') {
+        backBtn.classList.remove('hidden');
       } else {
-        heroImg.src = "assets/hero-checklist.png";
+        backBtn.classList.add('hidden');
       }
-
-      // Re-trigger location on tap to ensure accuracy
-      triggerGeolocationCapture();
-      renderPills();
-      showScreen(2);
     }
 
-    function renderPills() {
-      const container = document.getElementById("pillsContainer");
-      container.innerHTML = "";
-      const list = templates[selectedCat] || templates["General"];
+    function compressImage(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const MAX_DIM = 1200;
 
-      list.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "pill" + (index === 0 ? " selected" : "");
-        div.innerText = item[currentLang];
-        div.onclick = function() {
-          document.querySelectorAll(".pill").forEach(p => p.classList.remove("selected"));
-          div.classList.add("selected");
-          selectedText = item[currentLang];
-          document.getElementById("customMessage").value = "";
+          if (width > height && width > MAX_DIM) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          } else if (height > MAX_DIM) {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          callback(dataUrl);
         };
-        container.appendChild(div);
-      });
-
-      selectedText = list[0][currentLang];
-    }
-
-    function proceedToConfirmation() {
-      const customVal = document.getElementById("customMessage").value.trim();
-      const finalMsg = customVal || selectedText;
-
-      document.getElementById("confCategory").innerText = selectedCat;
-      document.getElementById("confMessage").innerText = `"${finalMsg}"`;
-
-      if (!locationUrl || locationUrl === "") {
-        triggerGeolocationCapture();
-      }
-      showScreen(3);
-    }
-
-    // 5. SUBMIT ALERT & COUNTDOWN / POLLING
-    function submitAlertPayload() {
-      const btn = document.getElementById("btnSendAlert");
-      btn.innerText = "Dispatching Alert...";
-      btn.disabled = true;
-
-      const customVal = document.getElementById("customMessage").value.trim();
-      const payload = {
-        action: "submitAlert",
-        customerId: customerId,
-        category: selectedCat,
-        message: customVal || selectedText,
-        urgency: "Normal",
-        locationUrl: locationUrl || "Location access skipped by user"
+        img.src = e.target.result;
       };
+      reader.readAsDataURL(file);
+    }
 
-      fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.blocked) {
-          showInactiveScreen(res.message);
+    function getCoordinates() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve(null);
           return;
         }
-        if (res.success && res.sessionId) {
-          activeSessionId = res.sessionId;
-          startCountdown();
-          startResponsePolling();
-          showScreen(4);
-        } else {
-          alert("Unable to dispatch alert. Please retry.");
-          btn.innerText = "🚀 Send Instant Alert";
-          btn.disabled = false;
-        }
-      })
-      .catch(() => {
-        alert("Network issue. Please check connection.");
-        btn.innerText = "🚀 Send Instant Alert";
-        btn.disabled = false;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          () => resolve(null),
+          { timeout: 4000, enableHighAccuracy: true }
+        );
       });
     }
 
-    function startCountdown() {
-      countdownRemaining = 180;
-      const circle = document.getElementById("timerCircle");
-      const display = document.getElementById("timerDisplay");
-      const circumference = 345;
+    function selectCategory(catKey) {
+      currentCategory = catKey;
+      const config = CATEGORIES[catKey] || CATEGORIES.vehicle;
+      document.getElementById('screen2HeroImg').src = config.heroImg;
 
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        countdownRemaining--;
-        display.innerText = countdownRemaining;
-        const offset = circumference - (countdownRemaining / 180) * circumference;
-        circle.style.strokeDashoffset = offset;
+      const chipContainer = document.getElementById('messageChips');
+      chipContainer.innerHTML = '';
 
-        if (countdownRemaining <= 0) {
-          clearInterval(timerInterval);
-          if (pollInterval) clearInterval(pollInterval);
-          showScreen(5);
+      config.chips.forEach((msg, idx) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = `message-chip ${idx === 0 ? 'active' : ''}`;
+        chip.textContent = msg;
+        chip.onclick = () => {
+          document.querySelectorAll('.message-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          selectedMessage = msg;
+          if (navigator.vibrate) navigator.vibrate(10);
+        };
+        chipContainer.appendChild(chip);
+      });
+
+      selectedMessage = config.chips[0];
+      showScreen('screen2');
+    }
+
+    async function handleSendAlert() {
+      const sendBtn = document.getElementById('sendAlertBtn');
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span>⏳</span> Sending Alert...';
+
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {}
+
+      const noteText = document.getElementById('customNoteInput').value.trim();
+      const coords = await getCoordinates();
+
+      const payload = {
+        tagId: tagId,
+        category: currentCategory,
+        message: selectedMessage,
+        customNote: noteText,
+        location: coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '',
+        photo: compressedPhotoBase64 || ''
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const cooldownEnd = Date.now() + 180 * 1000;
+        localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
+
+        startScreen3Timer(180);
+        showScreen('screen3');
+      } catch (err) {
+        alert('Network error. Please try sending again.');
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<span class="btn-icon">✈️</span><span class="btn-label">Send Instant Alert</span>';
+      }
+    }
+
+    function startScreen3Timer(secondsRemaining) {
+      let sec = secondsRemaining;
+      const countdownEl = document.getElementById('countdownText');
+
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        sec--;
+        const mins = Math.floor(sec / 60);
+        const remSec = sec % 60;
+        countdownEl.textContent = `${String(mins).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
+
+        if (sec <= 0) {
+          clearInterval(countdownInterval);
+          document.querySelector('.waiting-pill-placeholder').textContent = "Owner hasn't responded yet. Alert is still active.";
+          document.getElementById('socialActionBlock').classList.remove('hidden');
         }
       }, 1000);
+
+      clearInterval(pollInterval);
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`${SCRIPT_URL}?action=checkReply&tagId=${encodeURIComponent(tagId)}`);
+          const data = await res.json();
+          if (data && data.replyReceived) {
+            clearInterval(pollInterval);
+            clearInterval(countdownInterval);
+            triggerOwnerResponse(data.replyText || 'Coming in 2 mins!');
+          }
+        } catch (e) {}
+      }, 4000);
     }
 
-    function startResponsePolling() {
-      if (pollInterval) clearInterval(pollInterval);
-      pollInterval = setInterval(() => {
-        if (!activeSessionId) return;
+    function triggerOwnerResponse(replyText) {
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      playChime();
 
-        fetch(`${APPS_SCRIPT_URL}?action=checkResponse&sessionId=${encodeURIComponent(activeSessionId)}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data && data.hasResponse) {
-              clearInterval(pollInterval);
-              if (timerInterval) clearInterval(timerInterval);
-
-              document.getElementById("liveReplyBody").innerText = `"${data.response}"`;
-              document.getElementById("liveReplyTime").innerText = data.responseTime || "Just now";
-              showScreen(6);
-            }
-          })
-          .catch(() => {});
-      }, 3000);
+      document.getElementById('waitingBlock').classList.add('hidden');
+      const ackBlock = document.getElementById('acknowledgedBlock');
+      ackBlock.classList.remove('hidden');
+      document.getElementById('ackMessageText').textContent = replyText;
+      document.getElementById('socialActionBlock').classList.remove('hidden');
     }
 
-    // 6. SESSION LOCK ON COMPLETION
-    function handleSessionCompletion() {
-      sessionStorage.setItem("pingme_locked_" + customerId, "true");
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        if (splash) {
+          splash.classList.add('fade-out');
+          setTimeout(() => splash.remove(), 400);
+        }
+      }, 1500);
 
-      if (timerInterval) clearInterval(timerInterval);
-      if (pollInterval) clearInterval(pollInterval);
-
-      showSessionLockedScreen();
-    }
-
-    function showSessionLockedScreen() {
-      for (let i = 1; i <= 7; i++) {
-        const s = document.getElementById("screen" + i);
-        if (s) s.style.display = "none";
+      const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
+      if (activeCooldown) {
+        const remSeconds = Math.floor((parseInt(activeCooldown, 10) - Date.now()) / 1000);
+        if (remSeconds > 0) {
+          startScreen3Timer(remSeconds);
+          showScreen('screen3');
+          return;
+        } else {
+          localStorage.removeItem(`pingme_cooldown_${tagId}`);
+        }
       }
-      const inact = document.getElementById("screenInactive");
-      if (inact) inact.style.display = "none";
 
-      const existing = document.getElementById("lockedScreenCard");
-      if (existing) existing.remove();
+      document.querySelectorAll('.category-card').forEach(btn => {
+        btn.onclick = () => selectCategory(btn.dataset.category);
+      });
 
-      const lockCard = document.createElement("div");
-      lockCard.id = "lockedScreenCard";
-      lockCard.style.cssText = "padding:36px 20px;text-align:center;max-width:400px;margin:30px auto;background:#FFFFFF;border-radius:18px;border:1px solid #E2E8F0;box-shadow:0 10px 25px rgba(0,0,0,0.05);font-family:'Plus Jakarta Sans',sans-serif;";
-      
-      lockCard.innerHTML = `
-        <div style="font-size:46px;margin-bottom:12px;">🔒</div>
-        <h2 style="font-size:20px;font-weight:800;color:#0F172A;margin-bottom:8px;">Session Completed</h2>
-        <p style="font-size:13px;color:#64748B;line-height:1.5;margin-bottom:20px;">
-          This notification session has been safely closed. To protect owner privacy and prevent duplicate alerts, new submissions from this screen are locked.
-        </p>
-        <div style="background:#F1F5F9;border-radius:10px;padding:12px;font-size:12px;color:#334155;font-weight:700;">
-          📷 Please rescan the physical QR code if you need to reach the owner again.
-        </div>
-      `;
-      document.querySelector(".app-container").appendChild(lockCard);
+      document.getElementById('backBtn').onclick = () => showScreen('screen1');
 
-      history.pushState(null, "", window.location.href);
-      window.onpopstate = function() {
-        history.pushState(null, "", window.location.href);
+      const noteInput = document.getElementById('customNoteInput');
+      const countEl = document.getElementById('charCount');
+      noteInput.oninput = () => {
+        countEl.textContent = noteInput.value.length;
       };
-    }
+
+      const photoInput = document.getElementById('photoInput');
+      document.getElementById('photoZone').onclick = (e) => {
+        if (e.target.id !== 'removePhotoBtn') photoInput.click();
+      };
+
+      photoInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        compressImage(file, (base64) => {
+          compressedPhotoBase64 = base64;
+          document.getElementById('photoThumb').src = base64;
+          document.getElementById('photoPrompt').classList.add('hidden');
+          document.getElementById('photoPreviewWrap').classList.remove('hidden');
+        });
+      };
+
+      document.getElementById('removePhotoBtn').onclick = (e) => {
+        e.stopPropagation();
+        compressedPhotoBase64 = null;
+        photoInput.value = '';
+        document.getElementById('photoPreviewWrap').classList.add('hidden');
+        document.getElementById('photoPrompt').classList.remove('hidden');
+      };
+
+      document.getElementById('sendAlertBtn').onclick = handleSendAlert;
+
+      document.getElementById('whatsappShareBtn').onclick = () => {
+        const text = encodeURIComponent('Found this smart QR tag system for vehicles and items — check out PingMe!');
+        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+      };
+
+      document.getElementById('doneBtn').onclick = () => {
+        window.location.href = 'about:blank';
+      };
+    });
   </script>
 </body>
 </html>
