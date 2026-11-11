@@ -1,1148 +1,147 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PingMe — ONE SCAN. INSTANT CONNECTION.</title>
+<!-- Add this modal/box inside your scan.html body where completed screen appears -->
+<div id="doneContainer" style="display:none; text-align:center; padding: 30px 20px;">
+  <h3 style="color:#22c55e; font-size:20px;">Alert Delivered Successfully!</h3>
+  <p style="color:#94a3b8; font-size:14px; margin-top:8px;">The owner has received your notification via WhatsApp.</p>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <style>
-    :root {
-      --primary-blue: #0076fe;
-      --deep-blue: #0056cc;
-      --bg-gradient: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #030712 100%);
-      --card-bg: #ffffff;
-      --text-dark: #0f172a;
-      --text-muted: #64748b;
-      --card-radius: 28px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-  body {
-      background: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 0;
-      color: var(--text-dark);
-      overflow-x: hidden;
-    }
-
-    .device-shell {
-      width: 100%;
-      max-width: 520px;
-      position: relative;
-      min-height: 100vh;
-    }
-
-    /* Splash Screen (Never blocks clicks, auto removes) */
-    .splash-screen {
-      position: fixed;
-      inset: 0;
-      background: #030712;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 99999;
-      pointer-events: none !important;
-      transition: opacity 0.3s ease;
-    }
-    .splash-content { text-align: center; }
-    .splash-logo { width: 90px; height: 90px; border-radius: 50%; margin-bottom: 14px; object-fit: contain; }
-    .splash-spinner {
-      width: 28px; height: 28px;
-      border: 3px solid rgba(255,255,255,0.15);
-      border-top-color: #38bdf8;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      margin: 0 auto;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Full-Screen Edge-to-Edge Mockup Card */
-    .app-card {
-      background: var(--card-bg);
-      border-radius: 0;
-      padding: 24px 20px 32px;
-      box-shadow: none;
-      min-height: 100vh;
-      position: relative;
-      display: none;
-      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .app-card.active { display: block; }
-
-    @keyframes popIn {
-      from { opacity: 0; transform: translateY(10px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* Header Bar */
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .brand-logo-img {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: contain;
-    }
-    .brand-group {
-      display: flex;
-      flex-direction: column;
-    }
-    .brand-title {
-      font-size: 26px;
-      font-weight: 900;
-      color: #0284c7;
-      letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      line-height: 1.1;
-    }
-    .brand-title span { color: #ef4444; }
-    .brand-tagline {
-      font-size: 9px;
-      font-weight: 800;
-      color: #475569;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-    }
-    .lang-toggle-capsule {
-      background: #f1f5f9;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 800;
-      color: #1e293b;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Hero Banner Area */
-    .hero-banner {
-      width: 100%;
-      height: 140px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 14px;
-    }
-    .hero-banner img {
-      max-width: 100%;
-      max-height: 140px;
-      object-fit: contain;
-    }
-
-    .hello-pill {
-      display: inline-block;
-      background: #ffffff;
-      border: 1.5px solid #e2e8f0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-      padding: 6px 16px;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 10px;
-    }
-
-    .title-main {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--text-dark);
-      letter-spacing: -0.5px;
-      line-height: 1.25;
-    }
-    .title-sub {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-top: 5px;
-      margin-bottom: 22px;
-    }
-
-    /* Larger, Touch-Friendly Category Cards */
-    .category-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-    .cat-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #ffffff;
-      border: 2px solid #e0f2fe;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.1);
-      border-radius: 22px;
-      padding: 16px 18px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .cat-btn:active {
-      transform: scale(0.98);
-      border-color: var(--primary-blue);
-      background: #f0f9ff;
-    }
-    .cat-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      text-align: left;
-    }
-    .cat-img-box {
-      width: 68px;
-      height: 60px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .cat-img-box img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-    .cat-title-text {
-      font-size: 17px;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1.25;
-    }
-    .cat-arrow {
-      font-size: 24px;
-      font-weight: 800;
-      color: #0284c7;
-      padding-right: 4px;
-    }
-
-    /* Footer Trust Capsule */
-    .privacy-capsule {
-      background: #f8fafc;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    /* Screen 2: Message Options */
-    .back-btn-row {
-      margin-bottom: 8px;
-    }
-    .back-nav-btn {
-      background: none;
-      border: none;
-      color: var(--primary-blue);
-      font-weight: 800;
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-    }
-
-    .options-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .option-pill {
-      background: #ffffff;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 12px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #1e293b;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.15s ease;
-    }
-    .option-pill.active {
-      background: #0076fe;
-      border-color: #0076fe;
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 118, 254, 0.25);
-    }
-
-    /* Note Input */
-    .note-container {
-      position: relative;
-      background: #ffffff;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .note-container input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #0f172a;
-    }
-    .char-limit {
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #94a3b8;
-    }
-
-    /* Photo Upload Feature */
-    .photo-upload-row {
-      background: #f8fafc;
-      border: 1.5px dashed #cbd5e1;
-      border-radius: 14px;
-      padding: 9px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      cursor: pointer;
-    }
-    .photo-desc {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .photo-desc-text {
-      text-align: left;
-    }
-    .photo-desc-text strong {
-      display: block;
-      font-size: 12px;
-      font-weight: 800;
-      color: #1e293b;
-    }
-    .photo-desc-text span {
-      display: block;
-      font-size: 10px;
-      color: #64748b;
-    }
-    .thumb-preview-wrap {
-      position: relative;
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      overflow: hidden;
-      display: none;
-    }
-    .thumb-preview-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .remove-thumb-btn {
-      position: absolute;
-      top: 1px;
-      right: 1px;
-      background: rgba(0,0,0,0.65);
-      color: #fff;
-      border-radius: 50%;
-      width: 15px;
-      height: 15px;
-      font-size: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    /* Blue Capsule Send Button */
-    .btn-capsule-blue {
-      width: 100%;
-      background: linear-gradient(180deg, #0284c7 0%, #0068df 100%);
-      color: #ffffff;
-      border: none;
-      padding: 14px;
-      border-radius: 20px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 8px 18px rgba(0, 118, 254, 0.35);
-    }
-    .btn-capsule-blue:active { transform: scale(0.98); }
-
-    /* Screen 3: Response Waiting, Ack & WhatsApp Share */
-    .status-capsule-timer {
-      background: #eff6ff;
-      border: 1.5px solid #bfdbfe;
-      border-radius: 16px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      color: #1d4ed8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-
-    .owner-ack-box {
-      background: #ecfdf5;
-      border: 1.5px solid #6ee7b7;
-      border-radius: 16px;
-      padding: 12px 14px;
-      text-align: left;
-      margin-bottom: 16px;
-      display: none;
-    }
-    .ack-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #047857;
-      margin-bottom: 4px;
-    }
-    .ack-reply-body {
-      font-size: 15px;
-      font-weight: 800;
-      color: #065f46;
-    }
-    .ack-reply-time {
-      font-size: 10px;
-      color: #059669;
-      text-align: right;
-      margin-top: 2px;
-    }
-
-    .success-celebrate {
-      margin: 14px 0;
-      text-align: center;
-    }
-    .success-badge-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #0f172a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .success-badge-sub {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 2px;
-    }
-
-    .btn-whatsapp-share {
-      width: 100%;
-      background: #25d366;
-      color: #ffffff;
-      border: none;
-      padding: 13px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
-    }
-
-    .btn-done {
-      width: 100%;
-      background: linear-gradient(180deg, #0284c7 0%, #0068df 100%);
-      color: #ffffff;
-      border: none;
-      padding: 12px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- SPLASH SCREEN OVERLAY -->
-  <div id="splashScreen" class="splash-screen">
-    <div class="splash-content">
-      <img src="assets/pingme-logo.png" alt="PingMe" class="splash-logo" onerror="this.src='./assets/pingme-logo.png'">
-      <div class="splash-spinner"></div>
+  <!-- Real-Time Owner Reply Box -->
+  <div id="ownerReplyBox" style="margin-top:20px; background:#1e293b; border:1px solid #334155; border-radius:10px; padding:16px; text-align:left;">
+    <div style="font-size:12px; color:#38bdf8; font-weight:700; margin-bottom:6px;">💬 OWNER RESPONSE:</div>
+    <div id="ownerReplyText" style="color:#f8fafc; font-size:15px; font-weight:500;">
+      <span style="color:#64748b; font-style:italic;">Waiting for owner to reply on WhatsApp...</span>
     </div>
   </div>
 
-  <div class="device-shell">
-
-    <!-- SCREEN 1: CATEGORY SELECTION -->
-    <div id="screen1" class="app-card active">
-      <div class="header-bar">
-        <div class="brand-wrap">
-          <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img" onerror="this.src='./assets/pingme-logo.png'">
-          <div class="brand-group">
-            <div class="brand-title">Ping<span>Me</span></div>
-            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
-          </div>
-        </div>
-        <button class="lang-toggle-capsule" onclick="toggleLanguage()">
-          🌐 <span id="langDisplay">தமிழ் | ENG</span>
-        </button>
-      </div>
-
-      <div style="text-align: center; margin-bottom: 14px;">
-        <div class="hello-pill" id="helloPill">Hello there! 👋</div>
-        <h1 class="title-main" id="screen1Title">How can we help?</h1>
-        <p class="title-sub" id="screen1Sub">Choose an option below to notify the owner privately</p>
-      </div>
-
-      <div class="category-cards">
-        <!-- Car & Bike Parking -->
-        <div class="cat-btn" onclick="selectCategory('parking')">
-          <div class="cat-left">
-            <div class="cat-img-box">
-              <img src="assets/car-bike-3d.png" alt="Parking" onerror="this.src='./assets/car-bike-3d.png'">
-            </div>
-            <div class="cat-title-text" id="catParkingText">Car & Bike<br>Parking</div>
-          </div>
-          <div class="cat-arrow">›</div>
-        </div>
-
-        <!-- Lost & Found Keys & Bags -->
-        <div class="cat-btn" onclick="selectCategory('lost_found')">
-          <div class="cat-left">
-            <div class="cat-img-box">
-              <img src="assets/luggage-keys-3d.png" alt="Luggage" onerror="this.src='./assets/luggage-keys-3d.png'">
-            </div>
-            <div class="cat-title-text" id="catLostText">Lost & Found<br>Keys & Bags</div>
-          </div>
-          <div class="cat-arrow">›</div>
-        </div>
-
-        <!-- Other General Assistance -->
-        <div class="cat-btn" onclick="selectCategory('emergency')">
-          <div class="cat-left">
-            <div class="cat-img-box">
-              <img src="assets/support-bell-3d.png" alt="Assistance" onerror="this.src='./assets/support-bell-3d.png'">
-            </div>
-            <div class="cat-title-text" id="catHelpText">Other<br>General<br>Assistance</div>
-          </div>
-          <div class="cat-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="privacy-capsule">
-        🔒 <span id="privacyFooterText">Private Alerts • Your Contact Details Stay Hidden</span>
-      </div>
-    </div>
-
-    <!-- SCREEN 2: SELECT MESSAGE & PHOTO ATTACHMENT -->
-    <div id="screen2" class="app-card">
-      <div class="header-bar">
-        <div class="brand-wrap">
-          <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img" onerror="this.src='./assets/pingme-logo.png'">
-          <div class="brand-group">
-            <div class="brand-title">Ping<span>Me</span></div>
-            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
-          </div>
-        </div>
-        <button class="lang-toggle-capsule" onclick="toggleLanguage()">
-          🌐 <span id="langDisplay2">தமிழ் | ENG</span>
-        </button>
-      </div>
-
-      <div class="back-btn-row">
-        <button class="back-nav-btn" onclick="showScreen('screen1')">
-          ‹ <span id="backBtnText">Back to Categories</span>
-        </button>
-      </div>
-
-      <!-- Hero 3D Illustration -->
-      <div class="hero-banner">
-        <img id="screen2HeroImg" src="assets/hero-vehicle.png" alt="Hero Vehicle" onerror="this.src='assets/car-bike-3d.png'">
-      </div>
-
-      <div style="text-align: center; margin-bottom: 12px;">
-        <h2 class="title-main" id="screen2Title">Select Message</h2>
-        <p class="title-sub" id="screen2Sub">Tap a quick message or type your own</p>
-      </div>
-
-      <!-- Quick Message Options List -->
-      <div id="messageOptionsList" class="options-list"></div>
-
-      <!-- Custom Notes Input with Counter -->
-      <div class="note-container">
-        <span>✏️</span>
-        <input type="text" id="customNoteInput" placeholder="Add specific notes (optional)" maxlength="120" oninput="updateCharCount()">
-        <span class="char-limit" id="charCount">0 / 120</span>
-      </div>
-
-      <!-- Attach Photo (Optional) -->
-      <div class="photo-upload-row" onclick="triggerFileInput()">
-        <div class="photo-desc">
-          <span style="font-size: 20px;">📷</span>
-          <div class="photo-desc-text">
-            <strong id="photoTitle">Attach Photo (Optional)</strong>
-            <span id="photoSub">Photo shared privately with the owner.</span>
-          </div>
-        </div>
-        <div class="thumb-preview-wrap" id="thumbWrap" onclick="event.stopPropagation();">
-          <img id="thumbImg" src="" alt="Thumbnail">
-          <div class="remove-thumb-btn" onclick="removePhoto(event)">✕</div>
-        </div>
-      </div>
-      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelected(event)">
-
-      <!-- Send Button -->
-      <button id="sendAlertBtn" class="btn-capsule-blue" onclick="handleSendAlert()">
-        ✈️ <span id="sendBtnLabel">Send Instant Alert</span>
-      </button>
-    </div>
-
-    <!-- SCREEN 3: WAITING FOR RESPONSE, ACK & WHATSAPP SHARE -->
-    <div id="screen3" class="app-card">
-      <div class="header-bar">
-        <div class="brand-wrap">
-          <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo-img" onerror="this.src='./assets/pingme-logo.png'">
-          <div class="brand-group">
-            <div class="brand-title">Ping<span>Me</span></div>
-            <div class="brand-tagline">ONE SCAN. INSTANT CONNECTION.</div>
-          </div>
-        </div>
-        <button class="lang-toggle-capsule" onclick="toggleLanguage()">
-          🌐 <span id="langDisplay3">தமிழ் | ENG</span>
-        </button>
-      </div>
-
-      <!-- Hero Mascot on Paper Plane -->
-      <div class="hero-banner">
-        <img src="assets/mascot-airplane-3d.png" alt="PingMe Mascot" onerror="this.src='./assets/mascot-airplane-3d.png'">
-      </div>
-
-      <div style="text-align: center; margin-bottom: 10px;">
-        <h2 class="title-main" style="color: #0f172a;" id="screen3Title">Alert Dispatched! ✔</h2>
-        <p class="title-sub" id="screen3Sub">Owner notified via private alert channels.</p>
-      </div>
-
-  <!-- Timer Capsule -->
-      <div class="status-capsule-timer">
-        🕒 <span id="timerLabel">Waiting for Response...</span> <strong id="timerCounter">165s</strong>
-      </div>
-
-      <!-- Owner Response Received Box -->
-      <div id="ackBlock" class="owner-ack-box">
-        <div class="ack-badge">
-          <span>✔</span> <span id="ownerResponseReceivedLabel">Owner Response Received</span> 💬
-        </div>
-        <div id="ackMessageText" class="ack-reply-body">"Coming in 2 mins!"</div>
-        <div id="ackTimestamp" class="ack-reply-time">10:05 AM</div>
-      </div>
-
-      <!-- Connection Success Block -->
-      <div class="success-celebrate">
-        <div class="success-badge-title">
-          <span>🎉</span> <span id="connSuccessTitle">Connection Successful! 💚</span>
-        </div>
-        <div class="success-badge-sub" id="connSuccessSub">Thank you for using PingMe.</div>
-      </div>
-
-      <!-- Share via WhatsApp -->
-      <button class="btn-whatsapp-share" onclick="shareViaWhatsApp()">
-        💬 <span id="shareWaText">Share PingMe via WhatsApp</span>
-      </button>
-
-      <!-- Done Button -->
-      <button class="btn-done" onclick="finishSession()">
-        <span id="doneBtnText">Done</span>
-      </button>
-    </div>
-
+  <div style="margin-top:25px; font-size:12px; color:#64748b;">
+    PingMe • One Scan Instant Connection
   </div>
+</div>
 
-  <script>
-    setTimeout(function() {
-      var s = document.getElementById('splashScreen');
-      if (s) {
-        s.style.opacity = '0';
-        setTimeout(function() { if (s && s.parentNode) s.parentNode.removeChild(s); }, 300);
-      }
-    }, 700);
+<script>
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLe8t9VfN8Ml7VLDzu-wfq-162OqrllTmSdZSmYbhaU2GunfX3kl/exec";
+  const urlParams = new URLSearchParams(window.location.search);
+  const tagId = urlParams.get("id");
 
-    // =========================================================================
-    // ⚙️ BACKEND WEB APP CONFIGURATION
-    // =========================================================================
-    var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec"; 
+  let userCoords = "";
+  let photoDataUrl = "";
+  let scannerIP = "UNKNOWN";
+  let pollInterval = null;
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var tagId = urlParams.get('id') || urlParams.get('tag') || 'VP-1001';
-
-    var currentLang = 'en';
-    var currentCategory = 'parking';
-    var selectedMessage = '';
-    var attachedPhotoBase64 = '';
-    var currentSessionId = '';
-    var countdownTimer = null;
-    var pollTimer = null;
-    var detectedLocationUrl = '';
-
-    var TEXTS = {
-      en: {
-        langBtn: "தமிழ் | ENG",
-        hello: "Hello there! 👋",
-        s1Title: "How can we help?",
-        s1Sub: "Choose an option below to notify the owner privately",
-        catPark: "Car & Bike<br>Parking",
-        catLost: "Lost & Found<br>Keys & Bags",
-        catHelp: "Other<br>General<br>Assistance",
-        privacy: "Private Alerts • Your Contact Details Stay Hidden",
-        back: "Back to Categories",
-        s2Title: "Select Message",
-        s2Sub: "Tap a quick message or type your own",
-        notePlaceholder: "Add specific notes (optional)",
-        photoTitle: "Attach Photo (Optional)",
-        photoSub: "Photo shared privately with the owner.",
-        sendBtn: "Send Instant Alert",
-        s3Title: "Alert Dispatched! ✔",
-        s3Sub: "Owner notified via private alert channels.",
-        waiting: "Waiting for Response...",
-        ownerReply: "Owner Response Received",
-        successTitle: "Connection Successful! 💚",
-        successSub: "Thank you for using PingMe.",
-        shareWa: "Share PingMe via WhatsApp",
-        done: "Done"
-      },
-      ta: {
-        langBtn: "ENG | தமிழ்",
-        hello: "வணக்கம்! 👋",
-        s1Title: "உங்களுக்கு என்ன உதவி தேவை?",
-        s1Sub: "உரிமையாளருக்கு உடனடியாக தகவல் அனுப்ப தேர்வு செய்யவும்",
-        catPark: "வாகன பார்க்கிங்<br>உதவி",
-        catLost: "பொருட்கள்<br>கண்டெடுக்கப்பட்டது",
-        catHelp: "பொதுவான<br>அவசர<br>உதவி",
-        privacy: "தனிநபர் பாதுகாப்பு • உங்கள் எண் பகிரப்படாது",
-        back: "முந்தைய பக்கம்",
-        s2Title: "செய்தியை தேர்வு செய்யவும்",
-        s2Sub: "விரைவு செய்தியை தொடவும் அல்லது குறிப்பு எழுதவும்",
-        notePlaceholder: "கூடுதல் குறிப்பு (விரும்பினால்)",
-        photoTitle: "புகைப்படம் இணைக்கவும் (விரும்பினால்)",
-        photoSub: "புகைப்படம் உரிமையாளருக்கு மட்டுமே அனுப்பப்படும்.",
-        sendBtn: "உடனடி அலர்ட் அனுப்பவும்",
-        s3Title: "அலர்ட் அனுப்பப்பட்டது! ✔",
-        s3Sub: "உரிமையாளரின் வாட்ஸ்அப்பிற்கு தகவல் சென்றடைந்தது.",
-        waiting: "பதிலுக்காக காத்திருக்கிறது...",
-        ownerReply: "உரிமையாளர் பதிலளித்துள்ளார்",
-        successTitle: "இணைப்பு வெற்றிகரமாக முடிந்தது! 💚",
-        successSub: "PingMe பயன்படுத்தியமைக்கு நன்றி.",
-        shareWa: "வாட்ஸ்அப்பில் பகிரவும்",
-        done: "முடிந்தது"
-      }
-    };
-
-    var MESSAGES = {
-      parking: {
-        en: [
-          "Your vehicle is blocking my way.",
-          "Please move your car/bike.",
-          "Headlights are left ON.",
-          "Window is open / Tyre flat."
-        ],
-        ta: [
-          "உங்கள் வாகனம் வழியை அடைத்துள்ளது.",
-          "வாகனத்தை எடுக்க வேண்டுகிறோம்.",
-          "ஹெட்லைட் எரிகிறது.",
-          "கண்ணாடி கதவு திறந்துள்ளது / காற்று குறைவு."
-        ]
-      },
-      lost_found: {
-        en: [
-          "Left your bag / wallet behind.",
-          "Found your vehicle / house keys.",
-          "Your luggage is left unattended.",
-          "Found an item with your PingMe tag."
-        ],
-        ta: [
-          "உங்கள் பை / பர்ஸ் தவறவிடப்பட்டுள்ளது.",
-          "உங்கள் சாவி கொத்து கிடைத்தது.",
-          "உங்கள் உடைமை தனியாக வைக்கப்பட்டுள்ளது.",
-          "PingMe டேக் உள்ள பொருள் கிடைத்தது."
-        ]
-      },
-      emergency: {
-        en: [
-          "Please come to the entrance gate.",
-          "Package / Courier arrived for you.",
-          "Important alert regarding your premises.",
-          "Need to contact you urgently."
-        ],
-        ta: [
-          "மெயின் கேட் அருகே வரவும்.",
-          "பார்சல் / கூரியர் வந்துள்ளது.",
-          "உங்கள் இடம் குறித்து அவசர தகவல்.",
-          "உங்களை அவசரமாக தொடர்பு கொள்ள வேண்டும்."
-        ]
-      }
-    };
-
-    function showScreen(screenId) {
-      document.getElementById('screen1').classList.remove('active');
-      document.getElementById('screen2').classList.remove('active');
-      document.getElementById('screen3').classList.remove('active');
-      var s = document.getElementById(screenId);
-      if (s) s.classList.add('active');
-      window.scrollTo(0, 0);
+  window.addEventListener("DOMContentLoaded", () => {
+    if (!tagId) {
+      document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Invalid QR Code</h3></div>";
+      return;
     }
 
-    function toggleLanguage() {
-      currentLang = (currentLang === 'en') ? 'ta' : 'en';
-      var t = TEXTS[currentLang];
-      document.getElementById('langDisplay').textContent = t.langBtn;
-      document.getElementById('langDisplay2').textContent = t.langBtn;
-      document.getElementById('langDisplay3').textContent = t.langBtn;
-      document.getElementById('helloPill').textContent = t.hello;
-      document.getElementById('screen1Title').textContent = t.s1Title;
-      document.getElementById('screen1Sub').textContent = t.s1Sub;
-      document.getElementById('catParkingText').innerHTML = t.catPark;
-      document.getElementById('catLostText').innerHTML = t.catLost;
-      document.getElementById('catHelpText').innerHTML = t.catHelp;
-      document.getElementById('privacyFooterText').textContent = t.privacy;
-      document.getElementById('backBtnText').textContent = t.back;
-      document.getElementById('screen2Title').textContent = t.s2Title;
-      document.getElementById('screen2Sub').textContent = t.s2Sub;
-      document.getElementById('customNoteInput').placeholder = t.notePlaceholder;
-      document.getElementById('photoTitle').textContent = t.photoTitle;
-      document.getElementById('photoSub').textContent = t.photoSub;
-      document.getElementById('sendBtnLabel').textContent = t.sendBtn;
-      document.getElementById('screen3Title').textContent = t.s3Title;
-      document.getElementById('screen3Sub').textContent = t.s3Sub;
-      document.getElementById('timerLabel').textContent = t.waiting;
-      document.getElementById('ownerResponseReceivedLabel').textContent = t.ownerReply;
-      document.getElementById('connSuccessTitle').textContent = t.successTitle;
-      document.getElementById('connSuccessSub').textContent = t.successSub;
-      document.getElementById('shareWaText').textContent = t.shareWa;
-      document.getElementById('doneBtnText').textContent = t.done;
-      renderMessageOptions();
+    // 1. Fetch Client Public IP Silently for Audit Trail
+    fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(d => { scannerIP = d.ip; })
+      .catch(() => { scannerIP = "UNAVAILABLE"; });
+
+    // 2. Prevent Double Scan via Session Storage
+    if (sessionStorage.getItem("pingme_submitted_" + tagId) === "true") {
+      showCompletedScreen("Notice: You have already notified the owner during this scan. To send another alert, please scan the physical QR tag again.");
+      startReplyPolling();
+      return;
     }
 
-    function selectCategory(cat) {
-      currentCategory = cat;
-      var hero = document.getElementById('screen2HeroImg');
-      if (cat === 'parking') hero.src = 'assets/hero-vehicle.png';
-      else if (cat === 'lost_found') hero.src = 'assets/luggage-keys-3d.png';
-      else hero.src = 'assets/support-bell-3d.png';
-
-      // Request GPS silently while user is browsing messages
-      requestPreGPS();
-
-      renderMessageOptions();
-      showScreen('screen2');
-    }
-
-    function requestPreGPS() {
-      if (navigator.geolocation && !detectedLocationUrl) {
-        navigator.geolocation.getCurrentPosition(
-          function(p) {
-            detectedLocationUrl = "https://maps.google.com/?q=" + p.coords.latitude.toFixed(6) + "," + p.coords.longitude.toFixed(6);
-          },
-          function() {},
-          { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
-        );
-      }
-    }
-
-    function renderMessageOptions() {
-      var container = document.getElementById('messageOptionsList');
-      container.innerHTML = '';
-      var list = MESSAGES[currentCategory][currentLang] || [];
-      selectedMessage = list[0] || '';
-
-      list.forEach(function(msg, idx) {
-        var pill = document.createElement('div');
-        pill.className = 'option-pill' + (idx === 0 ? ' active' : '');
-        pill.innerHTML = (idx === 0 ? '<span>✔</span>' : '') + '<span>' + msg + '</span>';
-        pill.onclick = function() {
-          document.querySelectorAll('.option-pill').forEach(function(el) {
-            el.classList.remove('active');
-            var check = el.querySelector('span:first-child');
-            if (check && el.children.length > 1) check.remove();
-          });
-          pill.classList.add('active');
-          var tick = document.createElement('span');
-          tick.textContent = '✔';
-          pill.insertBefore(tick, pill.firstChild);
-          selectedMessage = msg;
-        };
-        container.appendChild(pill);
+    // 3. Verify Tag Status
+    fetch(`${BACKEND_URL}?id=${tagId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.valid || data.status === "EXPIRED") {
+          document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Tag Inactive or Expired</h3><p>This PingMe tag is not active.</p></div>";
+        } else if (data.status === "CREDIT_EXHAUSTED") {
+          document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Notifications Paused</h3><p>The owner cannot receive automated alerts right now.</p></div>";
+        }
       });
+  });
+
+  // GPS Snapshot
+  function captureLocation() {
+    const btn = document.getElementById("locationBtn");
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
     }
+    btn.innerText = "📍 Fetching location...";
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        userCoords = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        btn.innerText = "✅ Location Attached";
+        btn.style.background = "#16a34a";
+      },
+      (err) => {
+        btn.innerText = "📍 Add Location (Optional)";
+        alert("Location skipped. You can still send the alert.");
+      },
+      { timeout: 7000 }
+    );
+  }
 
-    function updateCharCount() {
-      var val = document.getElementById('customNoteInput').value;
-      document.getElementById('charCount').textContent = val.length + ' / 120';
-    }
+  // Form Submit Routine
+  function submitAlertForm() {
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Sending Alert...";
 
-    function triggerFileInput() { document.getElementById('cameraInput').click(); }
-    function handleFileSelected(event) {
-      var file = event.target.files[0];
-      if (!file) return;
+    const payload = {
+      id: tagId,
+      itemType: document.getElementById("itemTypeSelect") ? document.getElementById("itemTypeSelect").value : "Vehicle",
+      reason: document.getElementById("reasonSelect").value,
+      notes: document.getElementById("userNotes") ? document.getElementById("userNotes").value : "",
+      location: userCoords,
+      photo: photoDataUrl,
+      ipAddress: scannerIP,
+      userAgent: navigator.userAgent
+    };
 
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var img = new Image();
-        img.onload = function() {
-          // Resize image on the phone canvas before uploading
-          var maxDim = 1000;
-          var width = img.width;
-          var height = img.height;
-
-          if (width > height) {
-            if (width > maxDim) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            }
-          } else {
-            if (height > maxDim) {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
-            }
-          }
-
-          var canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Compress to lightweight JPEG (~200KB)
-          attachedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-          document.getElementById('thumbImg').src = attachedPhotoBase64;
-          document.getElementById('thumbWrap').style.display = 'block';
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-    function removePhoto(e) {
-      e.stopPropagation();
-      attachedPhotoBase64 = '';
-      document.getElementById('cameraInput').value = '';
-      document.getElementById('thumbWrap').style.display = 'none';
-    }
-
-    function getOrGenSessionId() {
-      if (!currentSessionId) {
-        currentSessionId = 'SESS-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-        try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
-      }
-      return currentSessionId;
-    }
-
-    // DISPATCH WITH LOCATION CONFIRMATION
-    function handleSendAlert() {
-      var btn = document.getElementById('sendAlertBtn');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<span>📍 Acquiring GPS & Sending...</span>';
-      }
-
-      var noteVal = document.getElementById('customNoteInput').value.trim();
-      var sessId = getOrGenSessionId();
-
-      if (detectedLocationUrl) {
-        proceedToDispatch(detectedLocationUrl, noteVal, sessId);
-        return;
-      }
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          function(pos) {
-            var mapUrl = "https://maps.google.com/?q=" + pos.coords.latitude.toFixed(6) + "," + pos.coords.longitude.toFixed(6);
-            detectedLocationUrl = mapUrl;
-            proceedToDispatch(mapUrl, noteVal, sessId);
-          },
-          function(err) {
-            console.warn("GPS timeout/denied, sending alert without location:", err);
-            proceedToDispatch("", noteVal, sessId);
-          },
-          { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
-        );
+    fetch(BACKEND_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === "SUCCESS") {
+        sessionStorage.setItem("pingme_submitted_" + tagId, "true");
+        showCompletedScreen("Message sent to owner successfully!");
+        startReplyPolling(); // Start listening for WhatsApp replies
       } else {
-        proceedToDispatch("", noteVal, sessId);
+        alert("Alert could not be sent: " + res.message);
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Send Alert";
       }
-    }
-
-    function proceedToDispatch(mapLink, noteVal, sessId) {
-      var cooldownEnd = Date.now() + (165 * 1000);
-      try { localStorage.setItem('pingme_cooldown_' + tagId, cooldownEnd.toString()); } catch(e){}
-
-      startCountdown(165);
-      showScreen('screen3');
-
-      dispatchBackend(mapLink, noteVal, sessId);
-      startAckPolling(sessId);
-    }
-
-    function dispatchBackend(mapLink, noteVal, sessId) {
-      var payload = {
-        action: 'submitAlert',
-        customerId: tagId,
-        tagId: tagId,
-        category: currentCategory,
-        message: selectedMessage,
-        urgency: 'Normal',
-        locationUrl: mapLink,
-        location: mapLink,
-        notes: noteVal,
-        sessionId: sessId,
-        photoBase64: attachedPhotoBase64 || ""
-      };
-
-      // Use POST so the base64 photo is sent without URL length limits
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(function(err) {
-        console.warn("POST dispatch failed, attempting fallback:", err);
-        // Fallback GET without image if network restricts POST
-        var targetUrl = SCRIPT_URL + 
-          '?action=submitAlert' +
-          '&customerId=' + encodeURIComponent(tagId) +
-          '&category=' + encodeURIComponent(currentCategory) +
-          '&message=' + encodeURIComponent(selectedMessage) +
-          '&locationUrl=' + encodeURIComponent(mapLink) +
-          '&sessionId=' + encodeURIComponent(sessId) +
-          '&t=' + Date.now();
-        fetch(targetUrl, { mode: 'no-cors' });
-      });
-    }
-
-    // POLLING FUNCTION
-    function startAckPolling(sessId) {
-      if (pollTimer) clearInterval(pollTimer);
-
-      pollTimer = setInterval(function() {
-        if (!sessId) return;
-
-        var pollUrl = SCRIPT_URL + 
-          '?action=checkOwnerResponse' +
-          '&sessionId=' + encodeURIComponent(sessId) +
-          '&t=' + Date.now();
-
-        fetch(pollUrl)
-          .then(function(res) { return res.json(); })
-          .then(function(data) {
-            if (!data) return;
-
-            var reply = data.reply || data.replyText || "";
-            var isResponded = data.hasResponse || data.status === "RESPONDED";
-
-            if (isResponded && reply.trim() !== "") {
-              clearInterval(pollTimer);
-              var ackBox = document.getElementById('ackBlock');
-              if (ackBox) {
-                document.getElementById('ackMessageText').textContent = '"' + reply + '"';
-                
-                var displayTime = (data.responseTime && !data.responseTime.includes("1899")) 
-                  ? data.responseTime 
-                  : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                document.getElementById('ackTimestamp').textContent = displayTime;
-                ackBox.style.display = 'block';
-              }
-            }
-          })
-          .catch(function(err) {
-            console.error("Poll fetch error:", err);
-          });
-      }, 3000);
-    }
-
-    function startCountdown(seconds) {
-      clearInterval(countdownTimer);
-      var remain = seconds;
-      renderTime(remain);
-      
-      countdownTimer = setInterval(function() {
-        remain--;
-        if (remain <= 0) {
-          clearInterval(countdownTimer);
-          document.getElementById('timerCounter').textContent = '0s';
-          try { localStorage.removeItem('pingme_cooldown_' + tagId); } catch(e){}
-        } else {
-          renderTime(remain);
-        }
-      }, 1000);
-    }
-
-    function renderTime(sec) {
-      document.getElementById('timerCounter').textContent = sec + 's';
-    }
-
-    function shareViaWhatsApp() {
-      var shareText = "I just used PingMe to contact a vehicle owner safely without sharing phone numbers! Check out PingMe: " + window.location.href;
-      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(shareText), '_blank');
-    }
-
-    function finishSession() {
-      try {
-        localStorage.removeItem('pingme_cooldown_' + tagId);
-        localStorage.removeItem('pingme_session_' + tagId);
-      } catch(e){}
-      showScreen('screen1');
-    }
-
-    window.addEventListener('load', function() {
-      try {
-        var active = localStorage.getItem('pingme_cooldown_' + tagId);
-        if (active) {
-          var rem = Math.floor((parseInt(active, 10) - Date.now()) / 1000);
-          if (rem > 0) {
-            currentSessionId = localStorage.getItem('pingme_session_' + tagId) || '';
-            startCountdown(rem);
-            showScreen('screen3');
-            startAckPolling(currentSessionId);
-          }
-        }
-      } catch(e){}
+    })
+    .catch(err => {
+      alert("Network error. Please try again.");
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Send Alert";
     });
-  </script>
+  }
+
+  function showCompletedScreen(msg) {
+    const formBox = document.getElementById("mainFormContainer");
+    if (formBox) formBox.style.display = "none";
+    const doneBox = document.getElementById("doneContainer");
+    doneBox.style.display = "block";
+  }
+
+  // Real-Time Polling for WhatsApp Owner Reply
+  function startReplyPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(() => {
+      fetch(`${BACKEND_URL}?action=checkReply&id=${tagId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.hasReply) {
+            document.getElementById("ownerReplyText").innerHTML = `
+              <div style="color:#22c55e; font-weight:700; margin-bottom:4px;">Received:</div>
+              "${data.message}"
+            `;
+            clearInterval(pollInterval); // Stop polling once reply is caught
+          }
+        })
+        .catch(() => {});
+    }, 3000); // Polls every 3 seconds
+  }
+</script>
