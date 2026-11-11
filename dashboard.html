@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PingMe Master Control Dashboard</title>
+  <!-- Load QRCode library for instant vector-crisp PNG generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f8fafc;
@@ -49,18 +51,61 @@
     .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
     .stat-value { font-size: 20px; font-weight: 700; }
 
-    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
     .info-table td { padding: 10px 0; border-bottom: 1px solid var(--border); }
     .info-table td:first-child { color: var(--muted); width: 35%; }
+
+    /* QR Asset Box */
+    .qr-asset-box {
+      background: #131c2e;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .qr-preview-container {
+      background: #ffffff;
+      padding: 8px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 110px;
+      height: 110px;
+    }
+    .qr-preview-container img, .qr-preview-container canvas {
+      width: 94px !important;
+      height: 94px !important;
+    }
+    .qr-details {
+      flex: 1;
+    }
+    .qr-link-input {
+      width: 100%;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--accent);
+      margin: 8px 0 10px 0;
+      outline: none;
+      font-family: monospace;
+    }
 
     .actions-box { background: #131c2e; padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
     .actions-box h3 { font-size: 14px; margin-bottom: 12px; color: var(--accent); }
     .btn-group { display: flex; flex-wrap: wrap; gap: 10px; }
-    .btn-action { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; color: white; border: none; }
+    .btn-action { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; color: white; border: none; }
     .btn-activate { background: #059669; }
     .btn-credit-rem { background: #d97706; }
     .btn-expiry-rem { background: #dc2626; }
     .btn-custom { background: #475569; }
+    .btn-qr-download { background: #0284c7; }
+    .btn-qr-copy { background: #334155; color: #f8fafc; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
     .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; width: 480px; padding: 20px; }
@@ -126,6 +171,20 @@
         </div>
       </div>
 
+      <!-- Live QR Code Generation & Download Center -->
+      <div class="qr-asset-box">
+        <div class="qr-preview-container" id="qrCanvasBox"></div>
+        <div class="qr-details">
+          <strong style="font-size: 13px; color: var(--text);">Tag QR & Print Assets</strong>
+          <input type="text" id="qrLinkInput" class="qr-link-input" readonly>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-action btn-qr-download" onclick="downloadQRCodePNG()">📥 Download Print QR (PNG)</button>
+            <button class="btn-action btn-qr-copy" onclick="copyTagLink()">📋 Copy URL</button>
+            <a id="btnTestScanLink" class="btn-action btn-custom" target="_blank">🔗 Open Scan Page</a>
+          </div>
+        </div>
+      </div>
+
       <table class="info-table">
         <tr>
           <td>Owner Name</td>
@@ -182,11 +241,12 @@ One Scan Instant Connection</textarea>
   </div>
 
   <script>
-    // PASTE YOUR DEPLOYED WEB APP URL HERE:
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLe8t9VfN8Ml7VLDzu-wfq-162OqrllTmSdZSmYbhaU2GunfX3kl/exec"; 
-    
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLE8t9VfN8M17VLDzu-wfq-1620qrllTmSdZSmYbhaU2GunfX3kl/exec";
+    const BASE_SCAN_URL = "https://milircrafts.github.io/pingme/?id=";
+
     let customers = [];
     let selectedCustomer = null;
+    let qrGenerator = null;
 
     window.addEventListener("DOMContentLoaded", fetchCustomers);
 
@@ -202,7 +262,7 @@ One Scan Instant Connection</textarea>
             document.getElementById("customerList").innerHTML = "<div style='text-align:center;padding:20px;'>No customer records found.</div>";
           }
         })
-        .catch(err => {
+        .catch(() => {
           document.getElementById("customerList").innerHTML = "<div style='text-align:center;padding:20px;color:#f87171;'>Failed to load from Google Sheets. Check BACKEND_URL.</div>";
         });
     }
@@ -266,6 +326,24 @@ One Scan Instant Connection</textarea>
       
       document.getElementById("statusSelect").value = c.status;
 
+      // Update QR Box & Scan URL
+      const fullScanUrl = BASE_SCAN_URL + c.id;
+      document.getElementById("qrLinkInput").value = fullScanUrl;
+      document.getElementById("btnTestScanLink").href = fullScanUrl;
+
+      // Render fresh QR Code
+      const qrBox = document.getElementById("qrCanvasBox");
+      qrBox.innerHTML = "";
+      qrGenerator = new QRCode(qrBox, {
+        text: fullScanUrl,
+        width: 128,
+        height: 128,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Alerts
       const creditBanner = document.getElementById("creditAlertBanner");
       if (Number(c.availableCredits) <= 10 && c.status === "ACTIVE") {
         creditBanner.classList.add("show");
@@ -283,6 +361,46 @@ One Scan Instant Connection</textarea>
       setupWhatsAppLinks(c);
     }
 
+    // High-Resolution 1000px QR Code PNG Exporter
+    function downloadQRCodePNG() {
+      if (!selectedCustomer) return;
+      const fullScanUrl = BASE_SCAN_URL + selectedCustomer.id;
+
+      // Create an offscreen canvas to generate crisp 1000x1000px print file
+      const offscreenDiv = document.createElement("div");
+      new QRCode(offscreenDiv, {
+        text: fullScanUrl,
+        width: 1000,
+        height: 1000,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      setTimeout(() => {
+        const img = offscreenDiv.querySelector("img");
+        const canvas = offscreenDiv.querySelector("canvas");
+        const dataUrl = img ? img.src : (canvas ? canvas.toDataURL("image/png") : null);
+
+        if (dataUrl) {
+          const downloadLink = document.createElement("a");
+          downloadLink.href = dataUrl;
+          downloadLink.download = `PingMe_${selectedCustomer.id}_QRCode.png`;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }
+      }, 200);
+    }
+
+    function copyTagLink() {
+      const copyText = document.getElementById("qrLinkInput");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(copyText.value);
+      alert("Copied link: " + copyText.value);
+    }
+
     function setupWhatsAppLinks(c) {
       const baseUrl = `https://wa.me/${c.phone}?text=`;
 
@@ -297,6 +415,9 @@ Account Overview:
 • Status: Active
 • Included Credits: ${c.availableCredits} WhatsApp Alerts
 • Plan Validity: ${c.expiryDate}
+
+Tag Scan Link:
+${BASE_SCAN_URL}${c.id}
 
 Next Steps:
 Place your acrylic holders and waterproof tags on your vehicle windshield, keychains, and personal belongings.
