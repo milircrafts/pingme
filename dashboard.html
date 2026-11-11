@@ -284,41 +284,42 @@ One Scan Instant Connection</textarea>
   }
 
     function renderList(list) {
-      const container = document.getElementById("customerList");
-      container.innerHTML = "";
+  const container = document.getElementById("customerList");
+  if (!container) return;
+  container.innerHTML = "";
 
-      list.forEach(c => {
-      const expDate = c.expiryDate || c.expiry || "-";
-      const daysLeft = calculateDaysRemaining(expDate);
-      const balance = c.availableCredits !== undefined ? c.availableCredits : ((Number(c.totalCredits || 0)) - Number(c.usedCredits || 0));
-      const isLowCredit = Number(balance) <= 10 && c.status === "ACTIVE";
-      const isExpiringSoon = daysLeft <= 7 && daysLeft >= 0 && c.status === "ACTIVE";
+  list.forEach(c => {
+    const expDate = c.expiryDate || c.expiry || "-";
+    const daysLeft = typeof calculateDaysRemaining === "function" ? calculateDaysRemaining(expDate) : 0;
+    const balance = c.availableCredits !== undefined ? c.availableCredits : ((Number(c.totalCredits || 0)) - Number(c.usedCredits || 0));
+    const isLowCredit = Number(balance) <= 10 && c.status === "ACTIVE";
+    const isExpiringSoon = daysLeft <= 7 && daysLeft >= 0 && c.status === "ACTIVE";
 
-        let badgeClass = "badge-active";
-        if (c.status === "CREDIT_EXHAUSTED") badgeClass = "badge-exhausted";
-        if (c.status === "EXPIRED") badgeClass = "badge-expired";
+    let badgeClass = "badge-active";
+    if (c.status === "CREDIT_EXHAUSTED" || Number(balance) <= 0) badgeClass = "badge-exhausted";
+    if (c.status === "EXPIRED" || daysLeft < 0) badgeClass = "badge-expired";
 
-        const div = document.createElement("div");
-        div.className = `customer-item ${selectedCustomer && selectedCustomer.id === c.id ? 'active-item' : ''}`;
-        div.onclick = () => selectCustomer(c);
+    const div = document.createElement("div");
+    div.className = `customer-item ${selectedCustomer && selectedCustomer.id === c.id ? 'active-item' : ''}`;
+    div.onclick = () => selectCustomer(c);
 
-        div.innerHTML = `
-          <div class="item-row">
-            <span class="item-id">${c.id}</span>
-            <span class="badge ${badgeClass}">${c.status}</span>
-          </div>
-          <div class="item-row">
-            <span class="item-name">${c.name} (${c.phone.slice(-4)})</span>
-            <span style="font-size: 11px; font-weight: 600;">Bal: ${balance}</span>
-          </div>
-          <div style="margin-top: 4px; display: flex; gap: 4px;">
-            ${isLowCredit ? '<span class="badge badge-warning">⚡ Low ('+c.availableCredits+')</span>' : ''}
-            ${isExpiringSoon ? '<span class="badge badge-warning">⏳ Exp in '+daysLeft+'d</span>' : ''}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
+    div.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>${c.id}</strong>
+        <span class="badge ${badgeClass}">${c.status || 'ACTIVE'}</span>
+      </div>
+      <div style="font-size:12px; color:var(--muted); margin-top:4px;">
+        ${c.name} (${String(c.phone).slice(-4)})
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px; color:var(--muted);">
+        <span>Bal: <b>${balance}</b></span>
+        <span>${daysLeft > 0 ? daysLeft + 'd left' : 'Expired'}</span>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
 
     function selectCustomer(c) {
       selectedCustomer = c;
