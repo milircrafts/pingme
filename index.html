@@ -2,218 +2,433 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PingMe • One Scan Instant Connection</title>
   <style>
     :root {
-      --bg: #0b1120;
-      --card: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-hover: #0284c7;
-      --success: #22c55e;
+      --bg: #090d16;
+      --card-bg: rgba(22, 30, 49, 0.85);
+      --border: #2e3c59;
+      --accent: #00d2ff;
+      --accent-glow: rgba(0, 210, 255, 0.35);
+      --accent-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
     }
+
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background: radial-gradient(circle at 50% 20%, #152238 0%, var(--bg) 80%);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       padding: 16px;
+      overflow-x: hidden;
     }
-    .card {
-      background: var(--card);
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 24px;
       width: 100%;
       max-width: 440px;
       padding: 24px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow);
+      position: relative;
     }
-    .header {
+
+    /* Top Logo & Hero */
+    .brand-header {
       text-align: center;
       margin-bottom: 20px;
     }
-    .header h1 {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: -0.5px;
+    .brand-logo {
+      height: 48px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0, 210, 255, 0.4));
+      animation: floatLogo 4s ease-in-out infinite;
     }
-    .header p {
+    .brand-tagline {
       font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+      text-transform: uppercase;
     }
-    .owner-badge {
-      background: #0f172a;
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Tag Status Bar */
+    .status-pill {
+      background: rgba(15, 23, 42, 0.7);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
+      border-radius: 50px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 18px;
       font-size: 13px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      margin-right: 6px;
+    }
+
+    /* 3D Asset Category Selector */
+    .category-slider {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .cat-btn {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: var(--text-sub);
+    }
+    .cat-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .cat-btn.selected {
+      background: rgba(0, 210, 255, 0.12);
+      border-color: var(--accent);
+      color: var(--text-main);
+      box-shadow: 0 4px 15px rgba(0, 210, 255, 0.25);
+    }
+    .cat-img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+    }
+    .cat-label {
+      font-size: 11px;
+      font-weight: 700;
+      display: block;
+    }
+
+    /* Input Styles */
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     label {
       display: block;
       font-size: 12px;
       font-weight: 600;
+      color: var(--text-sub);
       margin-bottom: 6px;
-      color: var(--text);
     }
     select, textarea {
       width: 100%;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      color: var(--text);
+      background: rgba(15, 23, 42, 0.8);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--text-main);
       font-size: 14px;
       outline: none;
       transition: border 0.2s;
     }
     select:focus, textarea:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
     }
     textarea {
-      resize: vertical;
-      height: 75px;
+      height: 70px;
+      resize: none;
     }
-    .btn-secondary {
+
+    /* Buttons */
+    .btn-action {
       width: 100%;
-      background: #334155;
-      color: var(--text);
       border: none;
-      border-radius: 8px;
-      padding: 11px;
-      font-size: 13px;
-      font-weight: 600;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 16px;
-      transition: background 0.2s;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px dashed var(--accent);
+      color: var(--accent);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .btn-secondary:hover {
+      background: rgba(0, 210, 255, 0.1);
     }
     .btn-primary {
-      width: 100%;
-      background: var(--accent);
-      color: #0b1120;
-      border: none;
-      border-radius: 8px;
-      padding: 13px;
+      background: var(--accent-gradient);
+      color: #040812;
       font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
+      box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
     }
     .btn-primary:hover {
-      background: var(--accent-hover);
+      filter: brightness(1.1);
+      transform: translateY(-1px);
     }
     .btn-primary:disabled {
-      background: #475569;
+      background: #334155;
+      color: #64748b;
       cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
-    .footer {
+
+    /* 180s Active Waiting Room Styles */
+    #waitingContainer {
+      display: none;
       text-align: center;
-      margin-top: 18px;
+      padding: 10px 0;
+    }
+    .mascot-avatar {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin: 0 auto 10px auto;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+      animation: bounceMascot 2s ease-in-out infinite alternate;
+    }
+    @keyframes bounceMascot {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .timer-ring-box {
+      margin: 14px 0;
+    }
+    .timer-digits {
+      font-size: 32px;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+    }
+    .progress-bar-bg {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border);
+      height: 8px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 10px auto;
+      width: 90%;
+    }
+    .progress-bar-fill {
+      background: var(--accent-gradient);
+      height: 100%;
+      width: 100%;
+      border-radius: 8px;
+      transition: width 1s linear;
+    }
+
+    .fun-quote-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 14px 0;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #e2e8f0;
+      animation: fadeIn 0.4s ease;
+    }
+
+    /* Live Reply Banner */
+    .reply-card {
+      display: none;
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid var(--success);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      margin-top: 14px;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .reply-header {
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .reply-body {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .footer-note {
+      text-align: center;
       font-size: 11px;
-      color: var(--muted);
+      color: var(--text-sub);
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .shield-icon {
+      width: 14px;
+      height: 14px;
+      vertical-align: middle;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
+  <div class="glass-card">
+    
+    <!-- BRAND HEADER: PINGME LOGO & TAGLINE -->
+    <div class="brand-header">
+      <img src="assets/pingme-logo.png" alt="PingMe Logo" class="brand-logo" onerror="this.style.display='none'">
+      <div class="brand-tagline">One Scan Instant Connection</div>
+    </div>
+
+    <!-- VIEW 1: SCANNER DISPATCH FORM -->
     <div id="mainFormContainer">
-      <div class="header">
-        <h1>PingMe</h1>
-        <p>One Scan Instant Connection</p>
+      <div class="status-pill">
+        <span>Tag: <strong id="displayTagId" style="color:var(--accent);">Checking...</strong></span>
+        <span><span class="status-dot"></span><span id="displayTagStatus">Verified</span></span>
       </div>
 
-      <div class="owner-badge">
-        <span>Connected Tag: <strong id="displayTagId">Verifying...</strong></span>
-        <span id="tagStatusDot" style="color: var(--success); font-weight: bold;">● Active</span>
+      <!-- 3D Category Interactive Selector -->
+      <label>1. What are you pinging?</label>
+      <div class="category-slider">
+        <div class="cat-btn selected" onclick="selectCategory('Vehicle', this)">
+          <img src="assets/car-bike-3d.png" class="cat-img" onerror="this.src='assets/hero-vehicle.png'">
+          <span class="cat-label">Vehicle</span>
+        </div>
+        <div class="cat-btn" onclick="selectCategory('Luggage / Keys', this)">
+          <img src="assets/luggage-keys-3d.png" class="cat-img" onerror="this.src='assets/icon-keys-luggage.png'">
+          <span class="cat-label">Keys / Bag</span>
+        </div>
+        <div class="cat-btn" onclick="selectCategory('Other Belonging', this)">
+          <img src="assets/mascot-airplane-3d.png" class="cat-img" onerror="this.src='assets/icon-other.png'">
+          <span class="cat-label">Other</span>
+        </div>
       </div>
+      <input type="hidden" id="itemTypeSelect" value="Vehicle">
 
+      <!-- Reason Selector -->
       <div class="form-group">
-        <label for="itemTypeSelect">Alert Category</label>
-        <select id="itemTypeSelect">
-          <option value="Vehicle">Vehicle</option>
-          <option value="Luggage / Bag">Luggage / Bag</option>
-          <option value="Keys">Keys</option>
-          <option value="Personal Belonging">Personal Belonging</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="reasonSelect">Reason for Alert</label>
+        <label for="reasonSelect">2. Reason for notification</label>
         <select id="reasonSelect">
-          <option value="Wrong Parking / Blocking Way">Wrong Parking / Blocking Way</option>
-          <option value="Lights are ON">Lights are ON</option>
-          <option value="Window / Door Left Open">Window / Door Left Open</option>
-          <option value="Found Lost Item / Luggage">Found Lost Item / Luggage</option>
-          <option value="Emergency Attention Required">Emergency Attention Required</option>
-          <option value="General Notification">General Notification</option>
+          <option value="Wrong Parking / Blocking Way">🚗 Wrong Parking / Blocking Way</option>
+          <option value="Headlights / Hazard Left ON">💡 Headlights / Hazard Lights Left ON</option>
+          <option value="Window / Door Left Open">🚪 Window or Door Left Open</option>
+          <option value="Found Lost Item / Luggage">🧳 Found Lost Belonging</option>
+          <option value="Emergency Attention Required">⚠️ Emergency / Attention Required</option>
+          <option value="General Notification">🔔 General Notification</option>
         </select>
       </div>
 
+      <!-- Short Note -->
       <div class="form-group">
-        <label for="userNotes">Quick Note (Optional)</label>
-        <textarea id="userNotes" placeholder="e.g., Please move ahead slightly, truck needs to exit..."></textarea>
+        <label for="userNotes">3. Short message (Optional)</label>
+        <textarea id="userNotes" placeholder="e.g., Please pull forward 2 feet, truck needs to exit..."></textarea>
       </div>
 
-      <button type="button" id="locationBtn" class="btn-secondary" onclick="captureLocation()">
-        📍 Add Location (Optional)
+      <!-- GPS Button -->
+      <button type="button" id="locationBtn" class="btn-action btn-secondary" onclick="captureLocation()">
+        📍 Attach Exact Location (Optional)
       </button>
 
-      <button type="button" id="submitBtn" class="btn-primary" onclick="submitAlertForm()">
-        Send Instant Alert
+      <!-- Submit Button -->
+      <button type="button" id="submitBtn" class="btn-action btn-primary" onclick="submitAlertForm()">
+        🚀 Send Instant Alert
       </button>
 
-      <div class="footer">
-        🔒 Encrypted & Private • Your phone number is never shared.
+      <div class="footer-note">
+        <img src="assets/response-shield.png" class="shield-icon" onerror="this.style.display='none'">
+        <span>100% Private • Your phone number is never exposed</span>
       </div>
     </div>
 
-    <!-- Completed Screen with Live Real-Time Polling for WhatsApp Reply -->
-    <div id="doneContainer" style="display:none; text-align:center; padding: 15px 0;">
-      <h3 style="color:var(--success); font-size:20px;">Alert Delivered Successfully!</h3>
-      <p style="color:var(--muted); font-size:13px; margin-top:8px;">
-        The owner received your notification on WhatsApp.
-      </p>
+    <!-- VIEW 2: 180-SECOND CARTOON WAITING ROOM -->
+    <div id="waitingContainer">
+      <img id="mascotImg" src="assets/boy-waiting.png" class="mascot-avatar" alt="PingMe Mascot">
       
-      <div style="margin-top:20px; background:#0f172a; border:1px solid var(--border); border-radius:10px; padding:16px; text-align:left;">
-        <div style="font-size:11px; color:var(--accent); font-weight:700; margin-bottom:6px;">
-          💬 OWNER RESPONSE:
-        </div>
-        <div id="ownerReplyText" style="color:#f8fafc; font-size:14px; font-weight:500;">
-          <span style="color:#64748b; font-style:italic;">Waiting for owner to reply on WhatsApp...</span>
+      <h2 id="waitingTitle" style="font-size: 19px; font-weight:800; color:#fff;">Alert Dispatched to Owner!</h2>
+      <p style="font-size:12px; color:var(--text-sub); margin-top:2px;">Delivered via official WhatsApp gateway.</p>
+
+      <!-- 180s Countdown Ring -->
+      <div class="timer-ring-box">
+        <div class="timer-digits" id="timerDisplay">03:00</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar"></div>
         </div>
       </div>
 
-      <div style="margin-top:20px; font-size:11px; color:var(--muted);">
+      <!-- Engaging Cartoon Waiting Joke -->
+      <div class="fun-quote-box" id="funQuote">
+        🤖 Beep boop! WhatsApp alert is buzzing the owner's phone right now...
+      </div>
+
+      <!-- Live Owner Reply Banner -->
+      <div id="replyCard" class="reply-card">
+        <div class="reply-header">
+          <span>💬 OWNER JUST REPLIED:</span>
+        </div>
+        <div class="reply-body" id="replyMessageText">
+          "On my way!"
+        </div>
+      </div>
+
+      <div class="footer-note" style="margin-top:20px;">
         PingMe • One Scan Instant Connection
       </div>
     </div>
+
   </div>
 
   <script>
+    // 1. LIVE BACKEND CONFIG
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx0ayR-0TsegshEBLE8t9VfN8M17VLDzu-wfq-1620qrllTmSdZSmYbhaU2GunfX3kl/exec";
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = urlParams.get("id");
@@ -222,68 +437,104 @@
     let photoDataUrl = "";
     let scannerIP = "UNKNOWN";
     let pollInterval = null;
+    let timerInterval = null;
+    let secondsLeft = 180; // 180 Seconds Active Time
 
+    // Cartoon entertainment quotes that rotate every 8 seconds
+    const waitingQuotes = [
+      "🚗 Ping delivered! The owner's phone is currently ringing with your alert...",
+      "👀 Fun fact: 89% of PingMe owners respond in under 90 seconds!",
+      "🏃‍♂️ Owner has likely seen the WhatsApp notification and is heading your way...",
+      "☕ Still waiting? Don't worry, your alert was delivered with priority!",
+      "🚦 Checking for replies directly from the owner's WhatsApp...",
+      "⚡ Almost there! Keeping this channel wide open for an instant response..."
+    ];
+    let quoteIndex = 0;
+
+    // Initialization
     window.addEventListener("DOMContentLoaded", () => {
       if (!tagId) {
-        document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Invalid QR Code</h3><p>Tag identifier is missing from URL.</p></div>";
+        document.body.innerHTML = `
+          <div style='text-align:center;padding:40px;color:#94a3b8;'>
+            <img src='assets/boy-sad.png' style='width:90px;margin-bottom:12px;'>
+            <h3>Invalid QR Code</h3>
+            <p style='font-size:13px;margin-top:6px;'>No Tag ID was found in this scan link.</p>
+          </div>`;
         return;
       }
 
       document.getElementById("displayTagId").innerText = tagId;
 
-      // 1. Fetch Client Public IP Silently for Audit Trail
+      // Fetch Client IP silently for security audit
       fetch("https://api.ipify.org?format=json")
         .then(res => res.json())
         .then(d => { scannerIP = d.ip; })
         .catch(() => { scannerIP = "UNAVAILABLE"; });
 
-      // 2. Prevent Double Submissions on Refresh via Session Storage
+      // Session Lock Check: Prevent refresh spamming
       if (sessionStorage.getItem("pingme_submitted_" + tagId) === "true") {
-        showCompletedScreen("Notice: You have already notified the owner during this scan.");
-        startReplyPolling();
+        enterWaitingRoom();
         return;
       }
 
-      // 3. Verify Tag Status with Backend
+      // Check Tag Status with Google Apps Script
       fetch(`${BACKEND_URL}?id=${tagId}`)
         .then(res => res.json())
         .then(data => {
           if (!data.valid || data.status === "EXPIRED") {
-            document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Tag Inactive or Expired</h3><p>This PingMe tag is currently inactive.</p></div>";
+            document.body.innerHTML = `
+              <div style='text-align:center;padding:40px;color:#94a3b8;'>
+                <img src='assets/timeout-hourglass.png' style='width:80px;margin-bottom:12px;'>
+                <h3>Tag Inactive or Expired</h3>
+                <p style='font-size:13px;margin-top:6px;'>This PingMe tag is currently inactive.</p>
+              </div>`;
           } else if (data.status === "CREDIT_EXHAUSTED") {
-            document.body.innerHTML = "<div style='text-align:center;padding:50px;color:#94a3b8;'><h3>Notifications Paused</h3><p>The owner cannot receive automated alerts right now.</p></div>";
+            document.body.innerHTML = `
+              <div style='text-align:center;padding:40px;color:#94a3b8;'>
+                <img src='assets/boy-sad.png' style='width:80px;margin-bottom:12px;'>
+                <h3>Alert Limit Reached</h3>
+                <p style='font-size:13px;margin-top:6px;'>Owner cannot receive automated alerts right now.</p>
+              </div>`;
           }
         })
         .catch(() => {});
     });
 
-    // Optional GPS Snapshot
+    // Category Selector
+    function selectCategory(catName, el) {
+      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("selected"));
+      el.classList.add("selected");
+      document.getElementById("itemTypeSelect").value = catName;
+    }
+
+    // High-Accuracy GPS Snapshot
     function captureLocation() {
       const btn = document.getElementById("locationBtn");
       if (!navigator.geolocation) {
         alert("Geolocation is not supported by your browser.");
         return;
       }
-      btn.innerText = "📍 Fetching location...";
+      btn.innerText = "📍 Fetching GPS Location...";
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           userCoords = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
           btn.innerText = "✅ Location Attached";
-          btn.style.background = "#16a34a";
+          btn.style.borderColor = "var(--success)";
+          btn.style.color = "var(--success)";
         },
-        (err) => {
-          btn.innerText = "📍 Add Location (Optional)";
-          alert("Location permission skipped. You can still send the alert.");
+        () => {
+          btn.innerText = "📍 Attach Exact Location (Optional)";
+          alert("Location skipped. You can still send your alert without it.");
         },
         { timeout: 7000 }
       );
     }
 
-    // Form Submit Routine
+    // Submit Alert to Backend
     function submitAlertForm() {
       const submitBtn = document.getElementById("submitBtn");
       submitBtn.disabled = true;
-      submitBtn.innerText = "Sending Alert...";
+      submitBtn.innerText = "Dispatched Alert...";
 
       const payload = {
         id: tagId,
@@ -304,27 +555,63 @@
       .then(res => {
         if (res.status === "SUCCESS") {
           sessionStorage.setItem("pingme_submitted_" + tagId, "true");
-          showCompletedScreen("Message sent to owner successfully!");
-          startReplyPolling();
+          enterWaitingRoom();
         } else {
           alert("Alert could not be sent: " + res.message);
           submitBtn.disabled = false;
-          submitBtn.innerText = "Send Instant Alert";
+          submitBtn.innerText = "🚀 Send Instant Alert";
         }
       })
-      .catch(err => {
+      .catch(() => {
         alert("Network error. Please try again.");
         submitBtn.disabled = false;
-        submitBtn.innerText = "Send Instant Alert";
+        submitBtn.innerText = "🚀 Send Instant Alert";
       });
     }
 
-    function showCompletedScreen(msg) {
+    // Switch to 180s Active Waiting Room
+    function enterWaitingRoom() {
       document.getElementById("mainFormContainer").style.display = "none";
-      document.getElementById("doneContainer").style.display = "block";
+      document.getElementById("waitingContainer").style.display = "block";
+
+      startCountdown();
+      startReplyPolling();
+
+      // Rotate cartoon quotes every 7 seconds
+      setInterval(() => {
+        quoteIndex = (quoteIndex + 1) % waitingQuotes.length;
+        const box = document.getElementById("funQuote");
+        if (box) box.innerText = waitingQuotes[quoteIndex];
+      }, 7000);
     }
 
-    // Real-Time Polling for WhatsApp Owner Reply
+    // 180-Second Live Countdown
+    function startCountdown() {
+      const timerDisplay = document.getElementById("timerDisplay");
+      const progressBar = document.getElementById("progressBar");
+
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.innerText = "00:00";
+          progressBar.style.width = "0%";
+          document.getElementById("mascotImg").src = "assets/timeout-hourglass.png";
+          document.getElementById("waitingTitle").innerText = "Notification Completed";
+          document.getElementById("funQuote").innerText = "⏰ 180s window elapsed. The owner has the WhatsApp alert and will attend to it shortly!";
+          return;
+        }
+
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        const pct = (secondsLeft / 180) * 100;
+        progressBar.style.width = `${pct}%`;
+      }, 1000);
+    }
+
+    // Real-Time WhatsApp Reply Polling (Every 3 seconds)
     function startReplyPolling() {
       if (pollInterval) clearInterval(pollInterval);
       pollInterval = setInterval(() => {
@@ -332,11 +619,21 @@
           .then(res => res.json())
           .then(data => {
             if (data.hasReply) {
-              document.getElementById("ownerReplyText").innerHTML = `
-                <div style="color:#22c55e; font-weight:700; margin-bottom:4px;">Received:</div>
-                "${data.message}"
-              `;
               clearInterval(pollInterval);
+              clearInterval(timerInterval);
+
+              // Update mascot to happy
+              document.getElementById("mascotImg").src = "assets/boy-happy.png";
+              document.getElementById("waitingTitle").innerText = "Owner Has Responded!";
+              document.getElementById("waitingTitle").style.color = "var(--success)";
+              document.getElementById("timerDisplay").innerText = "REPLIED";
+              document.getElementById("progressBar").style.background = "var(--success)";
+              document.getElementById("funQuote").style.display = "none";
+
+              // Show Reply Card
+              const replyCard = document.getElementById("replyCard");
+              replyCard.style.display = "block";
+              document.getElementById("replyMessageText").innerText = `"${data.message}"`;
             }
           })
           .catch(() => {});
