@@ -694,9 +694,8 @@
     </div>
 
   </div>
-
-  <script>
-    // Self-destruct splash overlay after 700ms (Never blocks touches)
+<script>
+    // 1. AUTO REMOVE SPLASH OVERLAY AFTER 700ms (Never traps touches)
     setTimeout(function() {
       var s = document.getElementById('splashScreen');
       if (s) {
@@ -709,7 +708,7 @@
     // ⚙️ BACKEND WEB APP CONFIGURATION
     // =========================================================================
     var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec"; 
-    // Paste your Google Apps Script web app URL ending in /exec here
+    // ^ Ensure your actual Apps Script URL ending in /exec is placed here
 
     var urlParams = new URLSearchParams(window.location.search);
     var tagId = urlParams.get('id') || urlParams.get('tag') || 'VP-1001';
@@ -935,55 +934,57 @@
 
     function getOrGenSessionId() {
       if (!currentSessionId) {
-        currentSessionId = 'INC-' + Date.now();
+        currentSessionId = 'SESS_' + Date.now();
         try { localStorage.setItem('pingme_session_' + tagId, currentSessionId); } catch(e){}
       }
       return currentSessionId;
     }
 
-    // 1. ROBUST GEOLOCATION + IMMEDIATE FALLBACK
+    // 1. AWAIT ACCURATE GPS FIRST, THEN DISPATCH
     function handleSendAlert() {
       var btn = document.getElementById('sendAlertBtn');
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span>📍 Connecting...</span>';
+        btn.innerHTML = '<span>📍 Detecting Location...</span>';
       }
 
-      var sessId = getOrGenSessionId();
-      var cooldownEnd = Date.now() + (165 * 1000);
-      try { localStorage.setItem('pingme_cooldown_' + tagId, cooldownEnd.toString()); } catch(e){}
-
       var noteVal = document.getElementById('customNoteInput').value.trim();
+      var sessId = getOrGenSessionId();
 
       if (navigator.geolocation) {
-        // High-accuracy mobile GPS fetch with 3.5s hard timeout
         navigator.geolocation.getCurrentPosition(
           function(pos) {
             var lat = pos.coords.latitude.toFixed(6);
             var lng = pos.coords.longitude.toFixed(6);
-            var mapUrl = "https://maps.google.com/?q=" + lat + "," + lng;
-            proceedWithDispatch(mapUrl, noteVal, sessId);
+            var mapLink = "https://maps.google.com/?q=" + lat + "," + lng;
+            proceedToDispatch(mapLink, noteVal, sessId);
           },
           function(err) {
-            // If denied or GPS unavailable, proceed immediately without hanging
-            proceedWithDispatch("Location permission not granted", noteVal, sessId);
+            proceedToDispatch("", noteVal, sessId);
           },
-          { enableHighAccuracy: true, timeout: 3500, maximumAge: 10000 }
+          { enableHighAccuracy: true, timeout: 3500, maximumAge: 0 }
         );
       } else {
-        proceedWithDispatch("Geolocation not supported", noteVal, sessId);
+        proceedToDispatch("", noteVal, sessId);
       }
     }
 
-    function proceedWithDispatch(locationUrl, noteVal, sessId) {
+    function proceedToDispatch(mapLink, noteVal, sessId) {
+      var cooldownEnd = Date.now() + (165 * 1000);
+      try { localStorage.setItem('pingme_cooldown_' + tagId, cooldownEnd.toString()); } catch(e){}
+
       startCountdown(165);
       showScreen('screen3');
-      dispatchBackend(locationUrl, noteVal, sessId);
-      startAckPolling();
+
+      // Send alert payload
+      dispatchBackend(mapLink, noteVal, sessId);
+
+      // Start polling matching Code.gs line 66 (action === "checkResponse")
+      startAckPolling(sessId);
     }
 
-    // 2. DISPATCH VIA JSONP / SCRIPT INJECTION (BYPASSES ALL CORS & BEACON DROPS)
-    function dispatchBackend(locationUrl, noteVal, sessId) {
+    // 2. DISPATCH PAYLOAD MATCHING CODE.GS LINES 55-61
+    function dispatchBackend(mapLink, noteVal, sessId) {
       var targetUrl = SCRIPT_URL + 
         '?action=submitAlert' +
         '&customerId=' + encodeURIComponent(tagId) +
@@ -991,54 +992,74 @@
         '&category=' + encodeURIComponent(currentCategory) +
         '&message=' + encodeURIComponent(selectedMessage) +
         '&urgency=Normal' +
-        '&locationUrl=' + encodeURIComponent(locationUrl) +
-        '&location=' + encodeURIComponent(locationUrl) +
+        '&locationUrl=' + encodeURIComponent(mapLink) +
         '&notes=' + encodeURIComponent(noteVal) +
         '&sessionId=' + encodeURIComponent(sessId) +
-        '&clientSessionId=' + encodeURIComponent(sessId) +
         '&t=' + Date.now();
 
-      // Reliable cross-domain script trigger (never gets blocked or truncated)
-      var s = document.createElement('script');
-      s.src = targetUrl;
-      s.onload = function() { if (s.parentNode) s.parentNode.removeChild(s); };
-      document.body.appendChild(s);
+      fetch(targetUrl, { mode: 'no-cors' }).catch(function() {
+        var s = document.createElement('script');
+        s.src = targetUrl;
+        document.body.appendChild(s);
+      });
     }
 
-    // 3. REAL-TIME WHATSAPP REPLY POLLING (JSONP - NO CORS BLOCKS)
-    window.handleAckResponse = function(data) {
-      if (data && (data.acknowledged || data.reply || data.replyText || data.ownerReply || data.status === 'RESOLVED')) {
-        clearInterval(pollTimer);
-        var replyMsg = data.replyText || data.reply || data.ownerReply || 'Coming in 2 mins!';
-        var ackBox = document.getElementById('ackBlock');
-        if (ackBox) {
-          document.getElementById('ackMessageText').textContent = '"' + replyMsg + '"';
-          document.getElementById('ackTimestamp').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          ackBox.style.display = 'block';
-        }
-      }
-    };
-
-    function startAckPolling() {
+    // 3. POLL EXACT BACKEND ACTION 'checkResponse' (CODE.GS LINE 66)
+    function startAckPolling(sessId) {
       clearInterval(pollTimer);
-      var sessId = getOrGenSessionId();
 
       pollTimer = setInterval(function() {
         if (!sessId) return;
 
-        // Clean JSONP query directly to Apps Script doGet
+        // Matches Code.gs line 66: action === "checkResponse" && sessionId
         var pollUrl = SCRIPT_URL + 
-          '?action=checkStatus' +
+          '?action=checkResponse' +
           '&sessionId=' + encodeURIComponent(sessId) +
-          '&tagId=' + encodeURIComponent(tagId) +
-          '&callback=handleAckResponse' +
+          '&customerId=' + encodeURIComponent(tagId) +
           '&t=' + Date.now();
 
-        var script = document.createElement('script');
-        script.src = pollUrl;
-        script.onload = function() { if (script.parentNode) script.parentNode.removeChild(script); };
-        document.body.appendChild(script);
-      }, 3500);
+        fetch(pollUrl)
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            var reply = data.replyText || data.response || data.reply || (data.data && data.data.replyText);
+            var isAck = data.acknowledged || data.success || (reply && reply.trim() !== "");
+
+            if (isAck && reply) {
+              clearInterval(pollTimer);
+              var ackBox = document.getElementById('ackBlock');
+              if (ackBox) {
+                document.getElementById('ackMessageText').textContent = '"' + reply + '"';
+                document.getElementById('ackTimestamp').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                ackBox.style.display = 'block';
+              }
+            }
+          })
+          .catch(function(err) {});
+      }, 3000);
+    }
+
+    function startCountdown(seconds) {
+      clearInterval(countdownTimer);
+      var remain = seconds;
+      renderTime(remain);
+
+      countdownTimer = setInterval(function() {
+        remain--;
+        if (remain <= 0) {
+          clearInterval(countdownTimer);
+          document.getElementById('timerCounter').textContent = '00:00';
+          try { localStorage.removeItem('pingme_cooldown_' + tagId); } catch(e){}
+        } else {
+          renderTime(remain);
+        }
+      }, 1000);
+    }
+
+    function renderTime(sec) {
+      var m = Math.floor(sec / 60);
+      var s = sec % 60;
+      var str = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      document.getElementById('timerCounter').textContent = str;
     }
 
     function shareViaWhatsApp() {
@@ -1054,7 +1075,7 @@
       showScreen('screen1');
     }
 
-    // Check cooldown on load
+    // Check active cooldown on load
     window.addEventListener('load', function() {
       try {
         var active = localStorage.getItem('pingme_cooldown_' + tagId);
@@ -1064,11 +1085,10 @@
             currentSessionId = localStorage.getItem('pingme_session_' + tagId) || '';
             startCountdown(rem);
             showScreen('screen3');
-            startAckPolling();
+            startAckPolling(currentSessionId);
           }
         }
       } catch(e){}
     });
   </script>
-</body>
-</html>
+  
