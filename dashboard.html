@@ -268,20 +268,31 @@ One Scan Instant Connection</textarea>
     }
 
     function calculateDaysRemaining(dateString) {
-      const today = new Date();
-      const exp = new Date(dateString);
-      const diffTime = exp - today;
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (!dateString || dateString === "-") return 0;
+    const parts = String(dateString).split("-");
+    let exp;
+    if (parts.length === 3) {
+      // Handles DD-MM-YYYY
+      exp = new Date(parts[2], parts[1] - 1, parts[0]);
+    } else {
+      exp = new Date(dateString);
     }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffTime = exp - today;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
 
     function renderList(list) {
       const container = document.getElementById("customerList");
       container.innerHTML = "";
 
       list.forEach(c => {
-        const daysLeft = calculateDaysRemaining(c.expiryDate);
-        const isLowCredit = Number(c.availableCredits) <= 10 && c.status === "ACTIVE";
-        const isExpiringSoon = daysLeft <= 7 && daysLeft >= 0 && c.status === "ACTIVE";
+      const expDate = c.expiryDate || c.expiry || "-";
+      const daysLeft = calculateDaysRemaining(expDate);
+      const balance = c.availableCredits !== undefined ? c.availableCredits : ((Number(c.totalCredits || 0)) - Number(c.usedCredits || 0));
+      const isLowCredit = Number(balance) <= 10 && c.status === "ACTIVE";
+      const isExpiringSoon = daysLeft <= 7 && daysLeft >= 0 && c.status === "ACTIVE";
 
         let badgeClass = "badge-active";
         if (c.status === "CREDIT_EXHAUSTED") badgeClass = "badge-exhausted";
@@ -298,7 +309,7 @@ One Scan Instant Connection</textarea>
           </div>
           <div class="item-row">
             <span class="item-name">${c.name} (${c.phone.slice(-4)})</span>
-            <span style="font-size: 11px; font-weight: 600;">Bal: ${c.availableCredits}</span>
+            <span style="font-size: 11px; font-weight: 600;">Bal: ${balance}</span>
           </div>
           <div style="margin-top: 4px; display: flex; gap: 4px;">
             ${isLowCredit ? '<span class="badge badge-warning">⚡ Low ('+c.availableCredits+')</span>' : ''}
@@ -312,18 +323,19 @@ One Scan Instant Connection</textarea>
     function selectCustomer(c) {
       selectedCustomer = c;
       renderList(customers);
+const expDate = c.expiryDate || c.expiry || "-";
+          const daysLeft = typeof calculateDaysRemaining === "function" ? calculateDaysRemaining(expDate) : 0;
+          const balance = c.availableCredits !== undefined ? c.availableCredits : ((c.totalCredits || 0) - (c.usedCredits || 0));
 
-      const daysLeft = calculateDaysRemaining(c.expiryDate);
-      document.getElementById("viewId").innerText = `${c.id} — ${c.name}`;
-      document.getElementById("viewCustomerInfo").innerText = `Expires: ${c.expiryDate}`;
-      document.getElementById("viewName").innerText = c.name;
-      document.getElementById("viewPhone").innerText = "+" + c.phone;
-      document.getElementById("viewEmail").innerText = c.email || "-";
-      document.getElementById("viewAddress").innerText = c.address || "-";
-      document.getElementById("viewCredits").innerText = c.availableCredits;
-      document.getElementById("viewUsedCredits").innerText = c.usedCredits;
-      document.getElementById("viewExpiryDate").innerText = `${c.expiryDate} (${daysLeft > 0 ? daysLeft + ' days left' : 'Expired'})`;
-      
+          document.getElementById("viewId").innerText = `${c.id} — ${c.name}`;
+          document.getElementById("viewCustomerInfo").innerText = `Expires: ${expDate}`;
+          document.getElementById("viewName").innerText = c.name;
+          document.getElementById("viewPhone").innerText = "+" + c.phone;
+          document.getElementById("viewEmail").innerText = c.email || "-";
+          document.getElementById("viewAddress").innerText = c.address || "-";
+          document.getElementById("viewCredits").innerText = balance;
+          document.getElementById("viewUsedCredits").innerText = c.usedCredits || 0;
+          document.getElementById("viewExpiryDate").innerText = `${expDate} (${daysLeft > 0 ? daysLeft + ' days left' : 'Active'})`;
       document.getElementById("statusSelect").value = c.status;
 
       // Update QR Box & Scan URL
