@@ -605,12 +605,23 @@
 </head>
 <body>
 
-  <!-- ================= SPLASH SCREEN (1.5s on scan) ================= -->
-  <div id="splashScreen" class="splash-screen">
+  <!-- ================= SPLASH SCREEN (1.2s on scan) ================= -->
+  <div id="splashScreen" class="splash-screen" onclick="this.style.display='none'">
     <div class="splash-content">
       <img src="assets/pingme-logo.png" alt="PingMe" class="splash-logo">
       <div class="splash-loader"></div>
     </div>
+    <script>
+      // Standalone self-timer: Guarantees removal on all mobile devices
+      setTimeout(function() {
+        var el = document.getElementById('splashScreen');
+        if (el) {
+          el.style.opacity = '0';
+          el.style.transition = 'opacity 0.4s ease';
+          setTimeout(function() { el.style.display = 'none'; }, 400);
+        }
+      }, 1200);
+    </script>
   </div>
 
   <div class="ambient-orb orb-blue"></div>
@@ -1203,26 +1214,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Bulletproof Splash Dismissal
-    (function dismissSplash() {
-      function hide() {
-        const splash = document.getElementById('splashScreen');
-        if (splash) {
-          splash.classList.add('fade-out');
-          setTimeout(() => {
-            if (splash.parentNode) splash.parentNode.removeChild(splash);
-          }, 400);
-        }
-      }
-      // Guarantee dismissal after 1.2s even if page assets are still loading
-      if (document.readyState === 'complete') {
-        setTimeout(hide, 1200);
-      } else {
-        window.addEventListener('load', () => setTimeout(hide, 1000));
-        setTimeout(hide, 1500); // Hard fallback safety timer
-      }
-    })();
-
       // Cooldown check
       const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
       if (activeCooldown) {
