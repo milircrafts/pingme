@@ -53,7 +53,7 @@
       opacity: 0.55;
     }
 
-    /* Splash Screen */
+    /* Splash Screen (1.5s) */
     .splash-screen {
       position: fixed;
       inset: 0;
@@ -617,7 +617,7 @@
         <button id="langToggle" class="lang-pill" type="button">🌐 தமிழ்</button>
       </header>
 
-      <!-- ================= SCREEN 1: CATEGORY SELECTION ================= -->
+      <!-- SCREEN 1 -->
       <section id="screen1" class="screen-view active">
         <div class="welcome-badge" id="txt_hello">Hello there! 👋</div>
         <h1 class="screen-title" id="txt_s1_title">How can we help?</h1>
@@ -663,7 +663,7 @@
         </div>
       </section>
 
-      <!-- ================= SCREEN 2: SELECT MESSAGE ================= -->
+      <!-- SCREEN 2 -->
       <section id="screen2" class="screen-view">
         <div class="hero-category-art">
           <img id="screen2HeroImg" src="assets/car-bike-3d.png" alt="Category Art" class="hero-3d-img">
@@ -707,7 +707,7 @@
         </button>
       </section>
 
-      <!-- ================= SCREEN 3: LIVE ACKNOWLEDGMENT ================= -->
+      <!-- SCREEN 3 -->
       <section id="screen3" class="screen-view">
         <div class="mascot-stage">
           <img src="assets/mascot-airplane-3d.png" alt="PingMe Mascot" class="mascot-img">
@@ -720,6 +720,7 @@
         <h2 class="screen-title" id="dispatchHeading">Alert Dispatched!</h2>
         <p class="dispatch-sub" id="txt_dispatch_sub">Owner notified via private alert channels.</p>
 
+        <!-- Response Timer (pure seconds) -->
         <div id="waitingBlock" class="waiting-box">
           <div class="timer-label" id="txt_timer_label">Response Timer</div>
           <div class="live-timer">
@@ -731,6 +732,7 @@
           </div>
         </div>
 
+        <!-- Acknowledged Block -->
         <div id="acknowledgedBlock" class="ack-box hidden">
           <div class="ack-status-tag" id="txt_ack_tag">Owner Response Received ⚡</div>
           <div class="ack-message-card">
@@ -758,7 +760,7 @@
   </main>
 
   <script>
-    // ================= DUAL LANGUAGE DICTIONARY =================
+    // DUAL LANGUAGE DICTIONARY
     const I18N = {
       en: {
         langBtn: "🌐 தமிழ்",
@@ -866,12 +868,12 @@
 
     let currentLang = 'en';
 
-    // ================= STATE & CONFIG =================
+    // CONFIG & STATE
     const urlParams = new URLSearchParams(window.location.search);
     const tagId = urlParams.get('id') || urlParams.get('tag') || 'PM-CUST-1004';
     
-    // YOUR LIVE WORKING GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec'; 
+    // YOUR LIVE GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgRCYgyJ8WJZ4SrKGkOq1MJHzXyR8gzLBHjyNpGQdo-8huP8LJfMM6YSE5iUhb4fC/exec';
 
     let currentCategory = 'vehicle';
     let selectedMessage = '';
@@ -914,7 +916,6 @@
       document.getElementById('txt_share_btn').textContent = t.share_btn;
       document.getElementById('txt_done_btn').textContent = t.done_btn;
 
-      // Re-render message chips for current category in selected language
       renderChips(currentCategory);
     }
 
@@ -1026,8 +1027,7 @@
       showScreen('screen2');
     }
 
-    // ================= DUAL DISPATCH ALERT =================
-    // ================= DISPATCH WITH TRIPLE FALLBACK =================
+    // DISPATCH ALERT
     async function handleSendAlert() {
       const sendBtn = document.getElementById('sendAlertBtn');
       sendBtn.disabled = true;
@@ -1041,7 +1041,6 @@
       const coords = await getCoordinates();
       const mapsUrl = coords ? `https://maps.google.com/?q=${coords.lat},${coords.lng}` : '';
 
-      // Clean, universally mapped parameters
       const payload = {
         action: 'sendAlert',
         tag: tagId,
@@ -1056,14 +1055,14 @@
         photo: compressedPhotoBase64 || ''
       };
 
-      // 1. Fire GET ping (Works if your script listens in doGet)
+      // 1. GET Beacon (doGet trigger)
       try {
         const getUrl = `${SCRIPT_URL}?action=sendAlert&tag=${encodeURIComponent(tagId)}&id=${encodeURIComponent(tagId)}&category=${encodeURIComponent(currentCategory)}&message=${encodeURIComponent(selectedMessage)}&notes=${encodeURIComponent(noteText)}&location=${encodeURIComponent(mapsUrl)}`;
         const imgBeacon = new Image();
         imgBeacon.src = getUrl;
       } catch (err) {}
 
-      // 2. Fire POST ping (Works if your script listens in doPost)
+      // 2. Direct POST fetch (doPost trigger)
       try {
         fetch(SCRIPT_URL, {
           method: 'POST',
@@ -1073,7 +1072,7 @@
         });
       } catch (err) {}
 
-      // 3. Fallback Form POST (Overcomes 302 redirects)
+      // 3. Hidden Form POST (Bypasses Google 302 redirects)
       try {
         let hiddenFrame = document.getElementById('gas_hidden_iframe');
         if (!hiddenFrame) {
@@ -1110,12 +1109,11 @@
       const cooldownEnd = Date.now() + 180 * 1000;
       localStorage.setItem(`pingme_cooldown_${tagId}`, cooldownEnd.toString());
 
-      // Start Countdown at 180 seconds
       startScreen3Timer(180);
       showScreen('screen3');
     }
 
-    // ================= TIMER IN PURE SECONDS (180s -> 0s) =================
+    // TIMER IN PURE SECONDS (180s -> 0s)
     function startScreen3Timer(secondsRemaining) {
       let sec = secondsRemaining;
       const countdownEl = document.getElementById('countdownText');
@@ -1148,6 +1146,7 @@
         } catch (e) {}
       }, 4000);
     }
+
     function triggerOwnerResponse(replyText) {
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       playChime();
@@ -1169,7 +1168,7 @@
         }
       }, 1500);
 
-      // Cooldown check
+      // Check active cooldown
       const activeCooldown = localStorage.getItem(`pingme_cooldown_${tagId}`);
       if (activeCooldown) {
         const remSeconds = Math.floor((parseInt(activeCooldown, 10) - Date.now()) / 1000);
@@ -1182,7 +1181,7 @@
         }
       }
 
-      // Language Switcher Toggle
+      // Language Switcher
       document.getElementById('langToggle').onclick = () => {
         const nextLang = currentLang === 'en' ? 'ta' : 'en';
         applyLanguage(nextLang);
@@ -1196,7 +1195,7 @@
       // Back Button
       document.getElementById('backBtn').onclick = () => showScreen('screen1');
 
-      // Notes Character Counter
+      // Notes Character Counter (0 / 120)
       const noteInput = document.getElementById('customNoteInput');
       const countEl = document.getElementById('charCount');
       noteInput.oninput = () => {
